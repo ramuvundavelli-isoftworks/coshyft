@@ -1,0 +1,397 @@
+import React, { useState } from 'react';
+import { Card } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Label } from '../components/ui/label';
+import { Input } from '../components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { Car, Bus, Bike, TrendingUp, Download, Eye, Target, ArrowRightLeft } from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { mockModeDistribution } from '../data/mockData';
+import { toast } from 'sonner';
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+const modeShiftTrend = [
+  { month: 'Jan', singleOccupancy: 45, carpool: 25, publicTransit: 20, bike: 10 },
+  { month: 'Feb', singleOccupancy: 42, carpool: 27, publicTransit: 21, bike: 10 },
+  { month: 'Mar', singleOccupancy: 40, carpool: 28, publicTransit: 22, bike: 10 },
+  { month: 'Apr', singleOccupancy: 38, carpool: 30, publicTransit: 22, bike: 10 },
+  { month: 'May', singleOccupancy: 35, carpool: 32, publicTransit: 23, bike: 10 },
+];
+
+const modeDetails = [
+  { mode: 'Single Occupancy Vehicle', emissions: 245.8, trips: 3420, avgPerTrip: 0.072, target: 200, icon: Car },
+  { mode: 'Carpool', emissions: 98.4, trips: 2150, avgPerTrip: 0.046, target: 120, icon: Car },
+  { mode: 'Public Transit', emissions: 52.6, trips: 1890, avgPerTrip: 0.028, target: 60, icon: Bus },
+  { mode: 'Bike/Walk', emissions: 0, trips: 840, avgPerTrip: 0, target: 0, icon: Bike },
+];
+
+export default function ModeSplit() {
+  const [isViewModeDialogOpen, setIsViewModeDialogOpen] = useState(false);
+  const [isShiftAnalysisDialogOpen, setIsShiftAnalysisDialogOpen] = useState(false);
+  const [isSetTargetDialogOpen, setIsSetTargetDialogOpen] = useState(false);
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<any>(null);
+  const [targetValue, setTargetValue] = useState('');
+
+  const handleSetTarget = () => {
+    toast.success(`Target set for ${selectedMode?.mode}`);
+    setIsSetTargetDialogOpen(false);
+  };
+
+  const handleExport = () => {
+    toast.success('Exporting mode split data...');
+    setIsExportDialogOpen(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Mode Split Analysis</h1>
+          <p className="text-gray-600 mt-1">
+            Commute mode distribution and shift analytics
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => setIsShiftAnalysisDialogOpen(true)}>
+            <ArrowRightLeft className="h-4 w-4 mr-2" />
+            Shift Analysis
+          </Button>
+          <Button onClick={() => setIsExportDialogOpen(true)}>
+            <Download className="h-4 w-4 mr-2" />
+            Export Data
+          </Button>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Car className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">SOV Rate</p>
+              <p className="text-2xl font-bold text-gray-900">35%</p>
+              <p className="text-xs text-green-600">↓ 10% vs baseline</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Car className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Carpool Rate</p>
+              <p className="text-2xl font-bold text-gray-900">32%</p>
+              <p className="text-xs text-green-600">↑ 7% vs baseline</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Bus className="h-5 w-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Transit Rate</p>
+              <p className="text-2xl font-bold text-gray-900">23%</p>
+              <p className="text-xs text-green-600">↑ 3% vs baseline</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-yellow-100 rounded-lg">
+              <Bike className="h-5 w-5 text-yellow-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Active Transport</p>
+              <p className="text-2xl font-bold text-gray-900">10%</p>
+              <p className="text-xs text-gray-500">No change</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Current Mode Distribution & Mode Shift Trend */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="p-6">
+          <h3 className="font-semibold text-gray-900 mb-4">Current Mode Distribution</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={mockModeDistribution}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={(entry) => `${entry.mode}: ${entry.percentage}%`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="percentage"
+              >
+                {mockModeDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="font-semibold text-gray-900 mb-4">Mode Shift Trend</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={modeShiftTrend}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="singleOccupancy" stroke="#ef4444" name="SOV" />
+              <Line type="monotone" dataKey="carpool" stroke="#3b82f6" name="Carpool" />
+              <Line type="monotone" dataKey="publicTransit" stroke="#10b981" name="Transit" />
+              <Line type="monotone" dataKey="bike" stroke="#f59e0b" name="Bike/Walk" />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      {/* Mode Details */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-gray-900 mb-4">Mode Performance Details</h3>
+        <div className="space-y-3">
+          {modeDetails.map((mode, idx) => {
+            const Icon = mode.icon;
+            const isOnTrack = mode.emissions <= mode.target;
+            return (
+              <div key={idx} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="p-3 bg-gray-100 rounded-lg">
+                      <Icon className="h-6 w-6 text-gray-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="font-medium text-gray-900">{mode.mode}</h4>
+                        {isOnTrack ? (
+                          <Badge className="bg-green-100 text-green-700">On Track</Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-700">Needs Improvement</Badge>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600">Emissions</p>
+                          <p className="font-medium text-gray-900">{mode.emissions} tCO₂e</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Total Trips</p>
+                          <p className="font-medium text-gray-900">{mode.trips}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Avg per Trip</p>
+                          <p className="font-medium text-gray-900">{mode.avgPerTrip} kg</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Target</p>
+                          <p className="font-medium text-gray-900">{mode.target} tCO₂e</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMode(mode);
+                        setIsViewModeDialogOpen(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Details
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMode(mode);
+                        setTargetValue(mode.target.toString());
+                        setIsSetTargetDialogOpen(true);
+                      }}
+                    >
+                      <Target className="h-4 w-4 mr-1" />
+                      Set Target
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* View Mode Details Dialog */}
+      <Dialog open={isViewModeDialogOpen} onOpenChange={setIsViewModeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedMode?.mode}</DialogTitle>
+            <DialogDescription>Detailed mode analytics</DialogDescription>
+          </DialogHeader>
+          {selectedMode && (
+            <div className="py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="p-4">
+                  <Label className="text-sm text-gray-600">Total Emissions</Label>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.emissions} tCO₂e</p>
+                </Card>
+                <Card className="p-4">
+                  <Label className="text-sm text-gray-600">Total Trips</Label>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.trips}</p>
+                </Card>
+                <Card className="p-4">
+                  <Label className="text-sm text-gray-600">Avg per Trip</Label>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.avgPerTrip} kg</p>
+                </Card>
+                <Card className="p-4">
+                  <Label className="text-sm text-gray-600">Target</Label>
+                  <p className="text-2xl font-bold text-blue-600 mt-1">{selectedMode.target} tCO₂e</p>
+                </Card>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsViewModeDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mode Shift Analysis Dialog */}
+      <Dialog open={isShiftAnalysisDialogOpen} onOpenChange={setIsShiftAnalysisDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Mode Shift Analysis</DialogTitle>
+            <DialogDescription>Analyze potential emissions reductions from mode shift</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Shift Scenario: 10% SOV → Carpool</h4>
+                <p className="text-sm text-blue-700">
+                  <strong>Potential Reduction:</strong> 24.6 tCO₂e annually
+                </p>
+                <p className="text-sm text-blue-700">
+                  <strong>Impact:</strong> 10% total emissions reduction
+                </p>
+              </div>
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <h4 className="font-semibold text-green-900 mb-2">Shift Scenario: 5% SOV → Public Transit</h4>
+                <p className="text-sm text-green-700">
+                  <strong>Potential Reduction:</strong> 10.8 tCO₂e annually
+                </p>
+                <p className="text-sm text-green-700">
+                  <strong>Impact:</strong> 4.4% total emissions reduction
+                </p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsShiftAnalysisDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Set Target Dialog */}
+      <Dialog open={isSetTargetDialogOpen} onOpenChange={setIsSetTargetDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set Mode Target</DialogTitle>
+            <DialogDescription>
+              Update emissions target for {selectedMode?.mode}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="target">Target Emissions (tCO₂e) *</Label>
+            <Input
+              id="target"
+              type="number"
+              value={targetValue}
+              onChange={(e) => setTargetValue(e.target.value)}
+              placeholder="Enter target"
+            />
+            <p className="text-sm text-gray-500 mt-2">
+              Current: {selectedMode?.emissions} tCO₂e
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSetTargetDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSetTarget}>Set Target</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Export Dialog */}
+      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Export Mode Split Data</DialogTitle>
+            <DialogDescription>Download mode distribution analytics</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="export-format">Export Format *</Label>
+            <Select defaultValue="excel">
+              <SelectTrigger id="export-format">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="excel">Excel Workbook</SelectItem>
+                <SelectItem value="pdf">PDF Report</SelectItem>
+                <SelectItem value="csv">CSV Data</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
