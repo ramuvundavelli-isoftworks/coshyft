@@ -20,25 +20,18 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { Car, Bus, Bike, TrendingUp, Download, Eye, Target, ArrowRightLeft } from 'lucide-react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Doughnut, Line } from 'react-chartjs-2';
+import { doughnutChartOptions, lineChartOptions, colors } from '../utils/chartConfig';
 import { mockModeDistribution } from '../data/mockData';
 import { toast } from 'sonner';
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+// Brand-aligned colors: green for sustainable, muted for SOV
+const MODE_COLORS = {
+  carpool: colors.chart.green,
+  publicTransit: colors.chart.emerald,
+  bike: '#22c55e',
+  singleOccupancy: '#94a3b8', // Muted gray (not red)
+};
 
 const modeShiftTrend = [
   { month: 'Jan', singleOccupancy: 45, carpool: 25, publicTransit: 20, bike: 10 },
@@ -150,42 +143,63 @@ export default function ModeSplit() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Current Mode Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={mockModeDistribution}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={(entry) => `${entry.mode}: ${entry.percentage}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="percentage"
-              >
-                {mockModeDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: mockModeDistribution.map(d => d.mode),
+                datasets: [
+                  {
+                    data: mockModeDistribution.map(d => d.percentage),
+                    backgroundColor: mockModeDistribution.map(d => d.color),
+                    borderWidth: 0,
+                  },
+                ],
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Mode Shift Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={modeShiftTrend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="singleOccupancy" stroke="#ef4444" name="SOV" />
-              <Line type="monotone" dataKey="carpool" stroke="#3b82f6" name="Carpool" />
-              <Line type="monotone" dataKey="publicTransit" stroke="#10b981" name="Transit" />
-              <Line type="monotone" dataKey="bike" stroke="#f59e0b" name="Bike/Walk" />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Line
+              data={{
+                labels: modeShiftTrend.map(d => d.month),
+                datasets: [
+                  {
+                    label: 'SOV',
+                    data: modeShiftTrend.map(d => d.singleOccupancy),
+                    borderColor: MODE_COLORS.singleOccupancy,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                  {
+                    label: 'Carpool',
+                    data: modeShiftTrend.map(d => d.carpool),
+                    borderColor: MODE_COLORS.carpool,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                  {
+                    label: 'Transit',
+                    data: modeShiftTrend.map(d => d.publicTransit),
+                    borderColor: MODE_COLORS.publicTransit,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                  {
+                    label: 'Bike/Walk',
+                    data: modeShiftTrend.map(d => d.bike),
+                    borderColor: MODE_COLORS.bike,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                ],
+              }}
+              options={lineChartOptions}
+            />
+          </div>
         </Card>
       </div>
 

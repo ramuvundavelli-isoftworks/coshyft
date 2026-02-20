@@ -17,20 +17,16 @@ import {
   Users,
   Zap,
   TrendingUp,
+  Bus,
+  Bike,
+  Home,
 } from 'lucide-react';
 import { mockRides } from '../data/mockData';
 import { Progress } from '../components/ui/progress';
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as ChartTooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line, Doughnut, Bar } from 'react-chartjs-2';
+import { lineChartOptions, doughnutChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 
 const impactData = [
   { week: 'Week 1', co2: 12.5 },
@@ -342,14 +338,14 @@ export default function EmployeeDashboard() {
             </div>
           </div>
 
-          {/* Monthly Commute Pattern */}
+          {/* 3-Month Commute Calendar - Separate Heatmap Chart */}
           <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
-            <div className="mb-4">
+            <div className="mb-6">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
-                Commute Pattern (3 Months)
+                3-Month Commute Calendar
               </h2>
               <p className="font-['Inter',sans-serif] font-normal text-[12px] text-[#4a5565]">
-                Dec 2025 - Feb 2026 • 127.5 kg CO₂ saved
+                Visual overview of your daily commute patterns
               </p>
             </div>
 
@@ -619,29 +615,23 @@ export default function EmployeeDashboard() {
             <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
               Your Monthly Impact
             </h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={impactData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis 
-                  dataKey="week" 
-                  stroke="#6b7280" 
-                  style={{ fontSize: '12px', fontFamily: 'Inter, sans-serif' }} 
-                />
-                <YAxis 
-                  stroke="#6b7280" 
-                  style={{ fontSize: '12px', fontFamily: 'Inter, sans-serif' }} 
-                />
-                <ChartTooltip />
-                <Line
-                  type="monotone"
-                  dataKey="co2"
-                  stroke="#00A63E"
-                  strokeWidth={3}
-                  name="CO₂ Saved"
-                  dot={{ fill: '#00A63E', r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div style={{ height: '200px', width: '100%' }}>
+              <Line
+                data={{
+                  labels: impactData.map(d => d.week),
+                  datasets: [
+                    {
+                      label: 'CO₂ Saved (kg)',
+                      data: impactData.map(d => d.co2),
+                      borderColor: colors.chart.green,
+                      borderWidth: 3,
+                      fill: false,
+                    },
+                  ],
+                }}
+                options={lineChartOptions}
+              />
+            </div>
             <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
               <p className="font-['Inter',sans-serif] text-[12px] text-green-800">
                 <strong>Great job!</strong> You've saved 21.3 kg CO₂ this month, equivalent to planting 1.2 trees.

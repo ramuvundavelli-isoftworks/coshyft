@@ -42,23 +42,8 @@ import {
   Linkedin,
   Facebook
 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { lineChartOptions, barChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const monthlyTrend = [
@@ -227,84 +212,93 @@ export default function MyImpact() {
       {/* Emissions Trend */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Emissions Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={monthlyTrend}>
-            <defs>
-              <linearGradient id="colorEmissions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="colorBaseline" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Area type="monotone" dataKey="baseline" stroke="#ef4444" fill="url(#colorBaseline)" name="Baseline" />
-            <Area type="monotone" dataKey="emissions" stroke="#3b82f6" fill="url(#colorEmissions)" name="Actual Emissions" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Line
+            data={{
+              labels: monthlyTrend.map(d => d.month),
+              datasets: [
+                {
+                  label: 'Baseline',
+                  data: monthlyTrend.map(d => d.baseline),
+                  borderColor: colors.chart.red,
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  fill: true,
+                  borderWidth: 2,
+                },
+                {
+                  label: 'Actual Emissions',
+                  data: monthlyTrend.map(d => d.emissions),
+                  borderColor: colors.chart.blue,
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  fill: true,
+                  borderWidth: 2,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Mode Distribution & Weekly Pattern */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Transport Mode Distribution</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={modeDistribution}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ mode, percentage }) => `${mode} ${percentage}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="count"
-              >
-                {modeDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '250px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: modeDistribution.map(d => d.mode),
+                datasets: [
+                  {
+                    data: modeDistribution.map(d => d.count),
+                    backgroundColor: modeDistribution.map(d => d.color),
+                    borderWidth: 0,
+                  },
+                ],
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Weekly Pattern</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={weeklyPattern}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="co2" fill="#3b82f6" name="CO₂ (kg)" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ height: '250px', width: '100%' }}>
+            <Bar
+              data={{
+                labels: weeklyPattern.map(d => d.day),
+                datasets: [
+                  {
+                    label: 'CO₂ (kg)',
+                    data: weeklyPattern.map(d => d.co2),
+                    backgroundColor: colors.chart.blue,
+                  },
+                ],
+              }}
+              options={barChartOptions}
+            />
+          </div>
         </Card>
       </div>
 
       {/* Peer Comparison */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Peer Comparison</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={peerComparison} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="category" type="category" />
-            <Tooltip />
-            <Bar dataKey="value" name="kg CO₂/month">
-              {peerComparison.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ height: '200px', width: '100%' }}>
+          <Bar
+            data={{
+              labels: peerComparison.map(d => d.category),
+              datasets: [
+                {
+                  label: 'kg CO₂/month',
+                  data: peerComparison.map(d => d.value),
+                  backgroundColor: peerComparison.map(d => d.color),
+                },
+              ],
+            }}
+            options={barChartOptions}
+          />
+        </div>
         <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-green-700">
             🎉 You're performing <strong>29% better</strong> than the department average!

@@ -9,6 +9,7 @@ import {
   LineElement,
   BarElement,
   ArcElement,
+  RadialLinearScale,
   Title,
   Tooltip,
   Legend,
@@ -23,6 +24,7 @@ ChartJS.register(
   LineElement,
   BarElement,
   ArcElement,
+  RadialLinearScale,
   Title,
   Tooltip,
   Legend,
@@ -281,4 +283,55 @@ export const exampleDoughnutData = {
       borderWidth: 0,
     },
   ],
+};
+
+// Radar Chart Config
+export const radarChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    r: {
+      beginAtZero: true,
+      grid: {
+        color: '#e5e7eb',
+      },
+      pointLabels: {
+        font: {
+          family: 'Inter',
+          size: 11,
+        },
+        color: colors.text.secondary,
+      },
+      ticks: {
+        font: {
+          family: 'Inter',
+          size: 10,
+        },
+        color: colors.text.tertiary,
+        backdropColor: 'transparent',
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: 'top' as const,
+      labels: {
+        usePointStyle: true,
+        padding: 15,
+        font: {
+          family: 'Inter',
+          size: 12,
+        },
+        color: colors.text.secondary,
+      },
+    },
+    tooltip: {
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      titleColor: colors.text.primary,
+      bodyColor: colors.text.secondary,
+      borderColor: '#e5e7eb',
+      borderWidth: 1,
+      padding: 12,
+    },
+  },
 };

@@ -17,11 +17,11 @@ export const mockEmissionData: EmissionData[] = [
 ];
 
 export const mockModeDistribution: ModeDistribution[] = [
-  { mode: 'Single Occupancy Vehicle', percentage: 45, emissions: 1245, color: '#ef4444' },
-  { mode: 'Carpool', percentage: 18, emissions: 320, color: '#f97316' },
-  { mode: 'Public Transport', percentage: 22, emissions: 180, color: '#eab308' },
+  { mode: 'Carpool', percentage: 18, emissions: 320, color: '#00bc7d' },
+  { mode: 'Public Transport', percentage: 22, emissions: 180, color: '#10b981' },
   { mode: 'Cycling', percentage: 8, emissions: 0, color: '#22c55e' },
-  { mode: 'Walking', percentage: 7, emissions: 0, color: '#10b981' },
+  { mode: 'Walking', percentage: 7, emissions: 0, color: '#34d399' },
+  { mode: 'Single Occupancy Vehicle', percentage: 45, emissions: 1245, color: '#94a3b8' },
 ];
 
 export const mockLocationPerformance: LocationPerformance[] = [

@@ -33,16 +33,8 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { toast } from 'sonner';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line } from 'react-chartjs-2';
+import { lineChartOptions, colors } from '../utils/chartConfig';
 
 interface TargetScenario {
   id: string;
@@ -311,18 +303,39 @@ export default function TargetsTrajectory() {
       {/* Trajectory Chart */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-6">Emission Trajectory</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={trajectoryData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="year" stroke="#6b7280" />
-            <YAxis stroke="#6b7280" label={{ value: 'tCO₂e', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={3} name="Actual" />
-            <Line type="monotone" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="Target Path" />
-            <Line type="monotone" dataKey="ambitious" stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 5" name="Ambitious Scenario" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '350px', width: '100%' }}>
+          <Line
+            data={{
+              labels: trajectoryData.map(d => d.year),
+              datasets: [
+                {
+                  label: 'Actual',
+                  data: trajectoryData.map(d => d.actual),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 3,
+                  fill: false,
+                },
+                {
+                  label: 'Target Path',
+                  data: trajectoryData.map(d => d.target),
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  fill: false,
+                },
+                {
+                  label: 'Ambitious Scenario',
+                  data: trajectoryData.map(d => d.ambitious),
+                  borderColor: colors.chart.purple,
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Scenario Management */}

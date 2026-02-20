@@ -28,21 +28,8 @@ import {
   TableRow,
 } from '../components/ui/table';
 import { MapPin, Download, Eye, Target, TrendingUp, TrendingDown, Building2 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from 'recharts';
+import { Bar, Radar } from 'react-chartjs-2';
+import { barChartOptions, radarChartOptions, colors } from '../utils/chartConfig';
 import { mockLocationPerformance } from '../data/mockData';
 import { toast } from 'sonner';
 
@@ -144,34 +131,65 @@ export default function LocationPerformance() {
       {/* Radar Comparison */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Multi-Metric Comparison</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <RadarChart data={radarData}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="metric" />
-            <PolarRadiusAxis angle={90} domain={[0, 100]} />
-            <Radar name="SF HQ" dataKey="sfHq" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-            <Radar name="New York" dataKey="ny" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-            <Radar name="London" dataKey="london" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} />
-            <Radar name="Tokyo" dataKey="tokyo" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
-            <Legend />
-            <Tooltip />
-          </RadarChart>
-        </ResponsiveContainer>
+        <div style={{ height: '400px', width: '100%' }}>
+          <Radar
+            data={{
+              labels: radarData.map(d => d.metric),
+              datasets: [
+                {
+                  label: 'SF HQ',
+                  data: radarData.map(d => d.sfHq),
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                },
+                {
+                  label: 'New York',
+                  data: radarData.map(d => d.ny),
+                  backgroundColor: 'rgba(0, 188, 125, 0.2)',
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                },
+                {
+                  label: 'London',
+                  data: radarData.map(d => d.london),
+                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                  borderColor: colors.chart.purple,
+                  borderWidth: 2,
+                },
+                {
+                  label: 'Tokyo',
+                  data: radarData.map(d => d.tokyo),
+                  backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                  borderColor: '#94a3b8',
+                  borderWidth: 2,
+                },
+              ],
+            }}
+            options={radarChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Emissions by Location */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Emissions by Location</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={mockLocationPerformance}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="location" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="emissions" fill="#3b82f6" name="Total Emissions (tCO₂e)" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Bar
+            data={{
+              labels: mockLocationPerformance.map(loc => loc.location),
+              datasets: [
+                {
+                  label: 'Total Emissions (tCO₂e)',
+                  data: mockLocationPerformance.map(loc => loc.emissions),
+                  backgroundColor: colors.chart.blue,
+                  borderRadius: 6,
+                },
+              ],
+            }}
+            options={barChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Location Rankings */}

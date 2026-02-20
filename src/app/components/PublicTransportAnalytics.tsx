@@ -29,21 +29,8 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { formatCurrency, formatEmissions, formatPercentage, formatNumber } from '../utils/localization';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Doughnut, Bar, Line } from 'react-chartjs-2';
+import { doughnutChartOptions, barChartOptions, lineChartOptions, colors } from '../utils/chartConfig';
 import { LeapCardConnection, LeapCardStatus } from './LeapCardIntegration';
 
 interface TransportMode {
@@ -340,24 +327,21 @@ export default function PublicTransportAnalytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-[#101828] mb-4">Transport Mode Distribution</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={modeSplitData}
-                    dataKey="value"
-                    nameKey="mode"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label={({ mode, value }) => `${mode}: ${value}`}
-                  >
-                    {modeSplitData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div style={{ height: '300px', width: '100%' }}>
+                <Doughnut
+                  data={{
+                    labels: modeSplitData.map(d => d.mode),
+                    datasets: [
+                      {
+                        data: modeSplitData.map(d => d.value),
+                        backgroundColor: modeSplitData.map(d => d.color),
+                        borderWidth: 0,
+                      },
+                    ],
+                  }}
+                  options={doughnutChartOptions}
+                />
+              </div>
             </Card>
 
             <Card className="p-6 border border-gray-200">
@@ -400,22 +384,51 @@ export default function PublicTransportAnalytics() {
         <TabsContent value="trends" className="space-y-4 mt-6">
           <Card className="p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-[#101828] mb-4">6-Month Usage Trends</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#6a7282' }} />
-                <YAxis tick={{ fontSize: 12, fill: '#6a7282' }} label={{ value: 'Users', angle: -90, position: 'insideLeft' }} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                />
-                <Legend />
-                <Line type="monotone" dataKey="dublinBus" stroke="#0066CC" strokeWidth={2} name="Dublin Bus" />
-                <Line type="monotone" dataKey="dart" stroke="#00bc7d" strokeWidth={2} name="DART" />
-                <Line type="monotone" dataKey="luas" stroke="#D83E3E" strokeWidth={2} name="Luas" />
-                <Line type="monotone" dataKey="irishRail" stroke="#009689" strokeWidth={2} name="Irish Rail" />
-                <Line type="monotone" dataKey="bike" stroke="#FFA500" strokeWidth={2} name="Bike Share" />
-              </LineChart>
-            </ResponsiveContainer>
+            <div style={{ height: '400px', width: '100%' }}>
+              <Line
+                data={{
+                  labels: monthlyTrend.map(d => d.month),
+                  datasets: [
+                    {
+                      label: 'Dublin Bus',
+                      data: monthlyTrend.map(d => d.dublinBus),
+                      borderColor: '#0066CC',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                    {
+                      label: 'DART',
+                      data: monthlyTrend.map(d => d.dart),
+                      borderColor: '#00bc7d',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                    {
+                      label: 'Luas',
+                      data: monthlyTrend.map(d => d.luas),
+                      borderColor: '#D83E3E',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                    {
+                      label: 'Irish Rail',
+                      data: monthlyTrend.map(d => d.irishRail),
+                      borderColor: '#009689',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                    {
+                      label: 'Bike Share',
+                      data: monthlyTrend.map(d => d.bike),
+                      borderColor: '#FFA500',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                  ],
+                }}
+                options={lineChartOptions}
+              />
+            </div>
           </Card>
         </TabsContent>
 
@@ -427,21 +440,25 @@ export default function PublicTransportAnalytics() {
                 Emission Factors Comparison (g CO₂e/km)
               </h3>
             </div>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={emissionsComparison} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis type="number" tick={{ fontSize: 12, fill: '#6a7282' }} />
-                <YAxis dataKey="mode" type="category" tick={{ fontSize: 12, fill: '#6a7282' }} width={150} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                />
-                <Bar dataKey="emissions" radius={[0, 8, 8, 0]}>
-                  {emissionsComparison.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div style={{ height: '400px', width: '100%' }}>
+              <Bar
+                data={{
+                  labels: emissionsComparison.map(d => d.mode),
+                  datasets: [
+                    {
+                      label: 'g CO₂e/km',
+                      data: emissionsComparison.map(d => d.emissions),
+                      backgroundColor: emissionsComparison.map(d => d.color),
+                      borderRadius: 6,
+                    },
+                  ],
+                }}
+                options={{
+                  ...barChartOptions,
+                  indexAxis: 'y' as const,
+                }}
+              />
+            </div>
 
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-start gap-2">

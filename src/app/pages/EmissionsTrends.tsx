@@ -19,20 +19,8 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { TrendingDown, Download, AlertCircle, Calendar, BarChart3 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line, Bar } from 'react-chartjs-2';
+import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const trendData = [
@@ -151,19 +139,45 @@ export default function EmissionsTrends() {
             View Anomalies
           </Button>
         </div>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2} name="Actual" />
-            <Line type="monotone" dataKey="forecast" stroke="#8b5cf6" strokeWidth={2} strokeDasharray="5 5" name="Forecast" />
-            <Line type="monotone" dataKey="lowerBound" stroke="#d1d5db" strokeWidth={1} name="Lower Bound" />
-            <Line type="monotone" dataKey="upperBound" stroke="#d1d5db" strokeWidth={1} name="Upper Bound" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '350px', width: '100%' }}>
+          <Line
+            data={{
+              labels: trendData.map(d => d.month),
+              datasets: [
+                {
+                  label: 'Actual',
+                  data: trendData.map(d => d.actual),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Forecast',
+                  data: trendData.map(d => d.forecast),
+                  borderColor: colors.chart.purple,
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  fill: false,
+                },
+                {
+                  label: 'Lower Bound',
+                  data: trendData.map(d => d.lowerBound),
+                  borderColor: '#d1d5db',
+                  borderWidth: 1,
+                  fill: false,
+                },
+                {
+                  label: 'Upper Bound',
+                  data: trendData.map(d => d.upperBound),
+                  borderColor: '#d1d5db',
+                  borderWidth: 1,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* YoY Comparison */}
@@ -178,17 +192,26 @@ export default function EmissionsTrends() {
             Compare Periods
           </Button>
         </div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={yoyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="previous" fill="#9ca3af" name="2025" />
-            <Bar dataKey="current" fill="#3b82f6" name="2026" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Bar
+            data={{
+              labels: yoyData.map(d => d.month),
+              datasets: [
+                {
+                  label: '2025',
+                  data: yoyData.map(d => d.previous),
+                  backgroundColor: '#9ca3af',
+                },
+                {
+                  label: '2026',
+                  data: yoyData.map(d => d.current),
+                  backgroundColor: colors.chart.blue,
+                },
+              ],
+            }}
+            options={barChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Export Dialog */}

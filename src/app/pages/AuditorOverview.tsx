@@ -20,22 +20,9 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Shield, CheckCircle, AlertTriangle, Clock, Download, Plus, Eye, Calendar } from 'lucide-react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Doughnut, Bar } from 'react-chartjs-2';
+import { doughnutChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
-
-const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#9ca3af'];
 
 const auditStatusData = [
   { name: 'Verified', value: 72, color: '#10b981' },
@@ -157,38 +144,41 @@ export default function AuditorOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">Audit Status Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={auditStatusData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={(entry) => `${entry.name}: ${entry.value}`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {auditStatusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: auditStatusData.map(d => d.name),
+                datasets: [
+                  {
+                    data: auditStatusData.map(d => d.value),
+                    backgroundColor: auditStatusData.map(d => d.color),
+                    borderWidth: 0,
+                  },
+                ],
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">Findings by Category</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={findingsByCategory}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="findings" fill="#ef4444" name="Findings" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Bar
+              data={{
+                labels: findingsByCategory.map(d => d.category),
+                datasets: [
+                  {
+                    label: 'Findings',
+                    data: findingsByCategory.map(d => d.findings),
+                    backgroundColor: '#94a3b8',
+                    borderRadius: 6,
+                  },
+                ],
+              }}
+              options={barChartOptions}
+            />
+          </div>
         </Card>
       </div>
 

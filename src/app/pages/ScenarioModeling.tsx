@@ -21,18 +21,8 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Plus, Play, Eye, Download, Copy, TrendingDown, Target } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line, Bar } from 'react-chartjs-2';
+import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 interface Scenario {
@@ -184,18 +174,37 @@ export default function ScenarioModeling() {
             Export Results
           </Button>
         </div>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={comparisonData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="baseline" stroke="#9ca3af" strokeWidth={2} name="Baseline" />
-            <Line type="monotone" dataKey="aggressive" stroke="#10b981" strokeWidth={2} name="Aggressive" />
-            <Line type="monotone" dataKey="moderate" stroke="#3b82f6" strokeWidth={2} name="Moderate" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '350px', width: '100%' }}>
+          <Line
+            data={{
+              labels: comparisonData.map(d => d.year),
+              datasets: [
+                {
+                  label: 'Baseline',
+                  data: comparisonData.map(d => d.baseline),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Aggressive',
+                  data: comparisonData.map(d => d.aggressive),
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Moderate',
+                  data: comparisonData.map(d => d.moderate),
+                  borderColor: colors.chart.purple,
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Scenarios List */}
@@ -412,20 +421,22 @@ export default function ScenarioModeling() {
             <DialogDescription>Side-by-side scenario comparison</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={[
-                { name: 'Baseline', reduction: 0, emissions2030: 1730 },
-                { name: 'Moderate', reduction: 15, emissions2030: 1380 },
-                { name: 'Aggressive', reduction: 35, emissions2030: 1150 },
-              ]}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="emissions2030" fill="#3b82f6" name="2030 Emissions (tCO₂e)" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div style={{ height: '300px', width: '100%' }}>
+              <Bar
+                data={{
+                  labels: ['Baseline', 'Moderate', 'Aggressive'],
+                  datasets: [
+                    {
+                      label: '2030 Emissions (tCO₂e)',
+                      data: [1730, 1380, 1150],
+                      backgroundColor: colors.chart.blue,
+                      borderRadius: 6,
+                    },
+                  ],
+                }}
+                options={barChartOptions}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button onClick={() => setIsCompareDialogOpen(false)}>Close</Button>

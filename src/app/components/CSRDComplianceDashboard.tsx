@@ -29,7 +29,8 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { formatCurrency, formatEmissions, formatPercentage, formatDate } from '../utils/localization';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { Line, Bar, Radar } from 'react-chartjs-2';
+import { lineChartOptions, barChartOptions, radarChartOptions, colors } from '../utils/chartConfig';
 
 interface CSRDRequirement {
   id: string;
@@ -339,28 +340,30 @@ export default function CSRDComplianceDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-[#101828] mb-4">Double Materiality Matrix</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <RadarChart data={materialityTopics}>
-                  <PolarGrid stroke="#e5e7eb" />
-                  <PolarAngleAxis dataKey="topic" tick={{ fontSize: 12, fill: '#6a7282' }} />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 12 }} />
-                  <Radar
-                    name="Impact Materiality"
-                    dataKey="impactMateriality"
-                    stroke="#00bc7d"
-                    fill="#00bc7d"
-                    fillOpacity={0.6}
-                  />
-                  <Radar
-                    name="Financial Materiality"
-                    dataKey="financialMateriality"
-                    stroke="#009689"
-                    fill="#009689"
-                    fillOpacity={0.6}
-                  />
-                  <Legend />
-                </RadarChart>
-              </ResponsiveContainer>
+              <div style={{ height: '300px', width: '100%' }}>
+                <Radar
+                  data={{
+                    labels: materialityTopics.map(t => t.topic),
+                    datasets: [
+                      {
+                        label: 'Impact Materiality',
+                        data: materialityTopics.map(t => t.impactMateriality),
+                        backgroundColor: 'rgba(0, 188, 125, 0.2)',
+                        borderColor: '#00bc7d',
+                        borderWidth: 2,
+                      },
+                      {
+                        label: 'Financial Materiality',
+                        data: materialityTopics.map(t => t.financialMateriality),
+                        backgroundColor: 'rgba(0, 150, 137, 0.2)',
+                        borderColor: '#009689',
+                        borderWidth: 2,
+                      },
+                    ],
+                  }}
+                  options={radarChartOptions}
+                />
+              </div>
             </Card>
 
             <Card className="p-6 border border-gray-200">
@@ -433,42 +436,38 @@ export default function CSRDComplianceDashboard() {
               </Badge>
             </div>
 
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={emissionsVsTargets}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#6a7282' }} />
-                <YAxis tick={{ fontSize: 12, fill: '#6a7282' }} label={{ value: 'tonnes CO₂e', angle: -90, position: 'insideLeft' }} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="actual"
-                  stroke="#101828"
-                  strokeWidth={2}
-                  name="Actual Emissions"
-                  dot={{ r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="target"
-                  stroke="#6a7282"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  name="Business as Usual"
-                  dot={{ r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="csrdTarget"
-                  stroke="#00bc7d"
-                  strokeWidth={2}
-                  name="CSRD Aligned Target"
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div style={{ height: '400px', width: '100%' }}>
+              <Line
+                data={{
+                  labels: emissionsVsTargets.map(d => d.year),
+                  datasets: [
+                    {
+                      label: 'Actual Emissions',
+                      data: emissionsVsTargets.map(d => d.actual),
+                      borderColor: '#101828',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                    {
+                      label: 'Business as Usual',
+                      data: emissionsVsTargets.map(d => d.target),
+                      borderColor: '#6a7282',
+                      borderWidth: 2,
+                      borderDash: [5, 5],
+                      fill: false,
+                    },
+                    {
+                      label: 'CSRD Aligned Target',
+                      data: emissionsVsTargets.map(d => d.csrdTarget),
+                      borderColor: '#00bc7d',
+                      borderWidth: 2,
+                      fill: false,
+                    },
+                  ],
+                }}
+                options={lineChartOptions}
+              />
+            </div>
 
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -511,19 +510,28 @@ export default function CSRDComplianceDashboard() {
         <TabsContent value="timeline" className="space-y-4">
           <Card className="p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-[#101828] mb-4">Compliance Progress Timeline</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={complianceTimeline}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#6a7282' }} />
-                <YAxis tick={{ fontSize: 12, fill: '#6a7282' }} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                />
-                <Legend />
-                <Bar dataKey="completed" fill="#00bc7d" name="Completed" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="planned" fill="#009689" name="Planned" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div style={{ height: '300px', width: '100%' }}>
+              <Bar
+                data={{
+                  labels: complianceTimeline.map(d => d.month),
+                  datasets: [
+                    {
+                      label: 'Completed',
+                      data: complianceTimeline.map(d => d.completed),
+                      backgroundColor: '#00bc7d',
+                      borderRadius: 6,
+                    },
+                    {
+                      label: 'Planned',
+                      data: complianceTimeline.map(d => d.planned),
+                      backgroundColor: '#009689',
+                      borderRadius: 6,
+                    },
+                  ],
+                }}
+                options={barChartOptions}
+              />
+            </div>
           </Card>
 
           <Card className="p-6 border border-gray-200">

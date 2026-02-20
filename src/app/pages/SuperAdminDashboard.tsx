@@ -28,18 +28,8 @@ import {
   TableRow,
 } from '../components/ui/table';
 import { Shield, Server, Users, AlertTriangle, TrendingUp, Database, Activity, Download, Eye, Plus, Settings } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line } from 'react-chartjs-2';
+import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const tenants = [
@@ -153,30 +143,54 @@ export default function SuperAdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">Platform Growth</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={systemMetrics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} name="Users" />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Line
+              data={{
+                labels: systemMetrics.map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Users',
+                    data: systemMetrics.map(d => d.users),
+                    borderColor: colors.chart.blue,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                ],
+              }}
+              options={lineChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">System Uptime</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={systemMetrics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis domain={[99, 100]} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="uptime" stroke="#10b981" strokeWidth={2} name="Uptime %" />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Line
+              data={{
+                labels: systemMetrics.map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Uptime %',
+                    data: systemMetrics.map(d => d.uptime),
+                    borderColor: colors.chart.green,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                ],
+              }}
+              options={{
+                ...lineChartOptions,
+                scales: {
+                  ...lineChartOptions.scales,
+                  y: {
+                    ...lineChartOptions.scales?.y,
+                    min: 99,
+                    max: 100,
+                  },
+                },
+              }}
+            />
+          </div>
         </Card>
       </div>
 

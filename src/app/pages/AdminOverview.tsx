@@ -5,21 +5,8 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { KPICard } from '../components/KPICard';
 import { BarChart3, Users, TrendingUp, MapPin, AlertTriangle, Car } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { barChartOptions, lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 
 const participationByDept = [
   { dept: 'Engineering', participation: 82, target: 75 },
@@ -116,33 +103,55 @@ export default function AdminOverview() {
               <Button variant="ghost" size="sm">View All</Button>
             </Link>
           </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={participationByDept}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="dept" stroke="#6b7280" angle={-45} textAnchor="end" height={80} />
-              <YAxis stroke="#6b7280" />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="participation" fill="#3b82f6" name="Participation %" />
-              <Bar dataKey="target" fill="#10b981" name="Target %" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Bar
+              data={{
+                labels: participationByDept.map(d => d.dept),
+                datasets: [
+                  {
+                    label: 'Participation %',
+                    data: participationByDept.map(d => d.participation),
+                    backgroundColor: colors.chart.blue,
+                  },
+                  {
+                    label: 'Target %',
+                    data: participationByDept.map(d => d.target),
+                    backgroundColor: colors.chart.green,
+                  },
+                ],
+              }}
+              options={barChartOptions}
+            />
+          </div>
         </Card>
 
         {/* Weekly Trends */}
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Weekly Activity Trends</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyTrends}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="week" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="rides" stroke="#3b82f6" strokeWidth={2} name="Total Rides" />
-              <Line type="monotone" dataKey="users" stroke="#10b981" strokeWidth={2} name="Active Users" />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Line
+              data={{
+                labels: weeklyTrends.map(d => d.week),
+                datasets: [
+                  {
+                    label: 'Total Rides',
+                    data: weeklyTrends.map(d => d.rides),
+                    borderColor: colors.chart.blue,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                  {
+                    label: 'Active Users',
+                    data: weeklyTrends.map(d => d.users),
+                    borderColor: colors.chart.green,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                ],
+              }}
+              options={lineChartOptions}
+            />
+          </div>
         </Card>
       </div>
 
@@ -151,25 +160,21 @@ export default function AdminOverview() {
         {/* Mode Adoption */}
         <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Current Mode Adoption</h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={modeAdoption}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={(entry) => `${entry.mode}: ${entry.value}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {modeAdoption.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '250px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: modeAdoption.map(d => d.mode),
+                datasets: [
+                  {
+                    data: modeAdoption.map(d => d.value),
+                    backgroundColor: modeAdoption.map(d => d.color),
+                    borderWidth: 0,
+                  },
+                ],
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
           <div className="mt-4 space-y-2">
             {modeAdoption.map((mode) => (
               <div key={mode.mode} className="flex items-center justify-between text-sm">

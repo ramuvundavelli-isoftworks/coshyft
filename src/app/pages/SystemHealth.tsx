@@ -11,18 +11,8 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { Activity, Server, Database, Zap, CheckCircle, AlertTriangle, Download, RefreshCw } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Line } from 'react-chartjs-2';
+import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const uptimeData = [
@@ -127,35 +117,94 @@ export default function SystemHealth() {
       {/* System Uptime & Response Time */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">System Uptime & Response Time (Last 24h)</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={uptimeData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
-            <YAxis yAxisId="left" domain={[99, 100]} />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Legend />
-            <Line yAxisId="left" type="monotone" dataKey="uptime" stroke="#10b981" strokeWidth={2} name="Uptime %" />
-            <Line yAxisId="right" type="monotone" dataKey="response" stroke="#3b82f6" strokeWidth={2} name="Response (ms)" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Line
+            data={{
+              labels: uptimeData.map(d => d.time),
+              datasets: [
+                {
+                  label: 'Uptime %',
+                  data: uptimeData.map(d => d.uptime),
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                  fill: false,
+                  yAxisID: 'y',
+                },
+                {
+                  label: 'Response (ms)',
+                  data: uptimeData.map(d => d.response),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                  yAxisID: 'y1',
+                },
+              ],
+            }}
+            options={{
+              ...lineChartOptions,
+              scales: {
+                ...lineChartOptions.scales,
+                y: {
+                  ...lineChartOptions.scales?.y,
+                  type: 'linear',
+                  position: 'left',
+                  min: 99,
+                  max: 100,
+                },
+                y1: {
+                  type: 'linear',
+                  position: 'right',
+                  grid: {
+                    drawOnChartArea: false,
+                  },
+                  ticks: {
+                    font: {
+                      family: 'Inter',
+                      size: 11,
+                    },
+                    color: colors.text.tertiary,
+                  },
+                },
+              },
+            }}
+          />
+        </div>
       </Card>
 
       {/* Resource Usage */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Resource Usage (Last 24h)</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={resourceData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Area type="monotone" dataKey="cpu" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} name="CPU %" />
-            <Area type="monotone" dataKey="memory" stackId="2" stroke="#10b981" fill="#10b981" fillOpacity={0.6} name="Memory %" />
-            <Area type="monotone" dataKey="storage" stackId="3" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.6} name="Storage %" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Line
+            data={{
+              labels: resourceData.map(d => d.time),
+              datasets: [
+                {
+                  label: 'CPU %',
+                  data: resourceData.map(d => d.cpu),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Memory %',
+                  data: resourceData.map(d => d.memory),
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Storage %',
+                  data: resourceData.map(d => d.storage),
+                  borderColor: '#94a3b8',
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Service Status */}

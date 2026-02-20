@@ -18,24 +18,9 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Users, Activity, TrendingUp, Download, BarChart3 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { barChartOptions, lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
-
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const userActivityData = [
   { month: 'Jan', logins: 8420, actions: 45200 },
@@ -148,55 +133,71 @@ export default function UsageAnalytics() {
       {/* User Activity Trend */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">User Activity Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={userActivityData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="logins" stroke="#3b82f6" strokeWidth={2} name="Logins" />
-            <Line type="monotone" dataKey="actions" stroke="#10b981" strokeWidth={2} name="Actions" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Line
+            data={{
+              labels: userActivityData.map(d => d.month),
+              datasets: [
+                {
+                  label: 'Logins',
+                  data: userActivityData.map(d => d.logins),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: 'Actions',
+                  data: userActivityData.map(d => d.actions),
+                  borderColor: colors.chart.green,
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Feature Usage & Tenant Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Feature Usage</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={featureUsageData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis dataKey="feature" type="category" width={120} />
-              <Tooltip />
-              <Bar dataKey="usage" fill="#3b82f6" name="Usage %" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Bar
+              data={{
+                labels: featureUsageData.map(d => d.feature),
+                datasets: [
+                  {
+                    label: 'Usage %',
+                    data: featureUsageData.map(d => d.usage),
+                    backgroundColor: colors.chart.blue,
+                    borderRadius: 6,
+                  },
+                ],
+              }}
+              options={barChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Activity by Tenant</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={tenantActivityData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={(entry) => `${entry.name}: ${entry.value}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {tenantActivityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '300px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: tenantActivityData.map(d => d.name),
+                datasets: [
+                  {
+                    data: tenantActivityData.map(d => d.value),
+                    backgroundColor: [colors.chart.green, colors.chart.blue, colors.chart.purple, '#94a3b8'],
+                    borderWidth: 0,
+                  },
+                ],
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
         </Card>
       </div>
 
