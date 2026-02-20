@@ -39,7 +39,7 @@ export function KPICard({
   };
 
   return (
-    <Card className={cn('p-6', status && statusColors[status], className)}>
+    <Card className={cn('p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]', status && statusColors[status], className)}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>

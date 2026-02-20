@@ -28,21 +28,8 @@ import {
   Eye,
   AlertTriangle,
 } from 'lucide-react';
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import { Line, Bar } from 'react-chartjs-2';
+import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const departmentEmissions = [
@@ -176,38 +163,52 @@ export default function AdminEmissions() {
       {/* Emissions Trend */}
       <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Emissions Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={monthlyTrend}>
-            <defs>
-              <linearGradient id="colorEmissions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Area type="monotone" dataKey="target" stroke="#ef4444" fill="none" strokeDasharray="5 5" name="Target" />
-            <Area type="monotone" dataKey="emissions" stroke="#3b82f6" fill="url(#colorEmissions)" name="Actual Emissions" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div style={{ height: '350px', width: '100%' }}>
+          <Line
+            data={{
+              labels: monthlyTrend.map((data) => data.month),
+              datasets: [
+                {
+                  label: 'Target',
+                  data: monthlyTrend.map((data) => data.target),
+                  borderColor: '#ef4444',
+                  borderWidth: 2,
+                  fill: false,
+                  borderDash: [5, 5],
+                },
+                {
+                  label: 'Actual Emissions',
+                  data: monthlyTrend.map((data) => data.emissions),
+                  borderColor: '#3b82f6',
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
       {/* Department Emissions & Location Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Department Emissions</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={departmentEmissions}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="emissions" fill="#3b82f6" name="Emissions (kg)" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ height: '320px', width: '100%' }}>
+            <Bar
+              data={{
+                labels: departmentEmissions.map((data) => data.name),
+                datasets: [
+                  {
+                    label: 'Emissions (kg)',
+                    data: departmentEmissions.map((data) => data.emissions),
+                    backgroundColor: '#3b82f6',
+                  },
+                ],
+              }}
+              options={barChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">

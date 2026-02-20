@@ -1,6 +1,29 @@
 // Role definitions
 export type Role = 'employee' | 'admin' | 'sustainability' | 'auditor' | 'superadmin';
 
+// Localization types
+export type SupportedLocale = 'en-IE' | 'en-GB' | 'en-US' | 'ga-IE';
+export type SupportedCurrency = 'EUR' | 'GBP' | 'USD';
+export type SupportedRegion = 'IE' | 'GB' | 'US' | 'NL' | 'DE' | 'FR' | 'EU';
+
+// GDPR types
+export interface GDPRConsent {
+  essential: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  dataSharingCarpooling: boolean;
+  consentDate: Date;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+export interface DataRetentionPolicy {
+  retentionYears: number;
+  autoDeleteEnabled: boolean;
+  deletionDate?: Date;
+  legalBasis: 'consent' | 'contract' | 'legal_obligation' | 'legitimate_interest';
+}
+
 export interface User {
   id: string;
   name: string;
@@ -8,6 +31,10 @@ export interface User {
   role: Role;
   avatar?: string;
   department?: string;
+  locale?: SupportedLocale;
+  region?: SupportedRegion;
+  gdprConsent?: GDPRConsent;
+  dataRetention?: DataRetentionPolicy;
 }
 
 // Carpooling types
@@ -103,11 +130,18 @@ export interface ModeDistribution {
 
 export interface LocationPerformance {
   location: string;
+  city?: string;
+  country?: string;
+  region?: SupportedRegion;
   employees: number;
   participation: number;
   emissions: number;
   intensity: number;
   trend: number[];
+  publicTransportAccess?: 'Excellent' | 'Good' | 'Moderate' | 'Limited';
+  parkingSpaces?: number;
+  bikeParking?: number;
+  evChargers?: number;
 }
 
 // Risk types
@@ -142,8 +176,12 @@ export interface EmissionFactor {
   kgCO2perKm: number;
   source: string;
   version: string;
+  region?: SupportedRegion;
   effectiveDate: string;
   approvalStatus: 'draft' | 'pending' | 'approved';
+  methodology?: string;
+  scopeCategory?: string;
+  gridIntensity?: number; // For EVs - g CO2/kWh
 }
 
 // Baseline types
@@ -184,4 +222,47 @@ export interface Ride {
   co2Saved: number;
   date: string;
   status: 'scheduled' | 'active' | 'completed' | 'cancelled';
+}
+
+// Irish Transport Modes
+export interface IrishTransportMode {
+  id: string;
+  mode: string;
+  operator: string | null;
+  regions: string[];
+  emissionFactor: number; // kg CO2/km
+  category: 'public-transport' | 'active-transport' | 'car' | 'carpool' | 'other';
+  taxRelief?: boolean; // TaxSaver eligible
+  bikeToWorkScheme?: boolean;
+}
+
+// Irish Workplace Benefits
+export interface IrishWorkplaceBenefit {
+  id: string;
+  name: string;
+  description: string;
+  category: 'bike-to-work' | 'taxsaver' | 'ev-incentive' | 'remote-work';
+  region: 'IE';
+  taxRelief?: number; // Percentage (e.g., 0.52 for 52%)
+  maxAmount?: number; // Maximum benefit amount in EUR
+  eligibleModes?: string[];
+  status: 'active' | 'proposed' | 'expired';
+  complianceRequired?: boolean;
+  documentation?: string;
+}
+
+// GDPR Audit Log
+export interface GDPRAuditLog {
+  id: string;
+  timestamp: Date;
+  userId: string;
+  userRole: Role;
+  action: 'view' | 'create' | 'update' | 'delete' | 'export' | 'approve' | 'reject' | 'consent_given' | 'consent_withdrawn';
+  entityType: 'emission_factor' | 'baseline' | 'commute_entry' | 'personal_data' | 'report' | 'user_profile';
+  entityId: string;
+  changes?: Record<string, { old: any; new: any }>;
+  ipAddress?: string;
+  gdprBasis?: 'consent' | 'contract' | 'legal_obligation' | 'legitimate_interest';
+  dataRetentionDate?: Date;
+  region?: SupportedRegion;
 }

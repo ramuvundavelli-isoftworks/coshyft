@@ -53,19 +53,18 @@ export default function EmissionFactors() {
   const [rejectReason, setRejectReason] = useState('');
 
   const pendingFactors = factors.filter(f => f.approvalStatus === 'pending');
-  const activeFactors = factors.filter(f => f.approvalStatus === 'approved' && f.status === 'active');
+  const activeFactors = factors.filter(f => f.approvalStatus === 'approved');
 
   const handleAddFactor = () => {
     const newFactor: EmissionFactor = {
       id: `factor-${Date.now()}`,
       mode: formData.mode,
-      factor: parseFloat(formData.factor),
+      kgCO2perKm: parseFloat(formData.factor),
       source: formData.source,
       version: formData.version,
       effectiveDate: formData.effectiveDate,
-      status: 'active',
       approvalStatus: 'pending',
-      lastUpdated: new Date().toISOString(),
+      methodology: formData.methodology || undefined,
     };
     setFactors([...factors, newFactor]);
     setIsAddDialogOpen(false);
@@ -80,10 +79,9 @@ export default function EmissionFactors() {
           ? {
               ...f,
               mode: formData.mode,
-              factor: parseFloat(formData.factor),
+              kgCO2perKm: parseFloat(formData.factor),
               source: formData.source,
-              methodology: formData.methodology,
-              lastUpdated: new Date().toISOString(),
+              methodology: formData.methodology || f.methodology,
             }
           : f
       );
@@ -99,10 +97,9 @@ export default function EmissionFactors() {
         ...selectedFactor,
         id: `factor-${Date.now()}`,
         version: formData.version,
-        factor: parseFloat(formData.factor),
+        kgCO2perKm: parseFloat(formData.factor),
         effectiveDate: formData.effectiveDate,
         approvalStatus: 'pending',
-        lastUpdated: new Date().toISOString(),
       };
       setFactors([...factors, newVersion]);
       setIsVersionDialogOpen(false);
@@ -113,9 +110,8 @@ export default function EmissionFactors() {
 
   const handleArchiveFactor = () => {
     if (selectedFactor) {
-      const updated = factors.map(f =>
-        f.id === selectedFactor.id ? { ...f, status: 'archived' } : f
-      );
+      // Remove from active list by filtering out
+      const updated = factors.filter(f => f.id !== selectedFactor.id);
       setFactors(updated);
       setIsArchiveDialogOpen(false);
       toast.success('Emission factor archived');
@@ -125,7 +121,7 @@ export default function EmissionFactors() {
   const handleApproveFactor = () => {
     if (selectedFactor) {
       const updated = factors.map(f =>
-        f.id === selectedFactor.id ? { ...f, approvalStatus: 'approved', status: 'active' } : f
+        f.id === selectedFactor.id ? { ...f, approvalStatus: 'approved' as const } : f
       );
       setFactors(updated);
       setIsApproveDialogOpen(false);
@@ -135,9 +131,8 @@ export default function EmissionFactors() {
 
   const handleRejectFactor = () => {
     if (selectedFactor) {
-      const updated = factors.map(f =>
-        f.id === selectedFactor.id ? { ...f, approvalStatus: 'rejected' } : f
-      );
+      // For rejected factors, we'll remove them from the list
+      const updated = factors.filter(f => f.id !== selectedFactor.id);
       setFactors(updated);
       setIsRejectDialogOpen(false);
       setRejectReason('');
@@ -149,11 +144,11 @@ export default function EmissionFactors() {
     setSelectedFactor(factor);
     setFormData({
       mode: factor.mode,
-      factor: factor.factor.toString(),
+      factor: factor.kgCO2perKm.toString(),
       source: factor.source,
       version: factor.version,
       effectiveDate: factor.effectiveDate,
-      methodology: '',
+      methodology: factor.methodology || '',
     });
   };
 
@@ -169,15 +164,10 @@ export default function EmissionFactors() {
     setSelectedFactor(null);
   };
 
-  const statusColors = {
-    active: 'bg-green-100 text-green-700 border-green-200',
-    archived: 'bg-gray-100 text-gray-700 border-gray-200',
-  };
-
   const approvalColors = {
     pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
     approved: 'bg-green-100 text-green-700 border-green-200',
-    rejected: 'bg-red-100 text-red-700 border-red-200',
+    draft: 'bg-gray-100 text-gray-700 border-gray-200',
   };
 
   return (
@@ -243,8 +233,9 @@ export default function EmissionFactors() {
               <p className="text-sm text-gray-600">Recent Updates</p>
               <p className="text-2xl font-bold text-gray-900">
                 {factors.filter(f => {
-                  const diff = Date.now() - new Date(f.lastUpdated).getTime();
-                  return diff < 7 * 24 * 60 * 60 * 1000; // 7 days
+                  const effectiveDate = new Date(f.effectiveDate);
+                  const diff = Date.now() - effectiveDate.getTime();
+                  return diff < 180 * 24 * 60 * 60 * 1000; // Last 6 months
                 }).length}
               </p>
             </div>
@@ -267,7 +258,7 @@ export default function EmissionFactors() {
                     <div>
                       <p className="font-medium text-gray-900">{factor.mode}</p>
                       <p className="text-sm text-gray-600">
-                        {factor.factor} kgCO₂/km • Version {factor.version} • {factor.source}
+                        {factor.kgCO2perKm} kgCO₂/km • Version {factor.version} • {factor.source}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -339,7 +330,7 @@ export default function EmissionFactors() {
             {factors.map((factor) => (
               <TableRow key={factor.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{factor.mode}</TableCell>
-                <TableCell className="text-right font-semibold">{factor.factor.toFixed(3)}</TableCell>
+                <TableCell className="text-right font-semibold">{factor.kgCO2perKm.toFixed(3)}</TableCell>
                 <TableCell className="text-sm text-gray-600">{factor.source}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="font-mono">{factor.version}</Badge>
@@ -348,12 +339,7 @@ export default function EmissionFactors() {
                   {new Date(factor.effectiveDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-sm text-gray-600">
-                  {new Date(factor.lastUpdated).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={statusColors[factor.status]}>
-                    {factor.status}
-                  </Badge>
+                  {new Date(factor.effectiveDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className={approvalColors[factor.approvalStatus]}>
@@ -382,7 +368,7 @@ export default function EmissionFactors() {
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
-                    {factor.status === 'active' && (
+                    {factor.approvalStatus === 'approved' && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -559,7 +545,7 @@ export default function EmissionFactors() {
           <div className="space-y-4 py-4">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
-                <strong>Current:</strong> {selectedFactor?.mode} • {selectedFactor?.factor} kgCO₂/km • Version {selectedFactor?.version}
+                <strong>Current:</strong> {selectedFactor?.mode} • {selectedFactor?.kgCO2perKm} kgCO₂/km • Version {selectedFactor?.version}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -650,7 +636,7 @@ export default function EmissionFactors() {
                 <span className="text-gray-600">Mode:</span>
                 <span className="font-medium">{selectedFactor?.mode}</span>
                 <span className="text-gray-600">Factor:</span>
-                <span className="font-medium">{selectedFactor?.factor} kgCO₂/km</span>
+                <span className="font-medium">{selectedFactor?.kgCO2perKm} kgCO₂/km</span>
                 <span className="text-gray-600">Source:</span>
                 <span className="font-medium">{selectedFactor?.source}</span>
                 <span className="text-gray-600">Version:</span>

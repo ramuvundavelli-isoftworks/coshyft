@@ -80,28 +80,30 @@ export default function SuperAdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">
-            Platform-wide monitoring and tenant management
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setIsSystemHealthDialogOpen(true)}>
-            <Activity className="h-4 w-4 mr-2" />
-            System Health
-          </Button>
-          <Button onClick={() => setIsAddTenantDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Tenant
-          </Button>
+      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-2">Super Admin Dashboard</h1>
+            <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
+              Platform-wide monitoring and tenant management
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => setIsSystemHealthDialogOpen(true)} className="bg-white hover:bg-gray-50">
+              <Activity className="h-4 w-4 mr-2" />
+              System Health
+            </Button>
+            <Button onClick={() => setIsAddTenantDialogOpen(true)} className="bg-black hover:bg-gray-900 text-white">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Tenant
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Platform KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Server className="h-5 w-5 text-blue-600" />
@@ -112,7 +114,7 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <Users className="h-5 w-5 text-green-600" />
@@ -123,7 +125,7 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Database className="h-5 w-5 text-purple-600" />
@@ -134,7 +136,7 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <TrendingUp className="h-5 w-5 text-green-600" />
@@ -149,7 +151,7 @@ export default function SuperAdminDashboard() {
 
       {/* System Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">Platform Growth</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={systemMetrics}>
@@ -163,7 +165,7 @@ export default function SuperAdminDashboard() {
           </ResponsiveContainer>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">System Uptime</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={systemMetrics}>
@@ -179,7 +181,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Tenants Table */}
-      <Card className="p-6">
+      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Tenant Overview</h3>
           <Button variant="outline" size="sm" onClick={() => setIsExportDialogOpen(true)}>

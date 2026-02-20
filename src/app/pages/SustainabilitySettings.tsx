@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Settings, Save, Building2, Calendar, Database, Bell } from 'lucide-react';
 import { toast } from 'sonner';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export default function SustainabilitySettings() {
   const [settings, setSettings] = useState({
@@ -158,6 +159,9 @@ export default function SustainabilitySettings() {
           </div>
         </div>
       </Card>
+
+      {/* Language Settings */}
+      <LanguageSwitcher />
     </div>
   );
 }

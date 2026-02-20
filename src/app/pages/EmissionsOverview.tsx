@@ -28,23 +28,10 @@ import {
   TableRow,
 } from '../components/ui/table';
 import { Activity, TrendingDown, MapPin, BarChart3, Download, Eye, GitBranch, RefreshCw } from 'lucide-react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+import { Line, Doughnut } from 'react-chartjs-2';
+import { lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 import { mockEmissionData, mockModeDistribution, mockLocationPerformance } from '../data/mockData';
 import { toast } from 'sonner';
-
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function EmissionsOverview() {
   const [location, setLocation] = useState('all');
@@ -146,44 +133,45 @@ export default function EmissionsOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Mode Distribution</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={mockModeDistribution}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={(entry) => `${entry.mode}: ${entry.percentage}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="percentage"
-              >
-                {mockModeDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ height: '320px', width: '100%' }}>
+            <Doughnut
+              data={{
+                labels: mockModeDistribution.map(d => d.mode),
+                datasets: [{
+                  data: mockModeDistribution.map(d => d.percentage),
+                  backgroundColor: [
+                    colors.chart.blue,
+                    colors.chart.green,
+                    colors.chart.orange,
+                    colors.chart.red,
+                    colors.chart.purple,
+                  ],
+                  borderWidth: 0,
+                }]
+              }}
+              options={doughnutChartOptions}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Monthly Emissions Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={mockEmissionData.slice(0, 8)}>
-              <defs>
-                <linearGradient id="colorEmissions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="actual" stroke="#3b82f6" fill="url(#colorEmissions)" />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div style={{ height: '320px', width: '100%' }}>
+            <Line
+              data={{
+                labels: mockEmissionData.slice(0, 8).map(d => d.month),
+                datasets: [{
+                  label: 'Actual Emissions',
+                  data: mockEmissionData.slice(0, 8).map(d => d.actual),
+                  borderColor: colors.chart.blue,
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  fill: true,
+                  borderWidth: 2,
+                }]
+              }}
+              options={lineChartOptions}
+            />
+          </div>
         </Card>
       </div>
 
@@ -291,7 +279,18 @@ export default function EmissionsOverview() {
               {mockModeDistribution.map((mode, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx] }} />
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ 
+                        backgroundColor: [
+                          colors.chart.blue,
+                          colors.chart.green,
+                          colors.chart.orange,
+                          colors.chart.red,
+                          colors.chart.purple,
+                        ][idx]
+                      }} 
+                    />
                     <span className="font-medium">{mode.mode}</span>
                   </div>
                   <div className="text-right">

@@ -6,9 +6,6 @@ import EmissionsOverview from './pages/EmissionsOverview';
 import EmissionsTrends from './pages/EmissionsTrends';
 import ModeSplit from './pages/ModeSplit';
 import LocationPerformance from './pages/LocationPerformance';
-import EmissionFactors from './pages/EmissionFactors';
-import ScenarioModeling from './pages/ScenarioModeling';
-import InitiativeTracker from './pages/InitiativeTracker';
 import BaselineSetup from './pages/BaselineSetup';
 import TargetsTrajectory from './pages/TargetsTrajectory';
 import OrganizationalBoundary from './pages/OrganizationalBoundary';
@@ -41,6 +38,7 @@ import AdminLocations from './pages/AdminLocations';
 import AdminPolicies from './pages/AdminPolicies';
 import AdminSettings from './pages/AdminSettings';
 import UserManagement from './pages/UserManagement';
+import AdminWorkplaceBenefits from './pages/AdminWorkplaceBenefits';
 import AuditorOverview from './pages/AuditorOverview';
 import AuditorEmissionsReview from './pages/AuditorEmissionsReview';
 import AuditorBaselineReview from './pages/AuditorBaselineReview';
@@ -56,6 +54,16 @@ import SystemHealth from './pages/SystemHealth';
 import SuperAdminSettings from './pages/SuperAdminSettings';
 import PlaceholderPage from './pages/PlaceholderPage';
 import LogCommuteDemo from './pages/LogCommuteDemo';
+import ChartJSExample from './pages/ChartJSExample';
+import CSRDCompliance from './pages/CSRDCompliance';
+import RegulatoryReporting from './pages/RegulatoryReporting';
+import RevenueReporting from './pages/RevenueReporting';
+import ScenarioModeling from './pages/ScenarioModeling';
+import InitiativeTracker from './pages/InitiativeTracker';
+import EmissionFactors from './pages/EmissionFactors';
+import TransportAnalytics from './pages/TransportAnalytics';
+import ClimateActionPlan from './pages/ClimateActionPlan';
+import DPIAModule from './pages/DPIAModule';
 
 export const router = createBrowserRouter([
   // Login Route (outside RootLayout)
@@ -72,6 +80,7 @@ export const router = createBrowserRouter([
       { path: 'emissions/trends', Component: EmissionsTrends },
       { path: 'emissions/modes', Component: ModeSplit },
       { path: 'emissions/locations', Component: LocationPerformance },
+      { path: 'transport-analytics', Component: TransportAnalytics },
       { path: 'baseline', Component: BaselineSetup },
       { path: 'targets', Component: TargetsTrajectory },
       { path: 'boundary', Component: OrganizationalBoundary },
@@ -83,10 +92,18 @@ export const router = createBrowserRouter([
       { path: 'risks', Component: RiskManagement },
       { path: 'approvals', Component: Approvals },
       { path: 'audit', Component: AuditAssurance },
+      { path: 'csrd-compliance', Component: CSRDCompliance },
+      { path: 'regulatory-reporting', Component: RegulatoryReporting },
+      { path: 'revenue-reporting', Component: RevenueReporting },
+      { path: 'climate-action-plan', Component: ClimateActionPlan },
+      { path: 'dpia', Component: DPIAModule },
       { path: 'reports', Component: ReportBuilder },
       { path: 'benchmarking', Component: Benchmarking },
       { path: 'alerts', Component: AlertCenter },
       { path: 'settings', Component: SustainabilitySettings },
+      
+      // Developer/Testing Routes
+      { path: 'chartjs-examples', Component: ChartJSExample },
       
       // Employee Routes
       { path: 'employee', Component: EmployeeDashboard },
@@ -110,6 +127,7 @@ export const router = createBrowserRouter([
       { path: 'admin/users', Component: UserManagement },
       { path: 'admin/locations', Component: AdminLocations },
       { path: 'admin/policies', Component: AdminPolicies },
+      { path: 'admin/workplace-benefits', Component: AdminWorkplaceBenefits },
       { path: 'admin/settings', Component: AdminSettings },
       
       // Auditor Routes

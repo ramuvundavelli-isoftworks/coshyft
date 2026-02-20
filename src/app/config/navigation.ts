@@ -1,4 +1,3 @@
-import { Role } from '../types';
 import {
   LayoutDashboard,
   Activity,
@@ -22,6 +21,12 @@ import {
   Building2,
   Zap,
   Plug,
+  Gift,
+  Train,
+  Globe,
+  Flag,
+  CreditCard,
+  Euro,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -91,6 +96,7 @@ export function getNavigationForRole(role: Role): NavSection[] {
             { label: 'Users', path: '/admin/users', icon: Users },
             { label: 'Locations', path: '/admin/locations', icon: MapPin },
             { label: 'Policies', path: '/admin/policies', icon: FileCheck },
+            { label: 'Workplace Benefits', path: '/admin/workplace-benefits', icon: Gift },
           ],
         },
         {
@@ -114,6 +120,7 @@ export function getNavigationForRole(role: Role): NavSection[] {
             { label: 'Trends & Forecast', path: '/emissions/trends', icon: TrendingUp },
             { label: 'Mode Distribution', path: '/emissions/modes', icon: BarChart3 },
             { label: 'Location Performance', path: '/emissions/locations', icon: MapPin },
+            { label: 'Public Transport', path: '/transport-analytics', icon: Train },
           ],
         },
         {
@@ -145,6 +152,11 @@ export function getNavigationForRole(role: Role): NavSection[] {
             { label: 'Risk Management', path: '/risks', icon: AlertTriangle },
             { label: 'Approvals', path: '/approvals', icon: CheckSquare, badge: '3' },
             { label: 'Audit & Assurance', path: '/audit', icon: Shield },
+            { label: 'CSRD/ESRS E1', path: '/csrd-compliance', icon: FileCheck },
+            { label: 'Climate Action Plan', path: '/climate-action-plan', icon: Flag },
+            { label: 'DPIA (GDPR)', path: '/dpia', icon: Shield },
+            { label: 'Regulatory Reporting', path: '/regulatory-reporting', icon: Globe },
+            { label: 'Revenue Reporting', path: '/revenue-reporting', icon: Euro },
           ],
         },
         {

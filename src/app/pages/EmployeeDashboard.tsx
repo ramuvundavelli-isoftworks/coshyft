@@ -12,6 +12,11 @@ import {
   Activity,
   Award,
   AlertCircle,
+  Calendar,
+  Leaf,
+  Users,
+  Zap,
+  TrendingUp,
 } from 'lucide-react';
 import { mockRides } from '../data/mockData';
 import { Progress } from '../components/ui/progress';
@@ -126,84 +131,68 @@ export default function EmployeeDashboard() {
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-4 gap-4">
-        {/* CO2 Saved */}
-        <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-[21px] flex flex-col gap-9">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#dcfce7] rounded-[10px] w-9 h-9 flex items-center justify-center">
-              <TrendingDown className="w-5 h-5 text-[#00A63E]" strokeWidth={1.67} />
-            </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+              Total Commutes
+            </p>
+            <Calendar className="w-4 h-4 text-[#6a7282]" />
+          </div>
+          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+            127
+          </p>
+          <div className="flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
+            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+12% from last month</span>
+          </div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               CO₂ Saved
             </p>
+            <Leaf className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <div>
-            <p className="font-['Inter',sans-serif] font-semibold text-[36px] leading-9 text-[#101828] tracking-[0.3955px] mb-2">
-              21.3 kg
-            </p>
-            <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
-              Lifetime: 287.5 kg
-            </p>
-          </div>
-        </div>
-
-        {/* Carpools */}
-        <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-[21px] flex flex-col gap-9">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#dbeafe] rounded-[10px] w-9 h-9 flex items-center justify-center">
-              <Car className="w-5 h-5 text-[#155DFC]" strokeWidth={1.67} />
-            </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
-              Carpools
-            </p>
-          </div>
-          <div>
-            <p className="font-['Inter',sans-serif] font-semibold text-[36px] leading-9 text-[#101828] tracking-[0.3955px] mb-2">
-              12
-            </p>
-            <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
-              this month
-            </p>
+          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+            43.2 kg
+          </p>
+          <div className="flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
+            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+8% from last month</span>
           </div>
         </div>
 
-        {/* Reward Points */}
-        <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-[21px] flex flex-col gap-9">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#fef3c6] rounded-[10px] w-9 h-9 flex items-center justify-center">
-              <Award className="w-5 h-5 text-[#E17100]" strokeWidth={1.67} />
-            </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
-              Reward Points
+        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+              Carpool Rides
             </p>
+            <Users className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <div>
-            <p className="font-['Inter',sans-serif] font-semibold text-[36px] leading-9 text-[#101828] tracking-[0.3955px] mb-2">
-              348
-            </p>
-            <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
-              points earned
-            </p>
+          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+            34
+          </p>
+          <div className="flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
+            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+18% from last month</span>
           </div>
         </div>
 
-        {/* Participation */}
-        <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-[21px] flex flex-col gap-9">
-          <div className="flex items-center gap-3">
-            <div className="bg-[#d0fae5] rounded-[10px] w-9 h-9 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-[#009966]" strokeWidth={1.67} />
-            </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
-              Participation
+        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+              Active Streaks
             </p>
+            <Zap className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <div>
-            <p className="font-['Inter',sans-serif] font-semibold text-[36px] leading-9 text-[#101828] tracking-[0.3955px] mb-2">
-              92%
-            </p>
-            <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
-              Target: 80% days
-            </p>
+          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+            7 days
+          </p>
+          <div className="flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
+            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">Keep it going!</span>
           </div>
         </div>
       </div>
@@ -213,9 +202,9 @@ export default function EmployeeDashboard() {
         {/* Left Column - 2/3 width */}
         <div className="col-span-2 space-y-4">
           {/* Today's Ride */}
-          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)]">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
             {/* Header */}
-            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100/50">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Today's Ride
               </h2>
@@ -291,7 +280,7 @@ export default function EmployeeDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3 border-t border-gray-100">
+            <div className="px-6 py-3 border-t border-gray-100/50">
               <button className="w-full text-center font-['Inter',sans-serif] font-normal text-[14px] text-[#4a5565] hover:text-[#101828] transition-colors">
                 View Details
               </button>
@@ -299,7 +288,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Upcoming Rides */}
-          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Upcoming Rides
@@ -354,7 +343,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Monthly Commute Pattern */}
-          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
             <div className="mb-4">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
                 Commute Pattern (3 Months)
@@ -626,7 +615,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Monthly Impact Chart */}
-          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
             <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
               Your Monthly Impact
             </h2>
@@ -661,7 +650,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Alert */}
-          <div className="bg-white rounded-[14px] border border-[rgba(0,0,0,0.1)] p-4">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-4">
             <div className="flex items-start gap-3">
               <div className="bg-orange-500 rounded-lg w-9 h-9 flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-white" />

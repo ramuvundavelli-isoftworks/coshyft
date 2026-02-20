@@ -5,7 +5,6 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
-import { Checkbox } from '../components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -14,27 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
-import { Lock, Unlock, AlertTriangle, CheckCircle, History, Building2, Plus, Edit, Calculator, Archive } from 'lucide-react';
+import { Lock, Unlock, AlertTriangle, CheckCircle, History, Building2, Plus, Edit, Calculator } from 'lucide-react';
 import { mockBaseline } from '../data/mockData';
+import { Baseline } from '../types';
 import { toast } from 'sonner';
-
-interface Baseline {
-  year: number;
-  totalEmissions: number;
-  scope: string[];
-  boundaries: string[];
-  locked: boolean;
-  approvedBy?: string;
-  approvedDate?: string;
-  methodology?: string;
-}
 
 export default function BaselineSetup() {
   const [baselines, setBaselines] = useState<Baseline[]>([mockBaseline]);
@@ -42,41 +24,26 @@ export default function BaselineSetup() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isRecalculateDialogOpen, setIsRecalculateDialogOpen] = useState(false);
-  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
   const [isLockDialogOpen, setIsLockDialogOpen] = useState(false);
   const [selectedBaseline, setSelectedBaseline] = useState<Baseline | null>(null);
   const [formData, setFormData] = useState({
     year: new Date().getFullYear().toString(),
-    totalEmissions: '',
-    methodology: '',
-    scope1: true,
-    scope2: true,
-    scope3: true,
-    hq: true,
-    offices: true,
-    remote: true,
+    emissions: '',
+    dataSource: '',
+    emissionFactorVersion: '',
   });
   const [recalculateReason, setRecalculateReason] = useState('');
 
   const handleCreateBaseline = () => {
-    const scope = [];
-    if (formData.scope1) scope.push('Scope 1');
-    if (formData.scope2) scope.push('Scope 2');
-    if (formData.scope3) scope.push('Scope 3');
-
-    const boundaries = [];
-    if (formData.hq) boundaries.push('HQ');
-    if (formData.offices) boundaries.push('Regional Offices');
-    if (formData.remote) boundaries.push('Remote Workers');
-
     const newBaseline: Baseline = {
       year: parseInt(formData.year),
-      totalEmissions: parseFloat(formData.totalEmissions),
-      scope,
-      boundaries,
+      emissions: parseFloat(formData.emissions),
+      offices: [],
+      legalEntities: [],
+      dataSource: formData.dataSource,
+      emissionFactorVersion: formData.emissionFactorVersion,
       locked: false,
-      methodology: formData.methodology,
     };
 
     setBaselines([...baselines, newBaseline]);
@@ -92,14 +59,20 @@ export default function BaselineSetup() {
         b.year === selectedBaseline.year
           ? {
               ...b,
-              totalEmissions: parseFloat(formData.totalEmissions),
-              methodology: formData.methodology,
+              emissions: parseFloat(formData.emissions),
+              dataSource: formData.dataSource,
+              emissionFactorVersion: formData.emissionFactorVersion,
             }
           : b
       );
       setBaselines(updated);
       if (currentBaseline.year === selectedBaseline.year) {
-        setCurrentBaseline({ ...currentBaseline, totalEmissions: parseFloat(formData.totalEmissions) });
+        setCurrentBaseline({ 
+          ...currentBaseline, 
+          emissions: parseFloat(formData.emissions),
+          dataSource: formData.dataSource,
+          emissionFactorVersion: formData.emissionFactorVersion,
+        });
       }
       setIsEditDialogOpen(false);
       toast.success('Baseline updated successfully');
@@ -108,29 +81,19 @@ export default function BaselineSetup() {
 
   const handleRecalculate = () => {
     if (selectedBaseline) {
-      // Simulate recalculation
-      const newEmissions = parseFloat(formData.totalEmissions);
+      const newEmissions = parseFloat(formData.emissions);
       const updated = baselines.map(b =>
         b.year === selectedBaseline.year
-          ? { ...b, totalEmissions: newEmissions }
+          ? { ...b, emissions: newEmissions }
           : b
       );
       setBaselines(updated);
       if (currentBaseline.year === selectedBaseline.year) {
-        setCurrentBaseline({ ...currentBaseline, totalEmissions: newEmissions });
+        setCurrentBaseline({ ...currentBaseline, emissions: newEmissions });
       }
       setIsRecalculateDialogOpen(false);
       setRecalculateReason('');
       toast.success('Baseline recalculated successfully');
-    }
-  };
-
-  const handleArchiveBaseline = () => {
-    if (selectedBaseline) {
-      const updated = baselines.filter(b => b.year !== selectedBaseline.year);
-      setBaselines(updated);
-      setIsArchiveDialogOpen(false);
-      toast.success('Baseline archived successfully');
     }
   };
 
@@ -139,7 +102,7 @@ export default function BaselineSetup() {
       ...currentBaseline,
       locked: true,
       approvedBy: 'John Doe',
-      approvedDate: new Date().toISOString(),
+      approvedDate: new Date().toISOString().split('T')[0],
     };
     setCurrentBaseline(updated);
     setBaselines(baselines.map(b => b.year === currentBaseline.year ? updated : b));
@@ -162,30 +125,19 @@ export default function BaselineSetup() {
   const selectBaseline = (baseline: Baseline) => {
     setSelectedBaseline(baseline);
     setFormData({
-      ...formData,
       year: baseline.year.toString(),
-      totalEmissions: baseline.totalEmissions.toString(),
-      methodology: baseline.methodology || '',
-      scope1: baseline.scope.includes('Scope 1'),
-      scope2: baseline.scope.includes('Scope 2'),
-      scope3: baseline.scope.includes('Scope 3'),
-      hq: baseline.boundaries.includes('HQ'),
-      offices: baseline.boundaries.includes('Regional Offices'),
-      remote: baseline.boundaries.includes('Remote Workers'),
+      emissions: baseline.emissions.toString(),
+      dataSource: baseline.dataSource || '',
+      emissionFactorVersion: baseline.emissionFactorVersion || '',
     });
   };
 
   const resetForm = () => {
     setFormData({
       year: new Date().getFullYear().toString(),
-      totalEmissions: '',
-      methodology: '',
-      scope1: true,
-      scope2: true,
-      scope3: true,
-      hq: true,
-      offices: true,
-      remote: true,
+      emissions: '',
+      dataSource: '',
+      emissionFactorVersion: '',
     });
   };
 
@@ -236,7 +188,7 @@ export default function BaselineSetup() {
             </h3>
             <p className={`text-sm ${currentBaseline.locked ? 'text-green-700' : 'text-yellow-700'}`}>
               {currentBaseline.locked
-                ? `This baseline was approved and locked on ${new Date(currentBaseline.approvedDate!).toLocaleDateString()} by ${currentBaseline.approvedBy}. Changes require unlocking first.`
+                ? `This baseline was approved and locked on ${currentBaseline.approvedDate} by ${currentBaseline.approvedBy}. Changes require unlocking first.`
                 : 'This baseline is still being edited and has not been locked for reporting yet.'}
             </p>
           </div>
@@ -271,7 +223,7 @@ export default function BaselineSetup() {
               <Label className="text-sm text-gray-600">Total Emissions</Label>
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-2xl font-bold text-gray-900">
-                  {currentBaseline.totalEmissions.toLocaleString()} <span className="text-base font-normal text-gray-600">tCO₂e</span>
+                  {currentBaseline.emissions.toLocaleString()} <span className="text-base font-normal text-gray-600">tCO₂e</span>
                 </p>
                 {!currentBaseline.locked && (
                   <Button 
@@ -299,52 +251,50 @@ export default function BaselineSetup() {
           </div>
         </Card>
 
-        {/* Scope Coverage */}
+        {/* Data Sources */}
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Scope Coverage</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Data Sources</h3>
           <div className="space-y-3">
-            {currentBaseline.scope.map((scope, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-gray-900">{scope}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 pt-4 border-t">
-            <p className="text-sm text-gray-600">
-              Coverage: <span className="font-medium text-gray-900">{currentBaseline.scope.length}/3 Scopes</span>
-            </p>
+            <div>
+              <Label className="text-sm text-gray-600">Primary Source</Label>
+              <p className="text-sm font-medium text-gray-900 mt-1">{currentBaseline.dataSource}</p>
+            </div>
+            <div>
+              <Label className="text-sm text-gray-600">Emission Factor Version</Label>
+              <p className="text-sm font-medium text-gray-900 mt-1">{currentBaseline.emissionFactorVersion}</p>
+            </div>
           </div>
         </Card>
 
         {/* Organizational Boundaries */}
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Organizational Boundaries</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Organizational Coverage</h3>
           <div className="space-y-3">
-            {currentBaseline.boundaries.map((boundary, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-blue-600" />
-                <span className="text-gray-900">{boundary}</span>
+            <div>
+              <Label className="text-sm text-gray-600">Offices</Label>
+              <div className="mt-2 space-y-2">
+                {currentBaseline.offices.map((office, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm text-gray-900">{office}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="mt-6 pt-4 border-t">
-            <p className="text-sm text-gray-600">
-              Total: <span className="font-medium text-gray-900">{currentBaseline.boundaries.length} Boundaries</span>
-            </p>
+            </div>
+            <div className="pt-3 border-t">
+              <Label className="text-sm text-gray-600">Legal Entities</Label>
+              <div className="mt-2 space-y-2">
+                {currentBaseline.legalEntities.map((entity, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm text-gray-900">{entity}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </Card>
       </div>
-
-      {/* Calculation Details */}
-      <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Calculation Methodology</h3>
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-700">
-            {currentBaseline.methodology || 'No methodology documented yet. Click Edit to add details about how this baseline was calculated.'}
-          </p>
-        </div>
-      </Card>
 
       {/* All Baselines History */}
       <Card className="p-6">
@@ -356,7 +306,7 @@ export default function BaselineSetup() {
                 <div>
                   <p className="font-medium text-gray-900">Baseline Year {baseline.year}</p>
                   <p className="text-sm text-gray-600">
-                    {baseline.totalEmissions.toLocaleString()} tCO₂e • {baseline.scope.length} scopes • {baseline.boundaries.length} boundaries
+                    {baseline.emissions.toLocaleString()} tCO₂e • {baseline.offices.length} offices • {baseline.legalEntities.length} entities
                   </p>
                 </div>
               </div>
@@ -370,18 +320,6 @@ export default function BaselineSetup() {
                 {baseline.year === currentBaseline.year && (
                   <Badge variant="default">Current</Badge>
                 )}
-                {!baseline.locked && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedBaseline(baseline);
-                      setIsArchiveDialogOpen(true);
-                    }}
-                  >
-                    <Archive className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
             </div>
           ))}
@@ -394,10 +332,10 @@ export default function BaselineSetup() {
           <DialogHeader>
             <DialogTitle>Create New Baseline</DialogTitle>
             <DialogDescription>
-              Define a new baseline year with scope and boundaries
+              Define a new baseline year with emissions data
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
+          <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="year">Baseline Year *</Label>
@@ -415,81 +353,30 @@ export default function BaselineSetup() {
                   id="emissions"
                   type="number"
                   step="0.01"
-                  value={formData.totalEmissions}
-                  onChange={(e) => setFormData({ ...formData, totalEmissions: e.target.value })}
-                  placeholder="2847.5"
+                  value={formData.emissions}
+                  onChange={(e) => setFormData({ ...formData, emissions: e.target.value })}
+                  placeholder="2847"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="mb-3 block">Scope Coverage *</Label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="scope1"
-                    checked={formData.scope1}
-                    onCheckedChange={(checked) => setFormData({ ...formData, scope1: checked as boolean })}
-                  />
-                  <Label htmlFor="scope1" className="cursor-pointer">Scope 1 - Direct emissions</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="scope2"
-                    checked={formData.scope2}
-                    onCheckedChange={(checked) => setFormData({ ...formData, scope2: checked as boolean })}
-                  />
-                  <Label htmlFor="scope2" className="cursor-pointer">Scope 2 - Indirect emissions (electricity)</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="scope3"
-                    checked={formData.scope3}
-                    onCheckedChange={(checked) => setFormData({ ...formData, scope3: checked as boolean })}
-                  />
-                  <Label htmlFor="scope3" className="cursor-pointer">Scope 3 - Employee commuting</Label>
-                </div>
-              </div>
+              <Label htmlFor="dataSource">Data Source *</Label>
+              <Input
+                id="dataSource"
+                value={formData.dataSource}
+                onChange={(e) => setFormData({ ...formData, dataSource: e.target.value })}
+                placeholder="e.g., HR System + Survey"
+              />
             </div>
 
             <div>
-              <Label className="mb-3 block">Organizational Boundaries *</Label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="hq"
-                    checked={formData.hq}
-                    onCheckedChange={(checked) => setFormData({ ...formData, hq: checked as boolean })}
-                  />
-                  <Label htmlFor="hq" className="cursor-pointer">Headquarters</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="offices"
-                    checked={formData.offices}
-                    onCheckedChange={(checked) => setFormData({ ...formData, offices: checked as boolean })}
-                  />
-                  <Label htmlFor="offices" className="cursor-pointer">Regional Offices</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="remote"
-                    checked={formData.remote}
-                    onCheckedChange={(checked) => setFormData({ ...formData, remote: checked as boolean })}
-                  />
-                  <Label htmlFor="remote" className="cursor-pointer">Remote Workers</Label>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="methodology">Calculation Methodology</Label>
-              <Textarea
-                id="methodology"
-                value={formData.methodology}
-                onChange={(e) => setFormData({ ...formData, methodology: e.target.value })}
-                placeholder="Describe the calculation approach, data sources, and assumptions..."
-                rows={3}
+              <Label htmlFor="emissionFactorVersion">Emission Factor Version *</Label>
+              <Input
+                id="emissionFactorVersion"
+                value={formData.emissionFactorVersion}
+                onChange={(e) => setFormData({ ...formData, emissionFactorVersion: e.target.value })}
+                placeholder="e.g., DEFRA 2023 v1.8"
               />
             </div>
           </div>
@@ -499,7 +386,7 @@ export default function BaselineSetup() {
             </Button>
             <Button
               onClick={handleCreateBaseline}
-              disabled={!formData.year || !formData.totalEmissions}
+              disabled={!formData.year || !formData.emissions || !formData.dataSource || !formData.emissionFactorVersion}
             >
               Create Baseline
             </Button>
@@ -513,7 +400,7 @@ export default function BaselineSetup() {
           <DialogHeader>
             <DialogTitle>Edit Baseline {selectedBaseline?.year}</DialogTitle>
             <DialogDescription>
-              Update baseline emissions and methodology
+              Update baseline emissions and data sources
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -523,17 +410,24 @@ export default function BaselineSetup() {
                 id="edit-emissions"
                 type="number"
                 step="0.01"
-                value={formData.totalEmissions}
-                onChange={(e) => setFormData({ ...formData, totalEmissions: e.target.value })}
+                value={formData.emissions}
+                onChange={(e) => setFormData({ ...formData, emissions: e.target.value })}
               />
             </div>
             <div>
-              <Label htmlFor="edit-methodology">Calculation Methodology</Label>
-              <Textarea
-                id="edit-methodology"
-                value={formData.methodology}
-                onChange={(e) => setFormData({ ...formData, methodology: e.target.value })}
-                rows={4}
+              <Label htmlFor="edit-dataSource">Data Source *</Label>
+              <Input
+                id="edit-dataSource"
+                value={formData.dataSource}
+                onChange={(e) => setFormData({ ...formData, dataSource: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-emissionFactorVersion">Emission Factor Version *</Label>
+              <Input
+                id="edit-emissionFactorVersion"
+                value={formData.emissionFactorVersion}
+                onChange={(e) => setFormData({ ...formData, emissionFactorVersion: e.target.value })}
               />
             </div>
           </div>
@@ -560,7 +454,7 @@ export default function BaselineSetup() {
           <div className="space-y-4 py-4">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
-                <strong>Current:</strong> {selectedBaseline?.totalEmissions.toLocaleString()} tCO₂e
+                <strong>Current:</strong> {selectedBaseline?.emissions.toLocaleString()} tCO₂e
               </p>
             </div>
             <div>
@@ -569,9 +463,9 @@ export default function BaselineSetup() {
                 id="recalc-emissions"
                 type="number"
                 step="0.01"
-                value={formData.totalEmissions}
-                onChange={(e) => setFormData({ ...formData, totalEmissions: e.target.value })}
-                placeholder="2847.5"
+                value={formData.emissions}
+                onChange={(e) => setFormData({ ...formData, emissions: e.target.value })}
+                placeholder="2847"
               />
             </div>
             <div>
@@ -591,34 +485,9 @@ export default function BaselineSetup() {
             </Button>
             <Button
               onClick={handleRecalculate}
-              disabled={!formData.totalEmissions || !recalculateReason.trim()}
+              disabled={!formData.emissions || !recalculateReason.trim()}
             >
               Recalculate Baseline
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Archive Dialog */}
-      <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Archive Baseline</DialogTitle>
-            <DialogDescription>
-              Remove baseline year {selectedBaseline?.year} from active baselines
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-gray-600">
-              This baseline will be archived and removed from active reporting. This action cannot be undone.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsArchiveDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleArchiveBaseline}>
-              Archive Baseline
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -639,11 +508,11 @@ export default function BaselineSetup() {
                 <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
                   <p className="text-sm text-gray-600 mb-1">Year</p>
                   <p className="font-bold">{baseline.year}</p>
-                  {index === 0 && <Badge className="mt-2" variant="default">Current</Badge>}
+                  {baseline.year === currentBaseline.year && <Badge className="mt-2" variant="default">Current</Badge>}
                 </div>
                 <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
                   <p className="text-sm text-gray-600 mb-1">Emissions</p>
-                  <p className="font-bold">{baseline.totalEmissions.toLocaleString()} tCO₂e</p>
+                  <p className="font-bold">{baseline.emissions.toLocaleString()} tCO₂e</p>
                 </div>
                 <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
                   <p className="text-sm text-gray-600 mb-1">Status</p>
@@ -657,14 +526,17 @@ export default function BaselineSetup() {
                 {index > 0 && (
                   <div className="p-4 border rounded-lg bg-gray-50">
                     <p className="text-sm text-gray-600 mb-1">vs Previous</p>
-                    <p className={`font-bold ${baseline.totalEmissions < baselines[index - 1].totalEmissions ? 'text-green-600' : 'text-red-600'}`}>
-                      {((baseline.totalEmissions - baselines[index - 1].totalEmissions) / baselines[index - 1].totalEmissions * 100).toFixed(1)}%
+                    <p className={`font-bold ${baseline.emissions < baselines[index - 1].emissions ? 'text-green-600' : 'text-red-600'}`}>
+                      {((baseline.emissions - baselines[index - 1].emissions) / baselines[index - 1].emissions * 100).toFixed(1)}%
                     </p>
                   </div>
                 )}
               </div>
             ))}
           </div>
+          <DialogFooter>
+            <Button onClick={() => setIsCompareDialogOpen(false)}>Close</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -697,11 +569,11 @@ export default function BaselineSetup() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Total Emissions:</span>
-                <span className="font-medium">{currentBaseline.totalEmissions.toLocaleString()} tCO₂e</span>
+                <span className="font-medium">{currentBaseline.emissions.toLocaleString()} tCO₂e</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Scopes:</span>
-                <span className="font-medium">{currentBaseline.scope.join(', ')}</span>
+                <span className="text-gray-600">Data Source:</span>
+                <span className="font-medium">{currentBaseline.dataSource}</span>
               </div>
             </div>
           </div>

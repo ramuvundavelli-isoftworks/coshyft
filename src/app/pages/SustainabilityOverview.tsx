@@ -7,6 +7,13 @@ import { Badge } from '../components/ui/badge';
 import { Label } from '../components/ui/label';
 import { Progress } from '../components/ui/progress';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -14,13 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
 import {
   Activity,
   TrendingDown,
@@ -34,20 +34,13 @@ import {
   Download,
   Eye,
   Play,
+  FileCheck,
+  Globe,
+  Train,
 } from 'lucide-react';
 import { mockAlerts, mockInitiatives } from '../data/mockData';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from 'recharts';
+import { Line } from 'react-chartjs-2';
+import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 
 const targetGapData = [
@@ -86,32 +79,34 @@ export default function SustainabilityOverview() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Sustainability Overview</h1>
-          <p className="text-gray-600 mt-1">
-            Executive control center for Scope 3 Category 7 compliance
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ytd-2026">YTD 2026</SelectItem>
-              <SelectItem value="q1-2026">Q1 2026</SelectItem>
-              <SelectItem value="2025">2025</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" onClick={() => setIsExportDialogOpen(true)}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button onClick={() => setIsSimulationDialogOpen(true)}>
-            <Zap className="h-4 w-4 mr-2" />
-            Run Simulation
-          </Button>
+      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-2">Sustainability Overview</h1>
+            <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
+              Executive control center for Scope 3 Category 7 compliance
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="w-[150px] bg-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ytd-2026">YTD 2026</SelectItem>
+                <SelectItem value="q1-2026">Q1 2026</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" onClick={() => setIsExportDialogOpen(true)} className="bg-white hover:bg-gray-50">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button onClick={() => setIsSimulationDialogOpen(true)} className="bg-black hover:bg-gray-900 text-white">
+              <Zap className="h-4 w-4 mr-2" />
+              Run Simulation
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -201,24 +196,98 @@ export default function SustainabilityOverview() {
       )}
 
       {/* Target Gap Analysis */}
-      <Card className="p-6">
+      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
         <h3 className="font-semibold text-gray-900 mb-4">Target vs Actual Performance</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={targetGapData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="target" stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" name="Target" />
-            <Line type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2} name="Actual" />
-          </LineChart>
-        </ResponsiveContainer>
+        <div style={{ height: '300px', width: '100%' }}>
+          <Line
+            data={{
+              labels: targetGapData.map(d => d.month),
+              datasets: [
+                {
+                  label: 'Target',
+                  data: targetGapData.map(d => d.target),
+                  borderColor: colors.chart.red,
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  fill: false,
+                },
+                {
+                  label: 'Actual',
+                  data: targetGapData.map(d => d.actual),
+                  borderColor: colors.chart.blue,
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            }}
+            options={lineChartOptions}
+          />
+        </div>
       </Card>
 
-      {/* Active Initiatives & Progress */}
+      {/* Quick Links to Compliance & Transport Analytics */}
+      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <h3 className="font-semibold text-gray-900 mb-4">Compliance & Analytics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link to="/csrd-compliance">
+            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg group-hover:scale-110 transition-transform">
+                  <FileCheck className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">CSRD/ESRS E1</h4>
+                  <p className="text-sm text-gray-600">Compliance Dashboard</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">Track CSRD requirements, materiality assessments, and compliance progress</p>
+              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+                View Dashboard <ArrowRight className="h-4 w-4" />
+              </div>
+            </div>
+          </Link>
+
+          <Link to="/regulatory-reporting">
+            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg group-hover:scale-110 transition-transform">
+                  <Globe className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Regulatory Reporting</h4>
+                  <p className="text-sm text-gray-600">Reporting & Submissions</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">Manage regulatory reports, submissions, and compliance frameworks</p>
+              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+                View Reports <ArrowRight className="h-4 w-4" />
+              </div>
+            </div>
+          </Link>
+
+          <Link to="/transport-analytics">
+            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg group-hover:scale-110 transition-transform">
+                  <Train className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Public Transport</h4>
+                  <p className="text-sm text-gray-600">Transport Analytics</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">Analyze commuting patterns across public transport networks and modes</p>
+              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+                View Analytics <ArrowRight className="h-4 w-4" />
+              </div>
+            </div>
+          </Link>
+        </div>
+      </Card>
+
+      {/* Active Initiatives & Compliance Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Active Initiatives</h3>
             <Link to="/initiatives">
@@ -254,7 +323,7 @@ export default function SustainabilityOverview() {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <h3 className="font-semibold text-gray-900 mb-4">Compliance Status</h3>
           <div className="space-y-4">
             <div className="p-4 border rounded-lg">
