@@ -72,57 +72,55 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-4">
-      {/* Header Container with Gradient Background */}
-      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
-        <div className="flex items-start justify-between">
-          {/* Left - Greeting */}
-          <div>
-            <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-4">
-              Good morning, Alex!
-            </h1>
-            <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
-              You have 3 upcoming rides this week. Keep up the great work reducing emissions!
-            </p>
-          </div>
+      {/* Header - No Container */}
+      <div className="flex items-start justify-between py-4">
+        {/* Left - Greeting */}
+        <div>
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+            Good morning, Alex!
+          </h1>
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+            You have 3 upcoming rides this week. Keep up the great work reducing emissions!
+          </p>
+        </div>
 
-          {/* Right - Action Buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/employee/offer-ride')}
-              className="bg-white h-8 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Plus className="h-4 w-4 text-[#0a0a0a]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#0a0a0a] tracking-[-0.1504px]">
-                  Offer Ride
-                </span>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => navigate('/employee/find-ride')}
-              className="bg-white h-8 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-[#0a0a0a]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#0a0a0a] tracking-[-0.1504px]">
-                  Find Ride
-                </span>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => setIsLogCommuteOpen(true)}
-              className="bg-black h-8 px-4 rounded-lg hover:bg-gray-900 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Plus className="h-4 w-4 text-white" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
-                  Log Commute
-                </span>
-              </div>
-            </button>
-          </div>
+        {/* Right - Action Buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/employee/offer-ride')}
+            className="bg-white h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center gap-2">
+              <Plus className="h-4 w-4 text-[#101828]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+                Offer Ride
+              </span>
+            </div>
+          </button>
+          
+          <button
+            onClick={() => navigate('/employee/find-ride')}
+            className="bg-white h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4 text-[#101828]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+                Find Ride
+              </span>
+            </div>
+          </button>
+          
+          <button
+            onClick={() => setIsLogCommuteOpen(true)}
+            className="bg-[#00bc7d] h-9 px-4 rounded-lg hover:bg-[#00a872] transition-all shadow-md hover:shadow-lg"
+          >
+            <div className="flex items-center gap-2">
+              <Plus className="h-4 w-4 text-white" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
+                Log Commute
+              </span>
+            </div>
+          </button>
         </div>
       </div>
 
@@ -135,7 +133,7 @@ export default function EmployeeDashboard() {
             </p>
             <Calendar className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             127
           </p>
           <div className="flex items-center gap-1">
@@ -151,7 +149,7 @@ export default function EmployeeDashboard() {
             </p>
             <Leaf className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             43.2 kg
           </p>
           <div className="flex items-center gap-1">
@@ -167,7 +165,7 @@ export default function EmployeeDashboard() {
             </p>
             <Users className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             34
           </p>
           <div className="flex items-center gap-1">
@@ -183,7 +181,7 @@ export default function EmployeeDashboard() {
             </p>
             <Zap className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Kaisei_Decol',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             7 days
           </p>
           <div className="flex items-center gap-1">
@@ -387,11 +385,11 @@ export default function EmployeeDashboard() {
                     const dayData = mockCommuteData.find(d => d.day === day);
                     
                     const modeColors = {
-                      carpool: 'bg-[#00A63E]',
-                      bike: 'bg-[#009966]',
-                      bus: 'bg-[#155DFC]',
-                      walk: 'bg-[#9333ea]',
-                      drive: 'bg-[#E17100]',
+                      carpool: 'bg-[#00bc7d]',
+                      bike: 'bg-[#00a872]',
+                      bus: 'bg-[#009689]',
+                      walk: 'bg-[#008573]',
+                      drive: 'bg-[#6a7282]',
                       remote: 'bg-gray-300',
                     };
                     
@@ -435,11 +433,11 @@ export default function EmployeeDashboard() {
                     const randomMode = modes[day % modes.length];
                     
                     const modeColors = {
-                      carpool: 'bg-[#00A63E]',
-                      bike: 'bg-[#009966]',
-                      bus: 'bg-[#155DFC]',
-                      walk: 'bg-[#9333ea]',
-                      drive: 'bg-[#E17100]',
+                      carpool: 'bg-[#00bc7d]',
+                      bike: 'bg-[#00a872]',
+                      bus: 'bg-[#009689]',
+                      walk: 'bg-[#008573]',
+                      drive: 'bg-[#6a7282]',
                       remote: 'bg-gray-300',
                     };
                     
@@ -479,11 +477,11 @@ export default function EmployeeDashboard() {
                     const randomMode = modes[(day + 2) % modes.length];
                     
                     const modeColors = {
-                      carpool: 'bg-[#00A63E]',
-                      bike: 'bg-[#009966]',
-                      bus: 'bg-[#155DFC]',
-                      walk: 'bg-[#9333ea]',
-                      drive: 'bg-[#E17100]',
+                      carpool: 'bg-[#00bc7d]',
+                      bike: 'bg-[#00a872]',
+                      bus: 'bg-[#009689]',
+                      walk: 'bg-[#008573]',
+                      drive: 'bg-[#6a7282]',
                       remote: 'bg-gray-300',
                     };
                     
@@ -514,23 +512,23 @@ export default function EmployeeDashboard() {
             <div className="pt-4 border-t border-gray-100 mt-4">
               <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#00A63E] rounded"></div>
+                  <div className="w-3 h-3 bg-[#00bc7d] rounded"></div>
                   <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Carpool</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#009966] rounded"></div>
+                  <div className="w-3 h-3 bg-[#00a872] rounded"></div>
                   <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Bike</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#155DFC] rounded"></div>
+                  <div className="w-3 h-3 bg-[#009689] rounded"></div>
                   <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Transit</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#E17100] rounded"></div>
+                  <div className="w-3 h-3 bg-[#6a7282] rounded"></div>
                   <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Drive</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#9333ea] rounded"></div>
+                  <div className="w-3 h-3 bg-[#008573] rounded"></div>
                   <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Walk</span>
                 </div>
                 <div className="flex items-center gap-1.5">

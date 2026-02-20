@@ -52,7 +52,7 @@ export function TopNav() {
               <span className="text-white font-bold text-sm">E</span>
             </div>
             <div>
-              <div className="font-semibold text-gray-900 text-lg">enwayu</div>
+              <div className="font-semibold text-gray-900 text-lg">REOXY</div>
             </div>
           </Link>
         </div>

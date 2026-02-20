@@ -22,11 +22,11 @@ const achievements = [
   { id: 'a6', title: 'Public Transit Pro', description: 'Used public transport 50 times', points: 400, unlocked: false, progress: 32 },
 ];
 
-const rewards = [
-  { id: 'r1', name: 'Coffee Shop Gift Card', points: 500, available: true, description: '€20 voucher' },
+const mockRewards = [
+  { id: 'r1', name: 'Gift Card', points: 500, available: true, description: '€25 retailer voucher' },
   { id: 'r2', name: 'Extra PTO Day', points: 1000, available: true, description: '1 additional leave day' },
   { id: 'r3', name: 'Reserved Parking Spot', points: 750, available: true, description: '1 month priority parking' },
-  { id: 'r4', name: 'Company Merchandise', points: 250, available: true, description: 'enwayu branded items' },
+  { id: 'r4', name: 'Company Merchandise', points: 250, available: true, description: 'REOXY branded items' },
   { id: 'r5', name: 'Bike Maintenance Voucher', points: 600, available: true, description: '€50 bike service' },
   { id: 'r6', name: 'Charity Donation', points: 300, available: true, description: 'Donate to green cause' },
 ];
@@ -80,7 +80,7 @@ export default function EmployeeRewards() {
               <Star className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[#6a7282]">Total Points</p>
+              <p className="text-sm text-[#6a7282]">Total OxyPoints</p>
               <p className="text-3xl font-bold text-[#101828]">{myPoints.toLocaleString()}</p>
             </div>
           </div>
@@ -180,11 +180,11 @@ export default function EmployeeRewards() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-[#101828]">Redeem Rewards</h3>
           <p className="text-sm text-[#6a7282]">
-            You have <strong className="text-[#00bc7d]">{myPoints}</strong> points to spend
+            You have <strong className="text-[#00bc7d]">{myPoints}</strong> OxyPoints to spend
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rewards.map((reward) => {
+          {mockRewards.map((reward) => {
             const canAfford = myPoints >= reward.points;
             return (
               <div 
@@ -204,7 +204,7 @@ export default function EmployeeRewards() {
                     <p className="text-xs text-[#6a7282] mb-3">{reward.description}</p>
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className={canAfford ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600'}>
-                        {reward.points} points
+                        {reward.points} OxyPoints
                       </Badge>
                       <Button
                         size="sm"
@@ -261,7 +261,7 @@ export default function EmployeeRewards() {
               </div>
               <div className="text-right">
                 <p className="font-bold text-lg text-[#101828]">{entry.points.toLocaleString()}</p>
-                <p className="text-xs text-[#6a7282]">points</p>
+                <p className="text-xs text-[#6a7282]">OxyPoints</p>
               </div>
             </div>
           ))}
