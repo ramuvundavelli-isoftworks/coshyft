@@ -442,7 +442,7 @@ export default function ActiveTrip() {
               </Button>
             </div>
 
-            <div className="mt-4 p-3 bg-white rounded border border-red-200">
+            <div className="mt-4 p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
               <p className="text-xs font-medium text-red-900 mb-1">
                 Emergency Contacts on File
               </p>

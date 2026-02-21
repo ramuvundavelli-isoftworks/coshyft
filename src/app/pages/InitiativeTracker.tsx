@@ -418,7 +418,7 @@ export default function InitiativeTracker() {
                 {initiatives
                   .filter(i => i.actualReduction / i.expectedReduction < 0.8 && i.status === 'active')
                   .map(initiative => (
-                    <div key={initiative.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                    <div key={initiative.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                       <div>
                         <p className="font-medium text-gray-900">{initiative.name}</p>
                         <p className="text-sm text-gray-600">

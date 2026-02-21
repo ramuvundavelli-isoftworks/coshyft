@@ -37,11 +37,16 @@ export default function AdminOverview() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
-        <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-2">Operations Overview</h1>
-        <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
-          Monitor participation, rides, and operational metrics
-        </p>
+      <div className="flex items-start justify-between py-4">
+        {/* Left - Title */}
+        <div>
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+            Operations Overview
+          </h1>
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+            Monitor participation, rides, and operational metrics
+          </p>
+        </div>
       </div>
 
       {/* KPIs */}
@@ -96,7 +101,7 @@ export default function AdminOverview() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Participation by Department */}
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">Participation by Department</h2>
             <Link to="/admin/participation">
@@ -126,7 +131,7 @@ export default function AdminOverview() {
         </Card>
 
         {/* Weekly Trends */}
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Weekly Activity Trends</h2>
           <div style={{ height: '300px', width: '100%' }}>
             <Line
@@ -158,7 +163,7 @@ export default function AdminOverview() {
       {/* Mode Adoption & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Mode Adoption */}
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Current Mode Adoption</h2>
           <div style={{ height: '250px', width: '100%' }}>
             <Doughnut
@@ -189,7 +194,7 @@ export default function AdminOverview() {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">

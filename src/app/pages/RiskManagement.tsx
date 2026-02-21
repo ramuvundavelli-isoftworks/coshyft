@@ -459,7 +459,7 @@ export default function RiskManagement() {
           <h3 className="font-semibold text-blue-900 mb-4">Recommended Mitigation Actions</h3>
           <div className="space-y-3">
             {risks.filter(r => r.status === 'open' && getRiskLevel(r.likelihood, r.impact) === 'high').map((risk) => (
-              <div key={risk.id} className="p-4 bg-white rounded-lg border">
+              <div key={risk.id} className="p-4 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{risk.title}</p>

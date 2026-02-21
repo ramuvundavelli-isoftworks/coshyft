@@ -79,39 +79,53 @@ export default function SustainabilityOverview() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-2">Sustainability Overview</h1>
-            <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
-              Executive control center for Scope 3 Category 7 compliance
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Select value={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-[150px] bg-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ytd-2026">YTD 2026</SelectItem>
-                <SelectItem value="q1-2026">Q1 2026</SelectItem>
-                <SelectItem value="2025">2025</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" onClick={() => setIsExportDialogOpen(true)} className="bg-white hover:bg-gray-50">
-              <Download className="h-4 w-4 mr-2" />
+      <div className="flex items-start justify-between py-4">
+        {/* Left - Title */}
+        <div>
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+            Sustainability Overview
+          </h1>
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+            Executive control center for Scope 3 Category 7 compliance
+          </p>
+        </div>
+
+        {/* Right - Action Buttons */}
+        <div className="flex items-center gap-2">
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[150px] h-9 bg-white border border-[rgba(0,0,0,0.1)] shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ytd-2026">YTD 2026</SelectItem>
+              <SelectItem value="q1-2026">Q1 2026</SelectItem>
+              <SelectItem value="2025">2025</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button 
+            variant="outline" 
+            onClick={() => setIsExportDialogOpen(true)} 
+            className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
               Export
-            </Button>
-            <Button onClick={() => setIsSimulationDialogOpen(true)} className="bg-black hover:bg-gray-900 text-white">
-              <Zap className="h-4 w-4 mr-2" />
+            </span>
+          </Button>
+          <Button 
+            onClick={() => setIsSimulationDialogOpen(true)} 
+            className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
+          >
+            <Zap className="h-4 w-4 mr-2" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
               Run Simulation
-            </Button>
-          </div>
+            </span>
+          </Button>
         </div>
       </div>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Emissions"
           value="1,850"
@@ -147,19 +161,6 @@ export default function SustainabilityOverview() {
           trend="up"
           status="good"
         />
-        <KPICard
-          title="Data Quality"
-          value="94"
-          unit="%"
-          icon={Database}
-          status="good"
-        />
-        <KPICard
-          title="Active Initiatives"
-          value={activeInitiatives.length.toString()}
-          icon={CheckCircle}
-          status="good"
-        />
       </div>
 
       {/* Critical Alerts */}
@@ -171,7 +172,7 @@ export default function SustainabilityOverview() {
               <h3 className="font-semibold text-red-900 mb-2">Critical Alerts Require Attention</h3>
               <div className="space-y-2">
                 {criticalAlerts.slice(0, 3).map((alert) => (
-                  <div key={alert.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div key={alert.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                     <div>
                       <p className="font-medium text-gray-900">{alert.title}</p>
                       <p className="text-sm text-gray-600">{alert.description}</p>
@@ -196,7 +197,7 @@ export default function SustainabilityOverview() {
       )}
 
       {/* Target Gap Analysis */}
-      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+      <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Target vs Actual Performance</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <Line
@@ -226,7 +227,7 @@ export default function SustainabilityOverview() {
       </Card>
 
       {/* Quick Links to Compliance & Transport Analytics */}
-      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+      <Card className="p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Compliance & Analytics</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link to="/csrd-compliance">
@@ -287,7 +288,7 @@ export default function SustainabilityOverview() {
 
       {/* Active Initiatives & Compliance Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Active Initiatives</h3>
             <Link to="/initiatives">
@@ -323,7 +324,7 @@ export default function SustainabilityOverview() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Compliance Status</h3>
           <div className="space-y-4">
             <div className="p-4 border rounded-lg">

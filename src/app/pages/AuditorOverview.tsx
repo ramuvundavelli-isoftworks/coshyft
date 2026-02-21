@@ -71,30 +71,45 @@ export default function AuditorOverview() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-[#00bc7d] to-[#009689] rounded-[14px] p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-['Kaisei_Decol',sans-serif] font-bold text-[42px] leading-[32px] text-white tracking-[0.0703px] mb-2">Auditor Dashboard</h1>
-            <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#d0fae5] tracking-[-0.3125px]">
-              Independent verification and audit oversight
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => setIsScheduleDialogOpen(true)} className="bg-white hover:bg-gray-50">
-              <Calendar className="h-4 w-4 mr-2" />
+      {/* Page Header */}
+      <div className="flex items-start justify-between py-4">
+        {/* Left - Title */}
+        <div>
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+            Auditor Dashboard
+          </h1>
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+            Independent verification and audit oversight
+          </p>
+        </div>
+
+        {/* Right - Action Buttons */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsScheduleDialogOpen(true)} 
+            className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
               Schedule Review
-            </Button>
-            <Button onClick={() => setIsExportDialogOpen(true)} className="bg-black hover:bg-gray-900 text-white">
-              <Download className="h-4 w-4 mr-2" />
+            </span>
+          </Button>
+          <Button 
+            onClick={() => setIsExportDialogOpen(true)} 
+            className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
               Export Summary
-            </Button>
-          </div>
+            </span>
+          </Button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckCircle className="h-5 w-5 text-green-600" />
@@ -105,7 +120,7 @@ export default function AuditorOverview() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <Clock className="h-5 w-5 text-yellow-600" />
@@ -116,7 +131,7 @@ export default function AuditorOverview() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -127,7 +142,7 @@ export default function AuditorOverview() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Shield className="h-5 w-5 text-blue-600" />
@@ -142,7 +157,7 @@ export default function AuditorOverview() {
 
       {/* Audit Status & Findings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Audit Status Distribution</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Doughnut
@@ -161,7 +176,7 @@ export default function AuditorOverview() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+        <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Findings by Category</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Bar
@@ -183,7 +198,7 @@ export default function AuditorOverview() {
       </div>
 
       {/* Audit Items */}
-      <Card className="p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Audit Areas</h3>
           <Button variant="outline" size="sm" onClick={() => setIsAddFindingDialogOpen(true)}>

@@ -254,7 +254,7 @@ export default function EmissionFactors() {
               </h3>
               <div className="space-y-2">
                 {pendingFactors.map(factor => (
-                  <div key={factor.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div key={factor.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                     <div>
                       <p className="font-medium text-gray-900">{factor.mode}</p>
                       <p className="text-sm text-gray-600">

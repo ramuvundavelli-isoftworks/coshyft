@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Card } from '../components/ui/card';
 import { 
   TrendingDown, 
   MapPin, 
@@ -126,7 +127,7 @@ export default function EmployeeDashboard() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Total Commutes
@@ -140,9 +141,9 @@ export default function EmployeeDashboard() {
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
             <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+12% from last month</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               CO₂ Saved
@@ -156,9 +157,9 @@ export default function EmployeeDashboard() {
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
             <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+8% from last month</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Carpool Rides
@@ -172,9 +173,9 @@ export default function EmployeeDashboard() {
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
             <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+18% from last month</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Active Streaks
@@ -188,7 +189,7 @@ export default function EmployeeDashboard() {
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
             <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">Keep it going!</span>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Main Content Grid */}
@@ -196,7 +197,7 @@ export default function EmployeeDashboard() {
         {/* Left Column - 2/3 width */}
         <div className="col-span-2 space-y-4">
           {/* Today's Ride */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+          <div className="bg-white  rounded-[14px] border border-gray-300/50">
             {/* Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100/50">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
@@ -282,7 +283,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Upcoming Rides */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Upcoming Rides
@@ -334,10 +335,10 @@ export default function EmployeeDashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
 
           {/* 3-Month Commute Calendar - Separate Heatmap Chart */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <Card className="p-6">
             <div className="mb-6">
               <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
                 3-Month Commute Calendar
@@ -537,7 +538,7 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Right Column - 1/3 width */}
@@ -609,7 +610,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Monthly Impact Chart */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-6">
+          <Card className="p-6">
             <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
               Your Monthly Impact
             </h2>
@@ -635,10 +636,10 @@ export default function EmployeeDashboard() {
                 <strong>Great job!</strong> You've saved 21.3 kg CO₂ this month, equivalent to planting 1.2 trees.
               </p>
             </div>
-          </div>
+          </Card>
 
           {/* Alert */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-[14px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-4">
+          <div className="bg-white  rounded-[14px] border border-gray-300/50 p-4">
             <div className="flex items-start gap-3">
               <div className="bg-orange-500 rounded-lg w-9 h-9 flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-white" />

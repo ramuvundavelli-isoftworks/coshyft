@@ -26,12 +26,6 @@ export function KPICard({
   status,
   className,
 }: KPICardProps) {
-  const statusColors = {
-    good: 'text-green-600 bg-green-50 border-green-200',
-    warning: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-    critical: 'text-red-600 bg-red-50 border-red-200',
-  };
-
   const trendColors = {
     up: change && change > 0 ? 'text-red-600' : 'text-green-600',
     down: change && change < 0 ? 'text-green-600' : 'text-red-600',
@@ -39,7 +33,7 @@ export function KPICard({
   };
 
   return (
-    <Card className={cn('p-6 bg-white/80 backdrop-blur-xl border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]', status && statusColors[status], className)}>
+    <Card className={cn('p-6', className)}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>

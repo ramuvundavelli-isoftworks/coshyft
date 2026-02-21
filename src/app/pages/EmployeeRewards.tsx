@@ -26,7 +26,7 @@ const mockRewards = [
   { id: 'r1', name: 'Gift Card', points: 500, available: true, description: '€25 retailer voucher' },
   { id: 'r2', name: 'Extra PTO Day', points: 1000, available: true, description: '1 additional leave day' },
   { id: 'r3', name: 'Reserved Parking Spot', points: 750, available: true, description: '1 month priority parking' },
-  { id: 'r4', name: 'Company Merchandise', points: 250, available: true, description: 'REOXY branded items' },
+  { id: 'r4', name: 'Company Merchandise', points: 250, available: true, description: 'CoShift branded items' },
   { id: 'r5', name: 'Bike Maintenance Voucher', points: 600, available: true, description: '€50 bike service' },
   { id: 'r6', name: 'Charity Donation', points: 300, available: true, description: 'Donate to green cause' },
 ];

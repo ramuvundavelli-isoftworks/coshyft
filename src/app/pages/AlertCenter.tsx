@@ -152,36 +152,44 @@ export default function AlertCenter() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6 bg-red-50 border-red-200">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="p-2 bg-red-50 rounded-lg">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </div>
             <div>
               <p className="text-sm text-gray-600">Critical</p>
               <p className="text-2xl font-bold text-red-600">{criticalAlerts.length}</p>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-yellow-50 border-yellow-200">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-6 w-6 text-yellow-600" />
+            <div className="p-2 bg-yellow-50 rounded-lg">
+              <AlertCircle className="h-6 w-6 text-yellow-600" />
+            </div>
             <div>
               <p className="text-sm text-gray-600">Warning</p>
               <p className="text-2xl font-bold text-yellow-600">{warningAlerts.length}</p>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-blue-50 border-blue-200">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
-            <Info className="h-6 w-6 text-blue-600" />
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Info className="h-6 w-6 text-blue-600" />
+            </div>
             <div>
               <p className="text-sm text-gray-600">Info</p>
               <p className="text-2xl font-bold text-blue-600">{infoAlerts.length}</p>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-green-50 border-green-200">
+        <Card className="p-6">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <div className="p-2 bg-green-50 rounded-lg">
+              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            </div>
             <div>
               <p className="text-sm text-gray-600">Resolved</p>
               <p className="text-2xl font-bold text-green-600">{resolvedAlerts.length}</p>
