@@ -77,10 +77,10 @@ export default function EmployeeDashboard() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Greeting */}
         <div>
-          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
             Good morning, Alex!
           </h1>
-          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
             You have 3 upcoming rides this week. Keep up the great work reducing emissions!
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function EmployeeDashboard() {
           >
             <div className="flex items-center gap-2">
               <Plus className="h-4 w-4 text-[#101828]" />
-              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
                 Offer Ride
               </span>
             </div>
@@ -105,7 +105,7 @@ export default function EmployeeDashboard() {
           >
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-[#101828]" />
-              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
                 Find Ride
               </span>
             </div>
@@ -117,7 +117,7 @@ export default function EmployeeDashboard() {
           >
             <div className="flex items-center gap-2">
               <Plus className="h-4 w-4 text-white" />
-              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
                 Log Commute
               </span>
             </div>
@@ -129,65 +129,65 @@ export default function EmployeeDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Total Commutes
             </p>
             <Calendar className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             127
           </p>
           <div className="flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+12% from last month</span>
+            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+12% from last month</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               CO₂ Saved
             </p>
             <Leaf className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             43.2 kg
           </p>
           <div className="flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+8% from last month</span>
+            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+8% from last month</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Carpool Rides
             </p>
             <Users className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             34
           </p>
           <div className="flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">+18% from last month</span>
+            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+18% from last month</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
               Active Streaks
             </p>
             <Zap className="w-4 h-4 text-[#6a7282]" />
           </div>
-          <p className="font-['Inter',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
             7 days
           </p>
           <div className="flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Inter',sans-serif] text-[12px] text-[#00A63E]">Keep it going!</span>
+            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">Keep it going!</span>
           </div>
         </Card>
       </div>
@@ -200,11 +200,11 @@ export default function EmployeeDashboard() {
           <div className="bg-white  rounded-[14px] border border-gray-300/50">
             {/* Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100/50">
-              <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Today's Ride
               </h2>
               <div className="bg-[#00bc7d] rounded-lg px-[9px] py-[3px]">
-                <span className="font-['Inter',sans-serif] font-medium text-[12px] leading-4 text-white">
+                <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-4 text-white">
                   Active
                 </span>
               </div>
@@ -219,11 +219,11 @@ export default function EmployeeDashboard() {
                 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[27px] text-[#101828] tracking-[-0.4395px]">
+                    <h3 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-[27px] text-[#101828] tracking-[-0.4395px]">
                       You're driving today
                     </h3>
                     <div className="rounded-lg border border-[rgba(0,0,0,0.1)] px-[9px] py-[3px]">
-                      <span className="font-['Inter',sans-serif] font-medium text-[12px] leading-4 text-[#0a0a0a]">
+                      <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-4 text-[#0a0a0a]">
                         3 passengers
                       </span>
                     </div>
@@ -232,39 +232,39 @@ export default function EmployeeDashboard() {
                   <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#4a5565]" strokeWidth={1.33} />
-                      <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
+                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
                         8:30 AM departure
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#4a5565]" strokeWidth={1.33} />
-                      <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
+                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
                         Downtown → Tech Park Office
                       </span>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <p className="font-['Inter',sans-serif] font-semibold text-[14px] leading-5 text-[#101828] mb-1">
+                    <p className="font-['Geist',sans-serif] font-semibold text-[14px] leading-5 text-[#101828] mb-1">
                       Passengers
                     </p>
-                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
+                    <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
                       Sarah Johnson, Mike Chen, Emma Davis
                     </p>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-['Inter',sans-serif] font-semibold text-[24px] leading-8 text-[#00A63E] mb-1">
+                      <p className="font-['Geist',sans-serif] font-semibold text-[24px] leading-8 text-[#00A63E] mb-1">
                         +2.5 kg
                       </p>
-                      <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
+                      <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
                         CO₂ saved
                       </p>
                     </div>
                     <Link to="/employee/active-trip">
                       <button className="bg-[#096] hover:bg-[#00a86b] transition-colors rounded-lg px-6 py-2">
-                        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white">
+                        <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-white">
                           Start Trip
                         </span>
                       </button>
@@ -276,7 +276,7 @@ export default function EmployeeDashboard() {
 
             {/* Footer */}
             <div className="px-6 py-3 border-t border-gray-100/50">
-              <button className="w-full text-center font-['Inter',sans-serif] font-normal text-[14px] text-[#4a5565] hover:text-[#101828] transition-colors">
+              <button className="w-full text-center font-['Geist',sans-serif] font-normal text-[14px] text-[#4a5565] hover:text-[#101828] transition-colors">
                 View Details
               </button>
             </div>
@@ -285,11 +285,11 @@ export default function EmployeeDashboard() {
           {/* Upcoming Rides */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Upcoming Rides
               </h2>
               <Link to="/employee/trips">
-                <button className="font-['Inter',sans-serif] font-medium text-[14px] text-[#155DFC] hover:text-[#0d47d1] transition-colors">
+                <button className="font-['Geist',sans-serif] font-medium text-[14px] text-[#155DFC] hover:text-[#0d47d1] transition-colors">
                   View All →
                 </button>
               </Link>
@@ -301,11 +301,11 @@ export default function EmployeeDashboard() {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1 inline-block mb-2">
-                        <span className="font-['Inter',sans-serif] font-medium text-[12px] text-orange-700">
+                        <span className="font-['Geist',sans-serif] font-medium text-[12px] text-orange-700">
                           Scheduled
                         </span>
                       </div>
-                      <p className="font-['Inter',sans-serif] font-semibold text-[14px] text-[#101828]">
+                      <p className="font-['Geist',sans-serif] font-semibold text-[14px] text-[#101828]">
                         {ride.driverName}
                       </p>
                     </div>
@@ -323,11 +323,11 @@ export default function EmployeeDashboard() {
                   </div>
 
                   <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                    <span className="font-['Inter',sans-serif] font-medium text-[12px] text-[#00A63E]">
+                    <span className="font-['Geist',sans-serif] font-medium text-[12px] text-[#00A63E]">
                       +{ride.co2Saved} kg CO₂ saved
                     </span>
                     <div className="bg-blue-50 border border-blue-200 rounded-lg px-2 py-1">
-                      <span className="font-['Inter',sans-serif] font-medium text-[12px] text-blue-700">
+                      <span className="font-['Geist',sans-serif] font-medium text-[12px] text-blue-700">
                         Confirmed
                       </span>
                     </div>
@@ -340,10 +340,10 @@ export default function EmployeeDashboard() {
           {/* 3-Month Commute Calendar - Separate Heatmap Chart */}
           <Card className="p-6">
             <div className="mb-6">
-              <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
                 3-Month Commute Calendar
               </h2>
-              <p className="font-['Inter',sans-serif] font-normal text-[12px] text-[#4a5565]">
+              <p className="font-['Geist',sans-serif] font-normal text-[12px] text-[#4a5565]">
                 Visual overview of your daily commute patterns
               </p>
             </div>
@@ -359,17 +359,17 @@ export default function EmployeeDashboard() {
                     transform: 'translateX(-50%)'
                   }}
                 >
-                  <div className="font-['Inter',sans-serif] font-semibold mb-1">
+                  <div className="font-['Geist',sans-serif] font-semibold mb-1">
                     {hoveredDay.month} - Day {hoveredDay.day}
                   </div>
                   {hoveredDay.mode && (
-                    <div className="font-['Inter',sans-serif]">
+                    <div className="font-['Geist',sans-serif]">
                       <div className="capitalize">{hoveredDay.mode}</div>
                       {hoveredDay.distance && <div>{hoveredDay.distance} km</div>}
                     </div>
                   )}
                   {!hoveredDay.mode && (
-                    <div className="font-['Inter',sans-serif] text-gray-300">No commute</div>
+                    <div className="font-['Geist',sans-serif] text-gray-300">No commute</div>
                   )}
                 </div>
               )}
@@ -377,8 +377,8 @@ export default function EmployeeDashboard() {
               {/* February 2026 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Inter',sans-serif] font-medium text-[11px] text-[#101828]">February 2026</p>
-                  <p className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">43.0 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">February 2026</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">43.0 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(28)].map((_, i) => {
@@ -412,19 +412,19 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">7</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">14</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">21</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">28</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">7</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">14</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">21</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">28</span>
                 </div>
               </div>
 
               {/* January 2026 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Inter',sans-serif] font-medium text-[11px] text-[#101828]">January 2026</p>
-                  <p className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">45.2 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">January 2026</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">45.2 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
@@ -456,19 +456,19 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">8</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">15</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">22</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">31</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">8</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">15</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">22</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">31</span>
                 </div>
               </div>
 
               {/* December 2025 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Inter',sans-serif] font-medium text-[11px] text-[#101828]">December 2025</p>
-                  <p className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">39.3 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">December 2025</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">39.3 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
@@ -500,11 +500,11 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">8</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">15</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">22</span>
-                  <span className="font-['Inter',sans-serif] text-[9px] text-[#6a7282]">31</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">8</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">15</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">22</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">31</span>
                 </div>
               </div>
             </div>
@@ -514,27 +514,27 @@ export default function EmployeeDashboard() {
               <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-[#00bc7d] rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Carpool</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Carpool</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-[#00a872] rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Bike</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Bike</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-[#009689] rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Transit</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Transit</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-[#6a7282] rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Drive</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Drive</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-[#008573] rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Walk</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Walk</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 bg-gray-300 rounded"></div>
-                  <span className="font-['Inter',sans-serif] text-[10px] text-[#6a7282]">Remote</span>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Remote</span>
                 </div>
               </div>
             </div>
@@ -547,24 +547,24 @@ export default function EmployeeDashboard() {
           <div className="bg-[#f0fdf4] rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown className="w-5 h-5 text-[#00A63E]" />
-              <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
                 Your Carbon Impact
               </h2>
             </div>
             
             <div className="mb-4">
-              <p className="font-['Inter',sans-serif] font-bold text-[36px] leading-10 text-[#00A63E] mb-1">
+              <p className="font-['Geist',sans-serif] font-bold text-[36px] leading-10 text-[#00A63E] mb-1">
                 142.5 kg
               </p>
-              <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#4a5565]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] text-[#4a5565]">
                 CO₂ saved this month
               </p>
             </div>
 
             <div className="mb-4">
               <div className="flex justify-between mb-2">
-                <span className="font-['Inter',sans-serif] text-[12px] text-[#6a7282]">Monthly goal</span>
-                <span className="font-['Inter',sans-serif] font-semibold text-[12px] text-[#00A63E]">160 kg</span>
+                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Monthly goal</span>
+                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#00A63E]">160 kg</span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-[#00A63E] rounded-full" style={{ width: '89%' }}></div>
@@ -573,12 +573,12 @@ export default function EmployeeDashboard() {
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
-                <span className="font-['Inter',sans-serif] text-[12px] text-[#6a7282]">Trees equivalent</span>
-                <span className="font-['Inter',sans-serif] font-semibold text-[12px] text-[#101828]">7 trees</span>
+                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Trees equivalent</span>
+                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#101828]">7 trees</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-['Inter',sans-serif] text-[12px] text-[#6a7282]">Distance saved</span>
-                <span className="font-['Inter',sans-serif] font-semibold text-[12px] text-[#101828]">385 km</span>
+                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Distance saved</span>
+                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#101828]">385 km</span>
               </div>
             </div>
 
@@ -586,7 +586,7 @@ export default function EmployeeDashboard() {
               onClick={() => navigate('/employee/impact')}
               className="w-full bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-colors rounded-lg py-2"
             >
-              <span className="font-['Inter',sans-serif] font-medium text-[14px] text-[#0a0a0a]">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">
                 View Full Report
               </span>
             </button>
@@ -599,11 +599,11 @@ export default function EmployeeDashboard() {
           >
             <div className="inline-flex items-center justify-center bg-gradient-to-r from-[#096] to-[#00bc7d] rounded-full px-6 py-3 mb-4">
               <Award className="w-6 h-6 text-white mr-2" />
-              <span className="font-['Inter',sans-serif] font-semibold text-[20px] text-white">
+              <span className="font-['Geist',sans-serif] font-semibold text-[20px] text-white">
                 Green Champion!
               </span>
             </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[16px] text-white leading-[32px]">
+            <p className="font-['Geist',sans-serif] font-normal text-[16px] text-white leading-[32px]">
               You're in the top 10% of drivers<br />
               saving CO₂ this month
             </p>
@@ -611,7 +611,7 @@ export default function EmployeeDashboard() {
 
           {/* Monthly Impact Chart */}
           <Card className="p-6">
-            <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
+            <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
               Your Monthly Impact
             </h2>
             <div style={{ height: '200px', width: '100%' }}>
@@ -632,7 +632,7 @@ export default function EmployeeDashboard() {
               />
             </div>
             <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="font-['Inter',sans-serif] text-[12px] text-green-800">
+              <p className="font-['Geist',sans-serif] text-[12px] text-green-800">
                 <strong>Great job!</strong> You've saved 21.3 kg CO₂ this month, equivalent to planting 1.2 trees.
               </p>
             </div>
@@ -645,10 +645,10 @@ export default function EmployeeDashboard() {
                 <AlertCircle className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-['Inter',sans-serif] font-semibold text-[14px] text-[#101828] mb-1">
+                <h3 className="font-['Geist',sans-serif] font-semibold text-[14px] text-[#101828] mb-1">
                   Haven't logged today's commute yet
                 </h3>
-                <p className="font-['Inter',sans-serif] font-normal text-[12px] text-[#4a5565] mb-3">
+                <p className="font-['Geist',sans-serif] font-normal text-[12px] text-[#4a5565] mb-3">
                   Click to view all transport modes
                 </p>
                 <button 
@@ -657,7 +657,7 @@ export default function EmployeeDashboard() {
                 >
                   <div className="flex items-center gap-2">
                     <Plus className="h-4 w-4 text-white" />
-                    <span className="font-['Inter',sans-serif] font-medium text-[12px] text-white">
+                    <span className="font-['Geist',sans-serif] font-medium text-[12px] text-white">
                       Quick Log
                     </span>
                   </div>

@@ -75,32 +75,33 @@ export default function AuditorOverview() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Title */}
         <div>
-          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
             Auditor Dashboard
           </h1>
-          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
             Independent verification and audit oversight
           </p>
         </div>
 
         {/* Right - Action Buttons */}
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsScheduleDialogOpen(true)} 
+          <Button
+            variant="outline"
+            onClick={() => console.log('Schedule review')}
             className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
           >
             <Calendar className="h-4 w-4 mr-2" />
-            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
               Schedule Review
             </span>
           </Button>
-          <Button 
-            onClick={() => setIsExportDialogOpen(true)} 
+
+          <Button
+            onClick={() => console.log('Export summary')}
             className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
           >
             <Download className="h-4 w-4 mr-2" />
-            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
               Export Summary
             </span>
           </Button>

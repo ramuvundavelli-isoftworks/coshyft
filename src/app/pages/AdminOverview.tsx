@@ -40,10 +40,10 @@ export default function AdminOverview() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Title */}
         <div>
-          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
             Operations Overview
           </h1>
-          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
             Monitor participation, rides, and operational metrics
           </p>
         </div>
