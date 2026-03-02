@@ -48,6 +48,8 @@ import { irishWorkplaceBenefits } from '../data/mockData';
 import { IrishWorkplaceBenefit } from '../types';
 import { formatCurrency, formatPercentage } from '../utils/localization';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 const categoryIcons = {
   'bike-to-work': Bike,
@@ -99,6 +101,10 @@ export default function AdminWorkplaceBenefits() {
     { category: 'ev-incentive', participants: 24, savings: 12400, co2Saved: 1.5 },
     { category: 'remote-work', participants: 14, savings: 1520, co2Saved: 0 },
   ];
+
+  const enableBenefitMutation = useApiMutation((data: { benefit_id: string; enabled: boolean }) =>
+    adminApi.enableBenefit(data)
+  );
 
   return (
     <div className="p-6 sm:p-8 max-w-[1600px] mx-auto space-y-6">
@@ -434,8 +440,18 @@ export default function AdminWorkplaceBenefits() {
             <Button variant="outline" onClick={() => setIsDetailsDialogOpen(false)}>
               Close
             </Button>
-            <Button onClick={() => toast.success('Benefit enabled for employees')}>
-              Enable for All Employees
+            <Button onClick={async () => {
+              const result = await enableBenefitMutation.execute({
+                benefit_id: selectedBenefit?.id,
+                enabled: true,
+              });
+              if (result.success) {
+                toast.success('Benefit enabled for employees');
+              } else {
+                toast.error(result.error?.message || 'Failed to enable benefit');
+              }
+            }} disabled={enableBenefitMutation.loading}>
+              {enableBenefitMutation.loading ? 'Enabling...' : 'Enable for All Employees'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useRole } from '../context/RoleContext';
-import { UserRole } from '../types';
-import { Leaf, Users, Shield, Building2, Crown } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Role } from '../types';
+import { Leaf, Users, Shield, Building2, Crown, Loader2 } from 'lucide-react';
 
-const roleOptions: { role: UserRole; label: string; description: string; icon: any; color: string }[] = [
+const roleOptions: { role: Role; label: string; description: string; icon: any; color: string }[] = [
   {
     role: 'employee',
     label: 'Employee',
@@ -49,26 +50,61 @@ const roleOptions: { role: UserRole; label: string; description: string; icon: a
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('sustainability');
+  const [selectedRole, setSelectedRole] = useState<Role>('sustainability');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { switchRole } = useRole();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Check if user was redirected here from a protected route
+  const from = (location.state as any)?.from?.pathname;
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Switch to selected role
-    switchRole(selectedRole);
-    
-    // Navigate based on role
-    const routes: Record<UserRole, string> = {
-      employee: '/employee',
-      admin: '/admin',
-      sustainability: '/',
-      auditor: '/auditor',
-      superadmin: '/superadmin',
-    };
-    
-    navigate(routes[selectedRole]);
+    setIsLoggingIn(true);
+    setLoginError(null);
+
+    try {
+      // Call auth API
+      const result = await login(email || `${selectedRole}@company.ie`, password || 'password123');
+
+      if (result.success) {
+        // Switch to selected role (demo mode role picker)
+        switchRole(selectedRole);
+
+        // Navigate to the page they tried to visit, or role default
+        const routes: Record<Role, string> = {
+          employee: '/employee',
+          admin: '/admin',
+          sustainability: '/',
+          auditor: '/auditor',
+          superadmin: '/superadmin',
+        };
+
+        navigate(from || routes[selectedRole], { replace: true });
+      } else {
+        // In mock mode, login always succeeds, so this is for live mode errors
+        setLoginError(result.error || 'Login failed');
+        // Fallback: still switch role for demo
+        switchRole(selectedRole);
+        const routes: Record<Role, string> = {
+          employee: '/employee',
+          admin: '/admin',
+          sustainability: '/',
+          auditor: '/auditor',
+          superadmin: '/superadmin',
+        };
+        navigate(from || routes[selectedRole], { replace: true });
+      }
+    } catch {
+      // Fallback for any errors — still navigate in demo mode
+      switchRole(selectedRole);
+      navigate(from || (selectedRole === 'sustainability' ? '/' : `/${selectedRole}`), { replace: true });
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -122,9 +158,19 @@ export default function Login() {
                   Forgot password?
                 </a>
               </div>
-              <Button type="submit" className="w-full">
-                Sign In
+              <Button type="submit" className="w-full" disabled={isLoggingIn}>
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
               </Button>
+              {loginError && (
+                <p className="text-sm text-red-600 text-center">{loginError}</p>
+              )}
             </form>
             <div className="mt-6 pt-6 border-t text-center text-sm text-gray-600">
               Don't have an account?{' '}

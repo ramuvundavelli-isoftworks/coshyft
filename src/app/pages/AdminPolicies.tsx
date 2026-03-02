@@ -37,6 +37,8 @@ import {
   History,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 interface Policy {
   id: string;
@@ -123,7 +125,15 @@ export default function AdminPolicies() {
     content: '',
   });
 
-  const handleCreatePolicy = () => {
+  // API mutations
+  const createPolicyMutation = useApiMutation((data: any) =>
+    adminApi.createPolicy(data)
+  );
+  const updatePolicyMutation = useApiMutation((data: { id: string; payload: any }) =>
+    adminApi.updatePolicy(data.id, data.payload)
+  );
+
+  const handleCreatePolicy = async () => {
     const newPolicy: Policy = {
       id: `pol-${Date.now()}`,
       name: formData.name,
@@ -135,13 +145,28 @@ export default function AdminPolicies() {
       appliesTo: formData.appliesTo,
       content: formData.content,
     };
+    // Optimistic update
     setPolicies([...policies, newPolicy]);
     setIsCreateDialogOpen(false);
     resetForm();
-    toast.success('Policy created successfully');
+
+    const result = await createPolicyMutation.execute({
+      name: formData.name,
+      description: formData.description,
+      category: formData.category,
+      effective_date: formData.effectiveDate,
+      applies_to: formData.appliesTo,
+      content: formData.content,
+    });
+
+    if (result.success) {
+      toast.success('Policy created successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to create policy (saved locally)');
+    }
   };
 
-  const handleEditPolicy = () => {
+  const handleEditPolicy = async () => {
     if (selectedPolicy) {
       const updated = policies.map(p =>
         p.id === selectedPolicy.id
@@ -157,13 +182,31 @@ export default function AdminPolicies() {
             }
           : p
       );
+      // Optimistic update
       setPolicies(updated);
       setIsEditDialogOpen(false);
-      toast.success('Policy updated successfully');
+
+      const result = await updatePolicyMutation.execute({
+        id: selectedPolicy.id,
+        payload: {
+          name: formData.name,
+          description: formData.description,
+          category: formData.category,
+          effective_date: formData.effectiveDate,
+          applies_to: formData.appliesTo,
+          content: formData.content,
+        },
+      });
+
+      if (result.success) {
+        toast.success('Policy updated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to update policy');
+      }
     }
   };
 
-  const handleDuplicatePolicy = () => {
+  const handleDuplicatePolicy = async () => {
     if (selectedPolicy) {
       const newPolicy: Policy = {
         ...selectedPolicy,
@@ -172,31 +215,74 @@ export default function AdminPolicies() {
         status: 'draft',
         lastModified: new Date().toISOString().split('T')[0],
       };
+      // Optimistic update
       setPolicies([...policies, newPolicy]);
       setIsDuplicateDialogOpen(false);
-      toast.success('Policy duplicated successfully');
+
+      const result = await createPolicyMutation.execute({
+        name: newPolicy.name,
+        description: newPolicy.description,
+        category: newPolicy.category,
+        effective_date: newPolicy.effectiveDate,
+        applies_to: newPolicy.appliesTo,
+        content: newPolicy.content,
+      });
+
+      if (result.success) {
+        toast.success('Policy duplicated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to duplicate policy (saved locally)');
+      }
     }
   };
 
-  const handleArchivePolicy = () => {
+  const handleArchivePolicy = async () => {
     if (selectedPolicy) {
+      const previousPolicies = [...policies];
       const updated = policies.map(p =>
         p.id === selectedPolicy.id ? { ...p, status: 'archived' as const } : p
       );
+      // Optimistic update
       setPolicies(updated);
       setIsArchiveDialogOpen(false);
-      toast.success('Policy archived');
+
+      const result = await updatePolicyMutation.execute({
+        id: selectedPolicy.id,
+        payload: { status: 'archived' },
+      });
+
+      if (result.success) {
+        toast.success('Policy archived');
+      } else {
+        // Rollback on failure
+        setPolicies(previousPolicies);
+        toast.error(result.error?.message || 'Failed to archive policy');
+      }
     }
   };
 
-  const handlePublishPolicy = () => {
+  const handlePublishPolicy = async () => {
     if (selectedPolicy) {
+      const previousPolicies = [...policies];
       const updated = policies.map(p =>
         p.id === selectedPolicy.id ? { ...p, status: 'active' as const } : p
       );
+      // Optimistic update
       setPolicies(updated);
       setIsPublishDialogOpen(false);
-      toast.success('Policy published and now active');
+
+      const result = await updatePolicyMutation.execute({
+        id: selectedPolicy.id,
+        payload: { status: 'active' },
+      });
+
+      if (result.success) {
+        toast.success('Policy published and now active');
+      } else {
+        // Rollback on failure
+        setPolicies(previousPolicies);
+        toast.error(result.error?.message || 'Failed to publish policy');
+      }
     }
   };
 
@@ -590,8 +676,8 @@ export default function AdminPolicies() {
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleEditPolicy}>
-              Save Changes
+            <Button onClick={handleEditPolicy} disabled={updatePolicyMutation.loading}>
+              {updatePolicyMutation.loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -678,9 +764,9 @@ export default function AdminPolicies() {
             <Button variant="outline" onClick={() => setIsDuplicateDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleDuplicatePolicy}>
+            <Button onClick={handleDuplicatePolicy} disabled={createPolicyMutation.loading}>
               <Copy className="h-4 w-4 mr-2" />
-              Duplicate Policy
+              {createPolicyMutation.loading ? 'Duplicating...' : 'Duplicate Policy'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -706,8 +792,8 @@ export default function AdminPolicies() {
             <Button variant="outline" onClick={() => setIsArchiveDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleArchivePolicy}>
-              Archive Policy
+            <Button onClick={handleArchivePolicy} disabled={updatePolicyMutation.loading}>
+              {updatePolicyMutation.loading ? 'Archiving...' : 'Archive Policy'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -739,9 +825,9 @@ export default function AdminPolicies() {
             <Button variant="outline" onClick={() => setIsPublishDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handlePublishPolicy}>
+            <Button onClick={handlePublishPolicy} disabled={updatePolicyMutation.loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Publish Policy
+              {updatePolicyMutation.loading ? 'Publishing...' : 'Publish Policy'}
             </Button>
           </DialogFooter>
         </DialogContent>

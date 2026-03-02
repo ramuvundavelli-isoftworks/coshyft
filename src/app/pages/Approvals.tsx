@@ -30,6 +30,8 @@ import {
 } from '../components/ui/table';
 import { CheckSquare, Clock, User, Download, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { sustainabilityApi } from '../api';
 
 interface Approval {
   id: string;
@@ -61,27 +63,63 @@ export default function Approvals() {
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
   const [comments, setComments] = useState('');
 
-  const handleApprove = () => {
+  // API mutations
+  const approveMutation = useApiMutation((data: { id: string; comments?: string }) =>
+    sustainabilityApi.approveRequest(data.id, data.comments)
+  );
+  const rejectMutation = useApiMutation((data: { id: string; comments?: string }) =>
+    sustainabilityApi.rejectRequest(data.id, data.comments)
+  );
+
+  const handleApprove = async () => {
     if (selectedApproval) {
+      const previousApprovals = [...approvals];
       const updated = approvals.map(a =>
         a.id === selectedApproval.id ? { ...a, status: 'approved' as const } : a
       );
+      // Optimistic update
       setApprovals(updated);
       setIsApproveDialogOpen(false);
       setComments('');
-      toast.success('Request approved successfully');
+
+      const result = await approveMutation.execute({
+        id: selectedApproval.id,
+        comments: comments || undefined,
+      });
+
+      if (result.success) {
+        toast.success('Request approved successfully');
+      } else {
+        // Rollback on failure
+        setApprovals(previousApprovals);
+        toast.error(result.error?.message || 'Failed to approve request');
+      }
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (selectedApproval) {
+      const previousApprovals = [...approvals];
       const updated = approvals.map(a =>
         a.id === selectedApproval.id ? { ...a, status: 'rejected' as const } : a
       );
+      // Optimistic update
       setApprovals(updated);
       setIsRejectDialogOpen(false);
       setComments('');
-      toast.success('Request rejected');
+
+      const result = await rejectMutation.execute({
+        id: selectedApproval.id,
+        comments: comments || undefined,
+      });
+
+      if (result.success) {
+        toast.success('Request rejected');
+      } else {
+        // Rollback on failure
+        setApprovals(previousApprovals);
+        toast.error(result.error?.message || 'Failed to reject request');
+      }
     }
   };
 
@@ -350,9 +388,9 @@ export default function Approvals() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleApprove}>
+            <Button onClick={handleApprove} disabled={approveMutation.loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Approve
+              {approveMutation.loading ? 'Approving...' : 'Approve'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -382,9 +420,9 @@ export default function Approvals() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleReject} disabled={!comments}>
+            <Button variant="destructive" onClick={handleReject} disabled={!comments || rejectMutation.loading}>
               <XCircle className="h-4 w-4 mr-2" />
-              Reject
+              {rejectMutation.loading ? 'Rejecting...' : 'Reject'}
             </Button>
           </DialogFooter>
         </DialogContent>

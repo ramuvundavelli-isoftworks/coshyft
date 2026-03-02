@@ -45,6 +45,8 @@ import {
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { lineChartOptions, barChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { commuteApi } from '../api';
 
 const monthlyTrend = [
   { month: 'Sep', emissions: 45.2, saved: 8.5, baseline: 53.7 },

@@ -24,6 +24,8 @@ import { Users, TrendingUp, TrendingDown, AlertTriangle, Download, Filter, Searc
 import { Line } from 'react-chartjs-2';
 import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 interface Department {
   id: string;
@@ -76,13 +78,42 @@ export default function AdminParticipation() {
   const totalActive = departments.reduce((sum, d) => sum + d.active, 0);
   const avgParticipation = Math.round(departments.reduce((sum, d) => sum + d.participation, 0) / departments.length);
 
-  const handleSetTarget = () => {
-    toast.success(`Target set to ${targetValue}% for ${selectedDept?.name}`);
+  const setTargetMutation = useApiMutation((data: { department: string; targetPercent: number }) =>
+    adminApi.setParticipationTarget(data.department, data.targetPercent)
+  );
+  const sendReminderMutation = useApiMutation((data: { department: string; message: string }) =>
+    adminApi.sendParticipationReminder(data.department, data.message)
+  );
+
+  const handleSetTarget = async () => {
+    if (selectedDept) {
+      const result = await setTargetMutation.execute({
+        department: selectedDept.name,
+        targetPercent: parseInt(targetValue),
+      });
+
+      if (result.success) {
+        toast.success(`Target set to ${targetValue}% for ${selectedDept.name}`);
+      } else {
+        toast.error(result.error?.message || 'Failed to set target');
+      }
+    }
     setIsSetTargetDialogOpen(false);
   };
 
-  const handleSendReminder = () => {
-    toast.success(`Reminder sent to ${selectedDept?.name} department`);
+  const handleSendReminder = async () => {
+    if (selectedDept) {
+      const result = await sendReminderMutation.execute({
+        department: selectedDept.name,
+        message: reminderMessage,
+      });
+
+      if (result.success) {
+        toast.success(`Reminder sent to ${selectedDept.name} department`);
+      } else {
+        toast.error(result.error?.message || 'Failed to send reminder');
+      }
+    }
     setIsSendReminderDialogOpen(false);
     setReminderMessage('');
   };
@@ -361,8 +392,8 @@ export default function AdminParticipation() {
             <Button variant="outline" onClick={() => setIsSetTargetDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSetTarget}>
-              Set Target
+            <Button onClick={handleSetTarget} disabled={setTargetMutation.loading}>
+              {setTargetMutation.loading ? 'Setting...' : 'Set Target'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -394,9 +425,9 @@ export default function AdminParticipation() {
             <Button variant="outline" onClick={() => setIsSendReminderDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSendReminder}>
+            <Button onClick={handleSendReminder} disabled={sendReminderMutation.loading}>
               <Mail className="h-4 w-4 mr-2" />
-              Send Reminder
+              {sendReminderMutation.loading ? 'Sending...' : 'Send Reminder'}
             </Button>
           </DialogFooter>
         </DialogContent>

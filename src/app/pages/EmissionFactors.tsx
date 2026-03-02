@@ -32,9 +32,12 @@ import { Plus, Edit, AlertTriangle, TrendingUp, Archive, FileText, CheckCircle, 
 import { mockEmissionFactors } from '../data/mockData';
 import { EmissionFactor } from '../types';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { emissionFactorsApi } from '../api';
 
 export default function EmissionFactors() {
-  const [factors, setFactors] = useState<EmissionFactor[]>(mockEmissionFactors);
+  const { data: apiFactors } = useApi(() => emissionFactorsApi.getFactors());
+  const [factors, setFactors] = useState<EmissionFactor[]>((apiFactors as any)?.items ?? mockEmissionFactors);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);

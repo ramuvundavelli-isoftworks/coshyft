@@ -1,5 +1,12 @@
 import { createBrowserRouter } from 'react-router';
 import RootLayout from './components/RootLayout';
+import {
+  SustainabilityGuard,
+  EmployeeGuard,
+  AdminGuard,
+  AuditorGuard,
+  SuperAdminGuard,
+} from './components/RoleGuard';
 import Login from './pages/Login';
 import SustainabilityOverview from './pages/SustainabilityOverview';
 import EmissionsOverview from './pages/EmissionsOverview';
@@ -64,6 +71,7 @@ import EmissionFactors from './pages/EmissionFactors';
 import TransportAnalytics from './pages/TransportAnalytics';
 import ClimateActionPlan from './pages/ClimateActionPlan';
 import DPIAModule from './pages/DPIAModule';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 
 export const router = createBrowserRouter([
   // Login Route (outside RootLayout)
@@ -74,79 +82,112 @@ export const router = createBrowserRouter([
     path: '/',
     Component: RootLayout,
     children: [
-      // Sustainability Manager Routes (default)
-      { index: true, Component: SustainabilityOverview },
-      { path: 'emissions', Component: EmissionsOverview },
-      { path: 'emissions/trends', Component: EmissionsTrends },
-      { path: 'emissions/modes', Component: ModeSplit },
-      { path: 'emissions/locations', Component: LocationPerformance },
-      { path: 'transport-analytics', Component: TransportAnalytics },
-      { path: 'baseline', Component: BaselineSetup },
-      { path: 'targets', Component: TargetsTrajectory },
-      { path: 'boundary', Component: OrganizationalBoundary },
-      { path: 'scenarios', Component: ScenarioModeling },
-      { path: 'initiatives', Component: InitiativeTracker },
-      { path: 'data-quality', Component: DataQuality },
-      { path: 'emission-factors', Component: EmissionFactors },
-      { path: 'methodology', Component: Methodology },
-      { path: 'risks', Component: RiskManagement },
-      { path: 'approvals', Component: Approvals },
-      { path: 'audit', Component: AuditAssurance },
-      { path: 'csrd-compliance', Component: CSRDCompliance },
-      { path: 'regulatory-reporting', Component: RegulatoryReporting },
-      { path: 'revenue-reporting', Component: RevenueReporting },
-      { path: 'climate-action-plan', Component: ClimateActionPlan },
-      { path: 'dpia', Component: DPIAModule },
-      { path: 'reports', Component: ReportBuilder },
-      { path: 'benchmarking', Component: Benchmarking },
-      { path: 'alerts', Component: AlertCenter },
-      { path: 'settings', Component: SustainabilitySettings },
-      
-      // Developer/Testing Routes
+      // Unauthorized page (accessible to all authenticated users)
+      { path: 'unauthorized', Component: UnauthorizedPage },
+
+      // ── Sustainability Manager Routes (default landing) ──────────────
+      // Guarded: sustainability + superadmin roles
+      {
+        Component: SustainabilityGuard,
+        children: [
+          { index: true, Component: SustainabilityOverview },
+          { path: 'emissions', Component: EmissionsOverview },
+          { path: 'emissions/trends', Component: EmissionsTrends },
+          { path: 'emissions/modes', Component: ModeSplit },
+          { path: 'emissions/locations', Component: LocationPerformance },
+          { path: 'transport-analytics', Component: TransportAnalytics },
+          { path: 'baseline', Component: BaselineSetup },
+          { path: 'targets', Component: TargetsTrajectory },
+          { path: 'boundary', Component: OrganizationalBoundary },
+          { path: 'scenarios', Component: ScenarioModeling },
+          { path: 'initiatives', Component: InitiativeTracker },
+          { path: 'data-quality', Component: DataQuality },
+          { path: 'emission-factors', Component: EmissionFactors },
+          { path: 'methodology', Component: Methodology },
+          { path: 'risks', Component: RiskManagement },
+          { path: 'approvals', Component: Approvals },
+          { path: 'audit', Component: AuditAssurance },
+          { path: 'csrd-compliance', Component: CSRDCompliance },
+          { path: 'regulatory-reporting', Component: RegulatoryReporting },
+          { path: 'revenue-reporting', Component: RevenueReporting },
+          { path: 'climate-action-plan', Component: ClimateActionPlan },
+          { path: 'dpia', Component: DPIAModule },
+          { path: 'reports', Component: ReportBuilder },
+          { path: 'benchmarking', Component: Benchmarking },
+          { path: 'alerts', Component: AlertCenter },
+          { path: 'settings', Component: SustainabilitySettings },
+        ],
+      },
+
+      // Developer/Testing Routes (accessible to all authenticated users)
       { path: 'chartjs-examples', Component: ChartJSExample },
-      
-      // Employee Routes
-      { path: 'employee', Component: EmployeeDashboard },
-      { path: 'employee/profile', Component: CommuteProfile },
-      { path: 'employee/offer-ride', Component: OfferRide },
-      { path: 'employee/find-ride', Component: FindRide },
-      { path: 'employee/active-trip', Component: ActiveTrip },
-      { path: 'employee/trips', Component: MyTrips },
-      { path: 'employee/impact', Component: MyImpact },
-      { path: 'employee/rewards', Component: EmployeeRewards },
-      { path: 'employee/settings', Component: EmployeeSettings },
-      { path: 'employee/recurring-rides', Component: RecurringRides },
-      { path: 'employee/rewards-achievements', Component: RewardsAchievements },
-      { path: 'employee/messages', Component: Messages },
-      
-      // Admin Routes
-      { path: 'admin', Component: AdminOverview },
-      { path: 'admin/participation', Component: AdminParticipation },
-      { path: 'admin/emissions', Component: AdminEmissions },
-      { path: 'admin/rides', Component: RideOperations },
-      { path: 'admin/users', Component: UserManagement },
-      { path: 'admin/locations', Component: AdminLocations },
-      { path: 'admin/policies', Component: AdminPolicies },
-      { path: 'admin/workplace-benefits', Component: AdminWorkplaceBenefits },
-      { path: 'admin/settings', Component: AdminSettings },
-      
-      // Auditor Routes
-      { path: 'auditor', Component: AuditorOverview },
-      { path: 'auditor/emissions', Component: AuditorEmissionsReview },
-      { path: 'auditor/baseline', Component: AuditorBaselineReview },
-      { path: 'auditor/factors', Component: AuditorFactorsReview },
-      { path: 'auditor/risks', Component: AuditorRisksReview },
-      { path: 'auditor/trail', Component: AuditTrail },
-      { path: 'auditor/evidence', Component: EvidenceRepository },
-      { path: 'auditor/reports', Component: AuditorReports },
-      
-      // Super Admin Routes
-      { path: 'superadmin', Component: SuperAdminDashboard },
-      { path: 'superadmin/tenants', Component: TenantManagement },
-      { path: 'superadmin/usage', Component: UsageAnalytics },
-      { path: 'superadmin/health', Component: SystemHealth },
-      { path: 'superadmin/settings', Component: SuperAdminSettings },
-      
+
+      // ── Employee Routes ──────────────────────────────────────────────
+      // Guarded: employee, sustainability, admin, superadmin
+      {
+        Component: EmployeeGuard,
+        children: [
+          { path: 'employee', Component: EmployeeDashboard },
+          { path: 'employee/profile', Component: CommuteProfile },
+          { path: 'employee/offer-ride', Component: OfferRide },
+          { path: 'employee/find-ride', Component: FindRide },
+          { path: 'employee/active-trip', Component: ActiveTrip },
+          { path: 'employee/trips', Component: MyTrips },
+          { path: 'employee/impact', Component: MyImpact },
+          { path: 'employee/rewards', Component: EmployeeRewards },
+          { path: 'employee/settings', Component: EmployeeSettings },
+          { path: 'employee/recurring-rides', Component: RecurringRides },
+          { path: 'employee/rewards-achievements', Component: RewardsAchievements },
+          { path: 'employee/messages', Component: Messages },
+        ],
+      },
+
+      // ── Admin Routes ─────────────────────────────────────────────────
+      // Guarded: admin + superadmin
+      {
+        Component: AdminGuard,
+        children: [
+          { path: 'admin', Component: AdminOverview },
+          { path: 'admin/participation', Component: AdminParticipation },
+          { path: 'admin/emissions', Component: AdminEmissions },
+          { path: 'admin/rides', Component: RideOperations },
+          { path: 'admin/users', Component: UserManagement },
+          { path: 'admin/locations', Component: AdminLocations },
+          { path: 'admin/policies', Component: AdminPolicies },
+          { path: 'admin/workplace-benefits', Component: AdminWorkplaceBenefits },
+          { path: 'admin/settings', Component: AdminSettings },
+        ],
+      },
+
+      // ── Auditor Routes ───────────────────────────────────────────────
+      // Guarded: auditor + superadmin
+      {
+        Component: AuditorGuard,
+        children: [
+          { path: 'auditor', Component: AuditorOverview },
+          { path: 'auditor/emissions', Component: AuditorEmissionsReview },
+          { path: 'auditor/baseline', Component: AuditorBaselineReview },
+          { path: 'auditor/factors', Component: AuditorFactorsReview },
+          { path: 'auditor/risks', Component: AuditorRisksReview },
+          { path: 'auditor/trail', Component: AuditTrail },
+          { path: 'auditor/evidence', Component: EvidenceRepository },
+          { path: 'auditor/reports', Component: AuditorReports },
+        ],
+      },
+
+      // ── Super Admin Routes ───────────────────────────────────────────
+      // Guarded: superadmin only
+      {
+        Component: SuperAdminGuard,
+        children: [
+          { path: 'superadmin', Component: SuperAdminDashboard },
+          { path: 'superadmin/tenants', Component: TenantManagement },
+          { path: 'superadmin/usage', Component: UsageAnalytics },
+          { path: 'superadmin/health', Component: SystemHealth },
+          { path: 'superadmin/settings', Component: SuperAdminSettings },
+        ],
+      },
+
       // 404
       { path: '*', Component: PlaceholderPage },
     ],

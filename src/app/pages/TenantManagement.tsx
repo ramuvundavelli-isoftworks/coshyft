@@ -30,6 +30,8 @@ import {
 } from '../components/ui/table';
 import { Building2, Plus, Eye, Trash2, Settings, UserCheck, Ban } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { superadminApi } from '../api';
 
 interface Tenant {
   id: string;
@@ -58,7 +60,11 @@ export default function TenantManagement() {
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
   const [formData, setFormData] = useState({ name: '', domain: '', adminEmail: '', plan: 'trial' });
 
-  const handleAddTenant = () => {
+  // API mutations
+  const createTenantMutation = useApiMutation((data: any) => superadminApi.createTenant(data));
+  const suspendTenantMutation = useApiMutation((tenantId: string) => superadminApi.suspendTenant(tenantId));
+
+  const handleAddTenant = async () => {
     const newTenant: Tenant = {
       id: `t-${Date.now()}`,
       name: formData.name,
@@ -72,17 +78,36 @@ export default function TenantManagement() {
     setTenants([...tenants, newTenant]);
     setIsAddDialogOpen(false);
     setFormData({ name: '', domain: '', adminEmail: '', plan: 'trial' });
-    toast.success('Tenant created successfully');
+
+    const result = await createTenantMutation.execute({
+      name: formData.name,
+      domain: formData.domain,
+      admin_email: formData.adminEmail,
+      plan: formData.plan,
+    });
+
+    if (result.success) {
+      toast.success('Tenant created successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to create tenant');
+    }
   };
 
-  const handleSuspendTenant = () => {
+  const handleSuspendTenant = async () => {
     if (selectedTenant) {
       const updated = tenants.map(t =>
         t.id === selectedTenant.id ? { ...t, status: 'suspended' as const } : t
       );
       setTenants(updated);
       setIsSuspendDialogOpen(false);
-      toast.success('Tenant suspended');
+
+      const result = await suspendTenantMutation.execute(selectedTenant.id);
+
+      if (result.success) {
+        toast.success('Tenant suspended');
+      } else {
+        toast.error(result.error?.message || 'Failed to suspend tenant');
+      }
     }
   };
 

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
+import { KPICard } from '../components/KPICard';
 import {
   Select,
   SelectContent,
@@ -27,10 +28,24 @@ import {
   TableHeader,
   TableRow,
 } from '../components/ui/table';
-import { Shield, Server, Users, AlertTriangle, TrendingUp, Database, Activity, Download, Eye, Plus, Settings } from 'lucide-react';
+import {
+  Building2,
+  Users,
+  Activity,
+  TrendingUp,
+  Plus,
+  Eye,
+  Download,
+  Settings,
+  Shield,
+  Server,
+  Database,
+} from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { superadminApi } from '../api';
 
 const tenants = [
   { id: 't1', name: 'Acme Corporation', status: 'active', users: 4250, emissions: 1850, plan: 'enterprise' },
@@ -108,50 +123,26 @@ export default function SuperAdminDashboard() {
 
       {/* Platform KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Server className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Active Tenants</p>
-              <p className="text-2xl font-bold text-gray-900">{tenants.filter(t => t.status === 'active').length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Users className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{totalUsers.toLocaleString()}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Database className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Emissions</p>
-              <p className="text-xl font-bold text-gray-900">{totalEmissions.toLocaleString()} tCO₂e</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">System Uptime</p>
-              <p className="text-2xl font-bold text-green-600">99.9%</p>
-            </div>
-          </div>
-        </Card>
+        <KPICard
+          icon={Building2}
+          title="Active Tenants"
+          value={tenants.filter(t => t.status === 'active').length}
+        />
+        <KPICard
+          icon={Users}
+          title="Total Users"
+          value={totalUsers.toLocaleString()}
+        />
+        <KPICard
+          icon={Database}
+          title="Total Emissions"
+          value={`${totalEmissions.toLocaleString()} tCO₂e`}
+        />
+        <KPICard
+          icon={TrendingUp}
+          title="System Uptime"
+          value="99.9%"
+        />
       </div>
 
       {/* System Metrics */}

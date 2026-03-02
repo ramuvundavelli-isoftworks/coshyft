@@ -9,7 +9,7 @@ interface KPICardProps {
   unit?: string;
   change?: number;
   changeLabel?: string;
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactNode;
   trend?: 'up' | 'down' | 'neutral';
   status?: 'good' | 'warning' | 'critical';
   className?: string;
@@ -21,7 +21,7 @@ export function KPICard({
   unit,
   change,
   changeLabel,
-  icon: Icon,
+  icon,
   trend,
   status,
   className,
@@ -30,6 +30,18 @@ export function KPICard({
     up: change && change > 0 ? 'text-red-600' : 'text-green-600',
     down: change && change < 0 ? 'text-green-600' : 'text-red-600',
     neutral: 'text-gray-600',
+  };
+
+  // Determine how to render the icon - support both component references and JSX elements
+  const renderIcon = () => {
+    if (!icon) return null;
+    // If icon is a valid React element (JSX), render it directly
+    if (React.isValidElement(icon)) {
+      return icon;
+    }
+    // If icon is a component (function/class), render it as a component
+    const IconComponent = icon as LucideIcon;
+    return <IconComponent className="h-6 w-6 text-gray-700" />;
   };
 
   return (
@@ -55,9 +67,9 @@ export function KPICard({
             </div>
           )}
         </div>
-        {Icon && (
+        {icon && (
           <div className="p-3 bg-white/50 rounded-lg">
-            <Icon className="h-6 w-6 text-gray-700" />
+            {renderIcon()}
           </div>
         )}
       </div>

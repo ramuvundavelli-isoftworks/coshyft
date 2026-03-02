@@ -49,6 +49,8 @@ import {
 } from 'lucide-react';
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { commuteApi } from '../api';
 
 type SortField = 'date' | 'mode' | 'distance' | 'co2Saved';
 type SortDirection = 'asc' | 'desc';

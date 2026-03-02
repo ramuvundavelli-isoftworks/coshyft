@@ -29,6 +29,8 @@ import {
 } from '../components/ui/table';
 import { Car, Users, MapPin, Eye, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { adminApi, carpoolingApi } from '../api';
 
 interface RideOffer {
   id: string;

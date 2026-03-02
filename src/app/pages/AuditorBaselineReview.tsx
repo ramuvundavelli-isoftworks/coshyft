@@ -22,6 +22,8 @@ import {
 } from '../components/ui/table';
 import { Calendar, CheckCircle, FileText, Download, Shield, Plus, Eye, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { auditorApi } from '../api';
 
 const baselineInfo = {
   year: '2026',
@@ -50,19 +52,53 @@ export default function AuditorBaselineReview() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [note, setNote] = useState('');
 
-  const handleAddNote = () => {
-    toast.success('Audit note added successfully');
+  // API mutations
+  const addNoteMutation = useApiMutation((data: { area: string; note: string }) =>
+    auditorApi.addAuditNote(data)
+  );
+  const requestClarificationMutation = useApiMutation((data: { area: string }) =>
+    auditorApi.requestClarification(data)
+  );
+  const approveBaselineMutation = useApiMutation((area: string) =>
+    auditorApi.approveReviewArea(area)
+  );
+
+  const handleAddNote = async () => {
+    const result = await addNoteMutation.execute({
+      area: 'baseline',
+      note,
+    });
+
+    if (result.success) {
+      toast.success('Audit note added successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to add note');
+    }
     setIsAddNoteDialogOpen(false);
     setNote('');
   };
 
-  const handleRequestClarification = () => {
-    toast.success('Clarification request sent');
+  const handleRequestClarification = async () => {
+    const result = await requestClarificationMutation.execute({
+      area: 'baseline',
+    });
+
+    if (result.success) {
+      toast.success('Clarification request sent');
+    } else {
+      toast.error(result.error?.message || 'Failed to send clarification request');
+    }
     setIsClarificationDialogOpen(false);
   };
 
-  const handleApprove = () => {
-    toast.success('Baseline approved');
+  const handleApprove = async () => {
+    const result = await approveBaselineMutation.execute('baseline');
+
+    if (result.success) {
+      toast.success('Baseline approved');
+    } else {
+      toast.error(result.error?.message || 'Failed to approve baseline');
+    }
     setIsApproveDialogOpen(false);
   };
 
@@ -281,8 +317,8 @@ export default function AuditorBaselineReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddNoteDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddNote} disabled={!note}>
-              Add Note
+            <Button onClick={handleAddNote} disabled={!note || addNoteMutation.loading}>
+              {addNoteMutation.loading ? 'Adding...' : 'Add Note'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -307,9 +343,9 @@ export default function AuditorBaselineReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsClarificationDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleRequestClarification}>
+            <Button onClick={handleRequestClarification} disabled={requestClarificationMutation.loading}>
               <MessageCircle className="h-4 w-4 mr-2" />
-              Send Request
+              {requestClarificationMutation.loading ? 'Sending...' : 'Send Request'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -343,9 +379,9 @@ export default function AuditorBaselineReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleApprove}>
+            <Button onClick={handleApprove} disabled={approveBaselineMutation.loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Approve
+              {approveBaselineMutation.loading ? 'Approving...' : 'Approve'}
             </Button>
           </DialogFooter>
         </DialogContent>

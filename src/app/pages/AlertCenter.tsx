@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -24,26 +24,54 @@ import { AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, Download } from 'l
 import { mockAlerts } from '../data/mockData';
 import { Alert } from '../types';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { alertsApi } from '../api';
 
 export default function AlertCenter() {
-  const [alerts, setAlerts] = useState(mockAlerts);
+  const { data: apiAlerts } = useApi(() => alertsApi.getAlerts({ resolved: undefined }));
+  const loadedAlerts = (apiAlerts as any)?.items ?? mockAlerts;
+  const [alerts, setAlerts] = useState(loadedAlerts);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [resolution, setResolution] = useState('');
 
+  // API mutations
+  const resolveAlertMutation = useApiMutation((data: { alertId: string; notes?: string }) =>
+    alertsApi.resolveAlert(data.alertId, data.notes)
+  );
+
+  // Sync when API data arrives
+  useEffect(() => {
+    if ((apiAlerts as any)?.items) {
+      setAlerts((apiAlerts as any).items);
+    }
+  }, [apiAlerts]);
+
   const criticalAlerts = alerts.filter(a => a.severity === 'critical' && !a.resolved);
   const warningAlerts = alerts.filter(a => a.severity === 'warning' && !a.resolved);
   const infoAlerts = alerts.filter(a => a.severity === 'info' && !a.resolved);
   const resolvedAlerts = alerts.filter(a => a.resolved);
 
-  const markResolved = () => {
+  const markResolved = async () => {
     if (selectedAlert) {
+      // Optimistic update
       setAlerts(alerts.map(a => a.id === selectedAlert.id ? { ...a, resolved: true } : a));
       setIsResolveDialogOpen(false);
+      const resolutionNotes = resolution;
       setResolution('');
-      toast.success('Alert marked as resolved');
+
+      const result = await resolveAlertMutation.execute({
+        alertId: selectedAlert.id,
+        notes: resolutionNotes || undefined,
+      });
+
+      if (result.success) {
+        toast.success('Alert marked as resolved');
+      } else {
+        toast.error(result.error?.message || 'Failed to resolve alert');
+      }
     }
   };
 
@@ -316,9 +344,9 @@ export default function AlertCenter() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsResolveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={markResolved}>
+            <Button onClick={markResolved} disabled={resolveAlertMutation.loading}>
               <CheckCircle2 className="h-4 w-4 mr-2" />
-              Mark Resolved
+              {resolveAlertMutation.loading ? 'Resolving...' : 'Mark Resolved'}
             </Button>
           </DialogFooter>
         </DialogContent>

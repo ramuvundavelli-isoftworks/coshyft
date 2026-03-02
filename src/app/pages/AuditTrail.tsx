@@ -29,6 +29,8 @@ import {
 } from '../components/ui/table';
 import { History, Download, Eye, Filter, User, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { auditorApi } from '../api';
 
 interface AuditLog {
   id: string;

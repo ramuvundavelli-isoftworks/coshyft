@@ -12,6 +12,8 @@ import {
 } from '../components/ui/dialog';
 import { Award, Trophy, Star, Gift, TrendingUp, Download, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { gamificationApi } from '../api';
 
 const achievements = [
   { id: 'a1', title: 'First Carpool', description: 'Completed your first carpool', points: 50, unlocked: true, date: '15/01/2026' },
@@ -43,13 +45,41 @@ export default function EmployeeRewards() {
   const [isRedeemDialogOpen, setIsRedeemDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<any>(null);
+  const [pointsBalance, setPointsBalance] = useState(1850);
+  const [redeemedRewards, setRedeemedRewards] = useState<string[]>([]);
 
-  const myPoints = 1850;
+  // API hooks
+  const redeemMutation = useApiMutation((data: { points: number; reward_type: string }) =>
+    gamificationApi.redeemPoints(data)
+  );
+
   const unlockedAchievements = achievements.filter(a => a.unlocked).length;
 
-  const handleRedeem = () => {
-    toast.success(`Redeemed ${selectedReward?.name}!`);
+  const handleRedeem = async () => {
+    if (!selectedReward) return;
+
+    const previousBalance = pointsBalance;
+
+    // Optimistic update
+    setPointsBalance((prev) => prev - selectedReward.points);
+    setRedeemedRewards((prev) => [...prev, selectedReward.id]);
     setIsRedeemDialogOpen(false);
+
+    const result = await redeemMutation.execute({
+      points: selectedReward.points,
+      reward_type: selectedReward.id,
+    });
+
+    if (result.success) {
+      toast.success(`Redeemed ${selectedReward.name}!`, {
+        description: `${selectedReward.points} OxyPoints deducted. Remaining: ${previousBalance - selectedReward.points}`,
+      });
+    } else {
+      // Rollback on failure
+      setPointsBalance(previousBalance);
+      setRedeemedRewards((prev) => prev.filter((id) => id !== selectedReward.id));
+      toast.error(result.error?.message || 'Failed to redeem reward. Please try again.');
+    }
   };
 
   const handleExport = () => {
@@ -81,7 +111,7 @@ export default function EmployeeRewards() {
             </div>
             <div>
               <p className="text-sm text-[#6a7282]">Total OxyPoints</p>
-              <p className="text-3xl font-bold text-[#101828]">{myPoints.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#101828]">{pointsBalance.toLocaleString()}</p>
             </div>
           </div>
         </Card>
@@ -180,12 +210,12 @@ export default function EmployeeRewards() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-[#101828]">Redeem Rewards</h3>
           <p className="text-sm text-[#6a7282]">
-            You have <strong className="text-[#00bc7d]">{myPoints}</strong> OxyPoints to spend
+            You have <strong className="text-[#00bc7d]">{pointsBalance}</strong> OxyPoints to spend
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockRewards.map((reward) => {
-            const canAfford = myPoints >= reward.points;
+            const canAfford = pointsBalance >= reward.points;
             return (
               <div 
                 key={reward.id} 
@@ -290,19 +320,19 @@ export default function EmployeeRewards() {
               </div>
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-900 mb-1">
-                  <strong>Current Balance:</strong> {myPoints.toLocaleString()} points
+                  <strong>Current Balance:</strong> {pointsBalance.toLocaleString()} points
                 </p>
                 <p className="text-sm text-blue-900">
-                  <strong>After Redemption:</strong> {(myPoints - selectedReward.points).toLocaleString()} points
+                  <strong>After Redemption:</strong> {(pointsBalance - selectedReward.points).toLocaleString()} points
                 </p>
               </div>
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsRedeemDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleRedeem}>
+            <Button onClick={handleRedeem} disabled={redeemMutation.loading}>
               <Gift className="h-4 w-4 mr-2" />
-              Confirm Redemption
+              {redeemMutation.loading ? 'Redeeming...' : 'Confirm Redemption'}
             </Button>
           </DialogFooter>
         </DialogContent>

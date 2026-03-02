@@ -31,6 +31,8 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { adminApi, emissionsApi } from '../api';
 
 const departmentEmissions = [
   { name: 'Engineering', emissions: 245.3, perEmployee: 0.42, target: 0.45, status: 'on-track' },

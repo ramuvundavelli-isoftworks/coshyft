@@ -4,6 +4,7 @@ import { TopNav } from './TopNav';
 import { Sidebar } from './Sidebar';
 import { Toaster } from './ui/sonner';
 import { SidebarProvider, useSidebar } from '../context/SidebarContext';
+import { ProtectedRoute } from './ProtectedRoute';
 import { cn } from './ui/utils';
 
 function RootLayoutContent() {
@@ -26,8 +27,10 @@ function RootLayoutContent() {
 
 export default function RootLayout() {
   return (
-    <SidebarProvider>
-      <RootLayoutContent />
-    </SidebarProvider>
+    <ProtectedRoute>
+      <SidebarProvider>
+        <RootLayoutContent />
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }

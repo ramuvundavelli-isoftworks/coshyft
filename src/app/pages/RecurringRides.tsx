@@ -47,6 +47,8 @@ import {
 import { mockRecurringTemplates } from '../data/mockRecurringData';
 import CreateRecurringRideModal from '../components/carpooling/CreateRecurringRideModal';
 import ScheduleCalendarView from '../components/carpooling/ScheduleCalendarView';
+import { useApi, useApiMutation } from '../api';
+import { carpoolingApi } from '../api';
 
 export default function RecurringRides() {
   const [templates, setTemplates] = useState<RecurringRideTemplate[]>(mockRecurringTemplates);
@@ -56,6 +58,23 @@ export default function RecurringRides() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<RecurringRideTemplate | undefined>();
+
+  // API mutations
+  const createTemplateMutation = useApiMutation((data: any) =>
+    carpoolingApi.createRecurringTemplate(data)
+  );
+  const updateTemplateMutation = useApiMutation((data: { id: string; payload: any }) =>
+    carpoolingApi.updateRecurringTemplate(data.id, data.payload)
+  );
+  const deleteTemplateMutation = useApiMutation((id: string) =>
+    carpoolingApi.deleteRecurringTemplate(id)
+  );
+  const pauseTemplateMutation = useApiMutation((id: string) =>
+    carpoolingApi.pauseTemplate(id)
+  );
+  const resumeTemplateMutation = useApiMutation((id: string) =>
+    carpoolingApi.resumeTemplate(id)
+  );
 
   // Filter templates
   const filteredTemplates = templates.filter((template) => {
@@ -85,13 +104,15 @@ export default function RecurringRides() {
     { totalRides: 0, completedRides: 0, co2Saved: 0, avgPassengers: 0 }
   );
 
-  const handleCreateTemplate = (template: RecurringRideTemplate) => {
+  const handleCreateTemplate = async (template: RecurringRideTemplate) => {
     if (editingTemplate) {
       setTemplates(templates.map((t) => (t.id === template.id ? template : t)));
       toast.success('Template updated successfully!');
+      await updateTemplateMutation.execute({ id: template.id, payload: template });
     } else {
       setTemplates([template, ...templates]);
       toast.success('Recurring ride template created!');
+      await createTemplateMutation.execute(template);
     }
     setEditingTemplate(undefined);
     setIsCreateModalOpen(false);
@@ -102,32 +123,44 @@ export default function RecurringRides() {
     setIsCreateModalOpen(true);
   };
 
-  const handleDeleteTemplate = (templateId: string) => {
+  const handleDeleteTemplate = async (templateId: string) => {
     const template = templates.find((t) => t.id === templateId);
     if (!template) return;
 
     if (confirm(`Are you sure you want to delete "${template.name}"? This cannot be undone.`)) {
       setTemplates(templates.filter((t) => t.id !== templateId));
       toast.success('Template deleted');
+      await deleteTemplateMutation.execute(templateId);
     }
   };
 
-  const handleToggleStatus = (templateId: string) => {
+  const handleToggleStatus = async (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const newStatus = template.status === 'active' ? 'paused' : 'active';
+    
     setTemplates(
-      templates.map((template) => {
-        if (template.id === templateId) {
-          const newStatus = template.status === 'active' ? 'paused' : 'active';
+      templates.map((t) => {
+        if (t.id === templateId) {
           toast.success(
             `Template ${newStatus === 'active' ? 'activated' : 'paused'}`,
             {
-              description: `"${template.name}" is now ${newStatus}`,
+              description: `"${t.name}" is now ${newStatus}`,
             }
           );
-          return { ...template, status: newStatus };
+          return { ...t, status: newStatus };
         }
-        return template;
+        return t;
       })
     );
+
+    // Fire the appropriate API call
+    if (newStatus === 'paused') {
+      await pauseTemplateMutation.execute(templateId);
+    } else {
+      await resumeTemplateMutation.execute(templateId);
+    }
   };
 
   const handleCloneTemplate = (template: RecurringRideTemplate) => {

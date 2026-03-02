@@ -22,6 +22,8 @@ import {
 } from '../components/ui/table';
 import { Database, Download, Eye, MessageCircle, CheckCircle, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { auditorApi } from '../api';
 
 const factors = [
   { id: 'f1', name: 'Gasoline - Passenger Car', value: 0.172, unit: 'kg CO₂e/km', source: 'DEFRA 2024', locked: true, verified: true },
@@ -37,18 +39,56 @@ export default function AuditorFactorsReview() {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [selectedFactor, setSelectedFactor] = useState<any>(null);
 
-  const handleAddComment = () => {
-    toast.success('Comment added successfully');
+  // API mutations
+  const addCommentMutation = useApiMutation((data: { factorId: string; comment: string }) =>
+    auditorApi.addFactorComment(data.factorId, data.comment)
+  );
+  const requestDocsMutation = useApiMutation((factorId: string) =>
+    auditorApi.requestFactorDocs(factorId)
+  );
+  const approveFactorMutation = useApiMutation((factorId: string) =>
+    auditorApi.approveFactor(factorId)
+  );
+
+  const handleAddComment = async () => {
+    if (selectedFactor) {
+      const result = await addCommentMutation.execute({
+        factorId: selectedFactor.id,
+        comment: 'Audit comment', // Would use form state in production
+      });
+
+      if (result.success) {
+        toast.success('Comment added successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to add comment');
+      }
+    }
     setIsAddCommentDialogOpen(false);
   };
 
-  const handleRequestDocs = () => {
-    toast.success('Documentation request sent');
+  const handleRequestDocs = async () => {
+    if (selectedFactor) {
+      const result = await requestDocsMutation.execute(selectedFactor.id);
+
+      if (result.success) {
+        toast.success('Documentation request sent');
+      } else {
+        toast.error(result.error?.message || 'Failed to send documentation request');
+      }
+    }
     setIsRequestDocsDialogOpen(false);
   };
 
-  const handleApproveFactor = () => {
-    toast.success('Emission factor approved');
+  const handleApproveFactor = async () => {
+    if (selectedFactor) {
+      const result = await approveFactorMutation.execute(selectedFactor.id);
+
+      if (result.success) {
+        toast.success('Emission factor approved');
+      } else {
+        toast.error(result.error?.message || 'Failed to approve factor');
+      }
+    }
     setIsApproveDialogOpen(false);
   };
 
@@ -250,8 +290,8 @@ export default function AuditorFactorsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddCommentDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddComment}>
-              Add Comment
+            <Button onClick={handleAddComment} disabled={addCommentMutation.loading}>
+              {addCommentMutation.loading ? 'Adding...' : 'Add Comment'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -273,8 +313,8 @@ export default function AuditorFactorsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsRequestDocsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleRequestDocs}>
-              Send Request
+            <Button onClick={handleRequestDocs} disabled={requestDocsMutation.loading}>
+              {requestDocsMutation.loading ? 'Sending...' : 'Send Request'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -309,9 +349,9 @@ export default function AuditorFactorsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleApproveFactor}>
+            <Button onClick={handleApproveFactor} disabled={approveFactorMutation.loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Approve
+              {approveFactorMutation.loading ? 'Approving...' : 'Approve'}
             </Button>
           </DialogFooter>
         </DialogContent>

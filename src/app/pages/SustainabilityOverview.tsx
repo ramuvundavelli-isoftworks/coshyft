@@ -42,6 +42,8 @@ import { mockAlerts, mockInitiatives } from '../data/mockData';
 import { Line } from 'react-chartjs-2';
 import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { sustainabilityApi, alertsApi } from '../api';
 
 const targetGapData = [
   { month: 'Jan', actual: 245, target: 230 },

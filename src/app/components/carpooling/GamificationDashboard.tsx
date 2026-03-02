@@ -32,14 +32,43 @@ import {
   formatNumber,
   DEFAULT_ACHIEVEMENTS,
 } from '../../utils/gamification';
+import { gamificationApi } from '../../api';
+import { useApiMutation } from '../../api/useApi';
+import { toast } from 'sonner';
 
 interface GamificationDashboardProps {
   userProfile: UserProfile;
   onClaimReward?: (achievementId: string) => void;
+  onJoinChallenge?: (challengeId: string) => void;
 }
 
-export default function GamificationDashboard({ userProfile }: GamificationDashboardProps) {
+export default function GamificationDashboard({ userProfile, onJoinChallenge }: GamificationDashboardProps) {
   const [selectedTab, setSelectedTab] = useState<'achievements' | 'challenges' | 'stats'>('achievements');
+  const [joinedChallenges, setJoinedChallenges] = useState<Set<string>>(new Set());
+
+  // Mutation hook for joining challenges
+  const joinChallengeMutation = useApiMutation<string, any>(
+    (challengeId) => gamificationApi.joinChallenge(challengeId)
+  );
+
+  const handleJoinChallenge = async (challengeId: string) => {
+    // Optimistic update
+    setJoinedChallenges(prev => new Set(prev).add(challengeId));
+
+    const result = await joinChallengeMutation.execute(challengeId);
+    if (result.success) {
+      toast.success('Challenge joined! Good luck!');
+      onJoinChallenge?.(challengeId);
+    } else {
+      // Rollback
+      setJoinedChallenges(prev => {
+        const next = new Set(prev);
+        next.delete(challengeId);
+        return next;
+      });
+      toast.error(result.error?.message || 'Failed to join challenge');
+    }
+  };
 
   const levelInfo = calculateLevel(userProfile.points);
   const progressToNextLevel = ((levelInfo.pointsToNext / 100) * 100);
@@ -356,6 +385,17 @@ export default function GamificationDashboard({ userProfile }: GamificationDashb
                       className="h-3"
                     />
                   </div>
+
+                  {/* Join Challenge Button */}
+                  {!joinedChallenges.has(challenge.id) && (
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={() => handleJoinChallenge(challenge.id)}
+                    >
+                      Join Challenge
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>

@@ -22,6 +22,8 @@ import {
 } from '../components/ui/table';
 import { Activity, Download, Eye, Flag, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { auditorApi, emissionsApi } from '../api';
 
 const emissionsSamples = [
   { id: 'e1', month: 'Jan 2026', emissions: 245, trips: 3420, quality: 96, verified: true },
@@ -38,18 +40,55 @@ export default function AuditorEmissionsReview() {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [selectedSample, setSelectedSample] = useState<any>(null);
 
-  const handleFlagIssue = () => {
-    toast.success('Issue flagged for review');
+  // API mutations
+  const flagIssueMutation = useApiMutation((data: { sample_id: string }) =>
+    auditorApi.flagIssue(data)
+  );
+  const requestEvidenceMutation = useApiMutation((data: { sample_id: string }) =>
+    auditorApi.requestEvidence(data)
+  );
+  const approveEmissionsMutation = useApiMutation((area: string) =>
+    auditorApi.approveReviewArea(area)
+  );
+
+  const handleFlagIssue = async () => {
+    if (selectedSample) {
+      const result = await flagIssueMutation.execute({
+        sample_id: selectedSample.id,
+      });
+
+      if (result.success) {
+        toast.success('Issue flagged for review');
+      } else {
+        toast.error(result.error?.message || 'Failed to flag issue');
+      }
+    }
     setIsFlagIssueDialogOpen(false);
   };
 
-  const handleRequestEvidence = () => {
-    toast.success('Evidence request sent');
+  const handleRequestEvidence = async () => {
+    if (selectedSample) {
+      const result = await requestEvidenceMutation.execute({
+        sample_id: selectedSample.id,
+      });
+
+      if (result.success) {
+        toast.success('Evidence request sent');
+      } else {
+        toast.error(result.error?.message || 'Failed to request evidence');
+      }
+    }
     setIsRequestEvidenceDialogOpen(false);
   };
 
-  const handleApprove = () => {
-    toast.success('Emissions data approved');
+  const handleApprove = async () => {
+    const result = await approveEmissionsMutation.execute('emissions');
+
+    if (result.success) {
+      toast.success('Emissions data approved');
+    } else {
+      toast.error(result.error?.message || 'Failed to approve emissions data');
+    }
     setIsApproveDialogOpen(false);
   };
 
@@ -245,9 +284,9 @@ export default function AuditorEmissionsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsFlagIssueDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleFlagIssue}>
+            <Button onClick={handleFlagIssue} disabled={flagIssueMutation.loading}>
               <Flag className="h-4 w-4 mr-2" />
-              Flag Issue
+              {flagIssueMutation.loading ? 'Flagging...' : 'Flag Issue'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -269,9 +308,9 @@ export default function AuditorEmissionsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsRequestEvidenceDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleRequestEvidence}>
+            <Button onClick={handleRequestEvidence} disabled={requestEvidenceMutation.loading}>
               <FileText className="h-4 w-4 mr-2" />
-              Send Request
+              {requestEvidenceMutation.loading ? 'Sending...' : 'Send Request'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -293,9 +332,9 @@ export default function AuditorEmissionsReview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleApprove}>
+            <Button onClick={handleApprove} disabled={approveEmissionsMutation.loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Approve
+              {approveEmissionsMutation.loading ? 'Approving...' : 'Approve'}
             </Button>
           </DialogFooter>
         </DialogContent>

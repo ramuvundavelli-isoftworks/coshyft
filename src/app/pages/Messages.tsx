@@ -28,6 +28,8 @@ import {
 } from '../utils/messaging';
 import { mockMessageThreads } from '../data/mockGamificationData';
 import ChatModal from '../components/carpooling/ChatModal';
+import { useApi, useApiMutation } from '../api';
+import { messagingApi } from '../api';
 
 export default function Messages() {
   const [threads, setThreads] = useState<MessageThread[]>(mockMessageThreads);
@@ -35,32 +37,48 @@ export default function Messages() {
   const [selectedThread, setSelectedThread] = useState<MessageThread | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  const markReadMutation = useApiMutation((threadId: string) =>
+    messagingApi.markRead(threadId)
+  );
+  const togglePinMutation = useApiMutation((threadId: string) =>
+    messagingApi.togglePin(threadId)
+  );
+
   const filteredThreads = sortThreadsByRecent(
     filterThreads(threads, searchQuery).filter((t) => !t.isArchived)
   );
 
   const unreadCount = getTotalUnreadCount(filteredThreads);
 
-  const handleThreadClick = (thread: MessageThread) => {
+  const handleThreadClick = async (thread: MessageThread) => {
     setSelectedThread(thread);
     setIsChatOpen(true);
 
-    // Mark as read
+    // Optimistic mark-as-read
     setThreads(
       threads.map((t) =>
         t.id === thread.id ? { ...t, unreadCount: 0 } : t
       )
     );
+
+    // Fire API call
+    if (thread.unreadCount > 0) {
+      await markReadMutation.execute(thread.id);
+    }
   };
 
-  const handlePinThread = (threadId: string, e: React.MouseEvent) => {
+  const handlePinThread = async (threadId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    // Optimistic update
     setThreads(
       threads.map((t) =>
         t.id === threadId ? { ...t, isPinned: !t.isPinned } : t
       )
     );
     toast.success('Thread pinned');
+
+    // Fire API call
+    await togglePinMutation.execute(threadId);
   };
 
   const handleArchiveThread = (threadId: string, e: React.MouseEvent) => {

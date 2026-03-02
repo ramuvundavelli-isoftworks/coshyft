@@ -30,6 +30,8 @@ import {
 } from '../components/ui/table';
 import { Users, Search, UserPlus, Ban, Edit, Trash2, Mail, Shield, Key, Upload, Download, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 interface User {
   id: string;
@@ -72,6 +74,17 @@ export default function UserManagement() {
     office: 'San Francisco HQ',
   });
 
+  // API mutations
+  const updateUserMutation = useApiMutation((data: { userId: string; payload: any }) =>
+    adminApi.updateUser(data.userId, data.payload)
+  );
+  const updateRoleMutation = useApiMutation((data: { userId: string; role: string }) =>
+    adminApi.updateUserRole(data.userId, data.role)
+  );
+  const deactivateUserMutation = useApiMutation((data: { userId: string }) =>
+    adminApi.deactivateUser(data.userId)
+  );
+
   const filteredUsers = users.filter(user => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -82,7 +95,7 @@ export default function UserManagement() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     const newUser: User = {
       id: `user-${Date.now()}`,
       name: formData.name,
@@ -93,13 +106,25 @@ export default function UserManagement() {
       status: 'pending',
       lastActive: new Date().toISOString().split('T')[0],
     };
+
+    // Optimistic local update + API call
     setUsers([...users, newUser]);
     setIsAddDialogOpen(false);
     resetForm();
-    toast.success('User added successfully');
+
+    const result = await updateUserMutation.execute({
+      userId: newUser.id,
+      payload: { name: formData.name, email: formData.email, department: formData.dept, role: formData.role },
+    });
+
+    if (result.success) {
+      toast.success('User added successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to add user (changes saved locally)');
+    }
   };
 
-  const handleEditUser = () => {
+  const handleEditUser = async () => {
     if (selectedUser) {
       const updated = users.map(u =>
         u.id === selectedUser.id
@@ -114,39 +139,74 @@ export default function UserManagement() {
       );
       setUsers(updated);
       setIsEditDialogOpen(false);
-      toast.success('User updated successfully');
+
+      const result = await updateUserMutation.execute({
+        userId: selectedUser.id,
+        payload: { name: formData.name, email: formData.email, department: formData.dept },
+      });
+
+      if (result.success) {
+        toast.success('User updated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to update user');
+      }
     }
   };
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = async () => {
     if (selectedUser) {
       setUsers(users.filter(u => u.id !== selectedUser.id));
       setIsDeleteDialogOpen(false);
-      toast.success('User deleted successfully');
+
+      const result = await deactivateUserMutation.execute({ userId: selectedUser.id });
+
+      if (result.success) {
+        toast.success('User deleted successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to delete user');
+      }
     }
   };
 
-  const handleSuspendUser = () => {
+  const handleSuspendUser = async () => {
     if (selectedUser) {
+      const newStatus = selectedUser.status === 'suspended' ? 'active' : 'suspended';
       const updated = users.map(u =>
         u.id === selectedUser.id
-          ? { ...u, status: u.status === 'suspended' ? 'active' : 'suspended' as const }
+          ? { ...u, status: newStatus as 'active' | 'suspended' | 'pending' }
           : u
       );
       setUsers(updated);
       setIsSuspendDialogOpen(false);
-      toast.success(selectedUser.status === 'suspended' ? 'User reactivated' : 'User suspended');
+
+      const result = await deactivateUserMutation.execute({ userId: selectedUser.id });
+
+      if (result.success) {
+        toast.success(selectedUser.status === 'suspended' ? 'User reactivated' : 'User suspended');
+      } else {
+        toast.error(result.error?.message || 'Failed to update user status');
+      }
     }
   };
 
-  const handleChangeRole = () => {
+  const handleChangeRole = async () => {
     if (selectedUser) {
       const updated = users.map(u =>
         u.id === selectedUser.id ? { ...u, role: formData.role } : u
       );
       setUsers(updated);
       setIsRoleChangeDialogOpen(false);
-      toast.success('User role updated');
+
+      const result = await updateRoleMutation.execute({
+        userId: selectedUser.id,
+        role: formData.role,
+      });
+
+      if (result.success) {
+        toast.success('User role updated');
+      } else {
+        toast.error(result.error?.message || 'Failed to update role');
+      }
     }
   };
 

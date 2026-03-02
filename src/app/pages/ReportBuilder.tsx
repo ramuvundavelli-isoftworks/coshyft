@@ -33,6 +33,8 @@ import {
   Settings,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { reportingApi } from '../api';
 
 const mockReports = [
   {
@@ -105,7 +107,11 @@ export default function ReportBuilder() {
     typeFilter === 'all' || r.type === typeFilter
   );
 
-  const handleGenerateReport = () => {
+  // API mutations
+  const generateReportMutation = useApiMutation((data: any) => reportingApi.generateReport(data));
+  const downloadReportMutation = useApiMutation((reportId: string) => reportingApi.downloadReport(reportId));
+
+  const handleGenerateReport = async () => {
     const sections = Object.entries(formData.sections)
       .filter(([, included]) => included)
       .map(([name]) => name);
@@ -121,16 +127,35 @@ export default function ReportBuilder() {
       emissions: 2847,
     };
 
+    // Optimistic local update
     setReports([newReport, ...reports]);
     setIsGenerateDialogOpen(false);
     resetForm();
-    toast.success('Report generated successfully');
+
+    const result = await generateReportMutation.execute({
+      title: formData.name,
+      report_type: formData.framework.toLowerCase(),
+      period_start: formData.startDate,
+      period_end: formData.endDate,
+      format: formData.format,
+      parameters: { sections, includeCharts: formData.includeCharts, includeDataTables: formData.includeDataTables },
+    });
+
+    if (result.success) {
+      toast.success('Report generated successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to generate report');
+    }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (selectedReport) {
-      // Simulate export
-      toast.success(`Exporting ${selectedReport.name} as ${formData.format.toUpperCase()}`);
+      const result = await downloadReportMutation.execute(selectedReport.id);
+      if (result.success) {
+        toast.success(`Exporting ${selectedReport.name} as ${formData.format.toUpperCase()}`);
+      } else {
+        toast.error(result.error?.message || 'Failed to export report');
+      }
       setIsExportDialogOpen(false);
     }
   };

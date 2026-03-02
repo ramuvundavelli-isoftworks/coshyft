@@ -1,0 +1,1 @@
+"""CoShift Authentication Module"""

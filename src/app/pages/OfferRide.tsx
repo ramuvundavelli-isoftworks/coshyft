@@ -22,6 +22,8 @@ import {
 } from '../components/ui/select';
 import { Car, MapPin, Clock, Users, Plus, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { carpoolingApi } from '../api';
 
 export default function OfferRide() {
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
@@ -34,15 +36,30 @@ export default function OfferRide() {
     notes: '',
   });
 
+  const offerMutation = useApiMutation((data: any) => carpoolingApi.offerRide(data));
+
   const myOffers = [
     { id: '1', from: 'Downtown', to: 'Tech Park HQ', date: '2026-02-19', time: '08:00 AM', seats: 3, requests: 2, status: 'active' },
     { id: '2', from: 'Downtown', to: 'Tech Park HQ', date: '2026-02-18', time: '08:00 AM', seats: 3, requests: 3, status: 'completed' },
   ];
 
-  const handleOfferRide = () => {
-    toast.success('Ride offer created successfully!');
-    setIsOfferDialogOpen(false);
-    setFormData({ from: '', to: '', date: '', time: '', seats: '3', notes: '' });
+  const handleOfferRide = async () => {
+    const result = await offerMutation.execute({
+      origin_address: formData.from,
+      destination_address: formData.to,
+      departure_date: formData.date,
+      departure_time: formData.time,
+      seats_available: parseInt(formData.seats),
+      notes: formData.notes,
+    });
+
+    if (result.success) {
+      toast.success('Ride offer created successfully!');
+      setIsOfferDialogOpen(false);
+      setFormData({ from: '', to: '', date: '', time: '', seats: '3', notes: '' });
+    } else {
+      toast.error(result.error?.message || 'Failed to create ride offer');
+    }
   };
 
   return (
@@ -264,10 +281,14 @@ export default function OfferRide() {
             <Button variant="outline" onClick={() => setIsOfferDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleOfferRide}
-              disabled={!formData.from || !formData.to || !formData.date || !formData.time}
+              disabled={!formData.from || !formData.to || !formData.date || !formData.time || offerMutation.loading}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Offer Ride
+              {offerMutation.loading ? (
+                <span className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              {offerMutation.loading ? 'Creating...' : 'Offer Ride'}
             </Button>
           </DialogFooter>
         </DialogContent>

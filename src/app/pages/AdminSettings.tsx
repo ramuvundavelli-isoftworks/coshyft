@@ -21,6 +21,8 @@ import {
 } from '../components/ui/select';
 import { Settings, Save, Bell, Users, Database, Shield, RefreshCw, Download, Upload, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -40,8 +42,19 @@ export default function AdminSettings() {
   const [isBackupDialogOpen, setIsBackupDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState('json');
 
-  const handleSave = () => {
-    toast.success('Settings saved successfully');
+  // API mutation
+  const updateSettingsMutation = useApiMutation((data: any) =>
+    adminApi.updateSettings(data)
+  );
+
+  const handleSave = async () => {
+    const result = await updateSettingsMutation.execute(settings);
+
+    if (result.success) {
+      toast.success('Settings saved successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to save settings');
+    }
   };
 
   const handleReset = () => {
@@ -88,9 +101,9 @@ export default function AdminSettings() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} disabled={updateSettingsMutation.loading}>
             <Save className="h-4 w-4 mr-2" />
-            Save Changes
+            {updateSettingsMutation.loading ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </div>

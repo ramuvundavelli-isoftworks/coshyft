@@ -13,6 +13,8 @@ import {
 import GamificationDashboard from '../components/carpooling/GamificationDashboard';
 import Leaderboard from '../components/carpooling/Leaderboard';
 import { mockUserProfile } from '../data/mockGamificationData';
+import { useApi } from '../api';
+import { gamificationApi } from '../api';
 
 export default function RewardsAchievements() {
   const [selectedView, setSelectedView] = useState<'overview' | 'leaderboard'>('overview');

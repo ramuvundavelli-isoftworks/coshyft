@@ -1,12 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Label } from '../components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import { KPICard } from '../components/KPICard';
-import { BarChart3, Users, TrendingUp, MapPin, AlertTriangle, Car } from 'lucide-react';
+import {
+  Users,
+  Car,
+  TrendingUp,
+  Activity,
+  Download,
+  Eye,
+  AlertTriangle,
+  MapPin,
+  BarChart3,
+} from 'lucide-react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { barChartOptions, lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
+import { toast } from 'sonner';
+import { useApi } from '../api';
+import { adminApi } from '../api';
 
 const participationByDept = [
   { dept: 'Engineering', participation: 82, target: 75 },

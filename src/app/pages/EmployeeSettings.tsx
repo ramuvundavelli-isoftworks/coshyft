@@ -22,6 +22,8 @@ import {
 } from '../components/ui/select';
 import { Settings, Bell, Shield, MapPin, Save, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { authApi } from '../api';
 
 export default function EmployeeSettings() {
   const [notificationSettings, setNotificationSettings] = useState({
@@ -42,17 +44,98 @@ export default function EmployeeSettings() {
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSaveNotifications = () => {
-    toast.success('Notification preferences saved');
+  // API mutations
+  const updateProfileMutation = useApiMutation((data: any) =>
+    authApi.updateProfile(data)
+  );
+  const changePasswordMutation = useApiMutation((data: { current_password: string; new_password: string }) =>
+    authApi.changePassword(data)
+  );
+
+  const handleSaveNotifications = async () => {
+    const result = await updateProfileMutation.execute({
+      notification_preferences: notificationSettings,
+    });
+
+    if (result.success) {
+      toast.success('Notification preferences saved');
+    } else {
+      toast.error(result.error?.message || 'Failed to save notification preferences');
+    }
   };
 
-  const handleSavePrivacy = () => {
-    toast.success('Privacy settings updated');
+  const handleSavePrivacy = async () => {
+    const result = await updateProfileMutation.execute({
+      privacy_settings: privacySettings,
+    });
+
+    if (result.success) {
+      toast.success('Privacy settings updated');
+    } else {
+      toast.error(result.error?.message || 'Failed to update privacy settings');
+    }
   };
 
-  const handleChangePassword = () => {
-    toast.success('Password changed successfully');
-    setIsPasswordDialogOpen(false);
+  const handleSaveProfile = async () => {
+    const result = await updateProfileMutation.execute({
+      name: (document.getElementById('name') as HTMLInputElement)?.value,
+      phone: (document.getElementById('phone') as HTMLInputElement)?.value,
+      home_location: (document.getElementById('home-location') as HTMLInputElement)?.value,
+    });
+
+    if (result.success) {
+      toast.success('Profile updated');
+    } else {
+      toast.error(result.error?.message || 'Failed to update profile');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const currentPassword = (document.getElementById('current-password') as HTMLInputElement)?.value;
+    const newPassword = (document.getElementById('new-password') as HTMLInputElement)?.value;
+    const confirmPassword = (document.getElementById('confirm-password') as HTMLInputElement)?.value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all password fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
+
+    const result = await changePasswordMutation.execute({
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+
+    if (result.success) {
+      toast.success('Password changed successfully');
+      setIsPasswordDialogOpen(false);
+    } else {
+      toast.error(result.error?.message || 'Failed to change password');
+    }
+  };
+
+  const handleSaveCommutePreferences = async () => {
+    const result = await updateProfileMutation.execute({
+      commute_preferences: {
+        default_mode: (document.getElementById('default-mode') as HTMLSelectElement)?.value,
+        arrival_time: (document.getElementById('arrival-time') as HTMLInputElement)?.value,
+      },
+    });
+
+    if (result.success) {
+      toast.success('Commute preferences saved');
+    } else {
+      toast.error(result.error?.message || 'Failed to save commute preferences');
+    }
   };
 
   return (
@@ -86,7 +169,7 @@ export default function EmployeeSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
+              <Input id="phone" type="tel" defaultValue="+353 1 234 5678" />
             </div>
             <div>
               <Label htmlFor="department">Department</Label>
@@ -95,12 +178,12 @@ export default function EmployeeSettings() {
           </div>
           <div>
             <Label htmlFor="home-location">Home Location</Label>
-            <Input id="home-location" defaultValue="Downtown, San Francisco" />
+            <Input id="home-location" defaultValue="Ranelagh, Dublin 6" />
           </div>
           <div className="flex items-center gap-3">
-            <Button onClick={() => toast.success('Profile updated')}>
+            <Button onClick={handleSaveProfile} disabled={updateProfileMutation.loading}>
               <Save className="h-4 w-4 mr-2" />
-              Save Profile
+              {updateProfileMutation.loading ? 'Saving...' : 'Save Profile'}
             </Button>
             <Button variant="outline" onClick={() => setIsPasswordDialogOpen(true)}>
               <Shield className="h-4 w-4 mr-2" />
@@ -189,9 +272,9 @@ export default function EmployeeSettings() {
               }
             />
           </div>
-          <Button onClick={handleSaveNotifications}>
+          <Button onClick={handleSaveNotifications} disabled={updateProfileMutation.loading}>
             <Save className="h-4 w-4 mr-2" />
-            Save Notification Settings
+            {updateProfileMutation.loading ? 'Saving...' : 'Save Notification Settings'}
           </Button>
         </div>
       </Card>
@@ -239,9 +322,9 @@ export default function EmployeeSettings() {
               }
             />
           </div>
-          <Button onClick={handleSavePrivacy}>
+          <Button onClick={handleSavePrivacy} disabled={updateProfileMutation.loading}>
             <Save className="h-4 w-4 mr-2" />
-            Save Privacy Settings
+            {updateProfileMutation.loading ? 'Saving...' : 'Save Privacy Settings'}
           </Button>
         </div>
       </Card>
@@ -285,9 +368,9 @@ export default function EmployeeSettings() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={() => toast.success('Commute preferences saved')}>
+          <Button onClick={handleSaveCommutePreferences} disabled={updateProfileMutation.loading}>
             <Save className="h-4 w-4 mr-2" />
-            Save Preferences
+            {updateProfileMutation.loading ? 'Saving...' : 'Save Preferences'}
           </Button>
         </div>
       </Card>
@@ -342,9 +425,9 @@ export default function EmployeeSettings() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleChangePassword}>
+            <Button onClick={handleChangePassword} disabled={changePasswordMutation.loading}>
               <Shield className="h-4 w-4 mr-2" />
-              Change Password
+              {changePasswordMutation.loading ? 'Changing...' : 'Change Password'}
             </Button>
           </DialogFooter>
         </DialogContent>

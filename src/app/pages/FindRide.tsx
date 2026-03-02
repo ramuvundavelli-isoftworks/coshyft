@@ -56,6 +56,10 @@ import AdvancedSearchModal from '../components/carpooling/AdvancedSearchModal';
 import PreferenceProfileModal from '../components/carpooling/PreferenceProfileModal';
 import CompatibilityScore from '../components/carpooling/CompatibilityScore';
 import RouteMapVisualization from '../components/carpooling/RouteMapVisualization';
+import { useApi, useApiMutation } from '../api';
+import { carpoolingApi } from '../api';
+import { messagingApi } from '../api';
+import { authApi } from '../api';
 
 export default function FindRide() {
   const [rides, setRides] = useState<ExtendedRide[]>([]);
@@ -99,6 +103,16 @@ export default function FindRide() {
   });
   
   const [message, setMessage] = useState('');
+
+  // API mutations
+  const requestRideMutation = useApiMutation((data: { rideId: string; payload: any }) =>
+    carpoolingApi.requestRide(data.rideId, data.payload)
+  );
+  const offerRideMutation = useApiMutation((data: any) => carpoolingApi.offerRide(data));
+  const sendMessageMutation = useApiMutation((data: { threadId: string; content: string }) =>
+    messagingApi.sendMessage(data.threadId, { content: data.content })
+  );
+  const savePreferencesMutation = useApiMutation((data: any) => authApi.updateProfile(data));
 
   // Initialize rides with calculated compatibility scores
   useEffect(() => {
@@ -169,9 +183,26 @@ export default function FindRide() {
     }
   };
 
-  const handleSavePreferences = (preferences: CommutePreferences) => {
+  const handleSavePreferences = async (preferences: CommutePreferences) => {
     setUserPreferences(preferences);
-    toast.success('Your commute preferences have been saved!');
+
+    const result = await savePreferencesMutation.execute({
+      commute_preferences: {
+        maxDetourMinutes: preferences.maxDetourMinutes,
+        preferredDepartureTime: preferences.preferredDepartureTime,
+        musicPreference: preferences.musicPreference,
+        smokingAllowed: preferences.smokingAllowed,
+        petsAllowed: preferences.petsAllowed,
+        conversationLevel: preferences.conversationLevel,
+        genderPreference: preferences.genderPreference,
+      },
+    });
+
+    if (result.success) {
+      toast.success('Your commute preferences have been saved!');
+    } else {
+      toast.error(result.error?.message || 'Failed to save preferences');
+    }
   };
 
   const handleViewDetails = (ride: ExtendedRide) => {
@@ -179,15 +210,29 @@ export default function FindRide() {
     setIsDetailsDialogOpen(true);
   };
 
-  const handleBookRide = () => {
+  const handleBookRide = async () => {
     if (selectedRide) {
       setIsBookDialogOpen(false);
       setIsConfirmationDialogOpen(true);
-      toast.success(`Ride booked with ${selectedRide.driver}!`);
+
+      const result = await requestRideMutation.execute({
+        rideId: selectedRide.id,
+        payload: {
+          seats_requested: parseInt(bookingData.seats),
+          pickup_location: bookingData.pickupLocation,
+          notes: bookingData.notes,
+        },
+      });
+
+      if (result.success) {
+        toast.success(`Ride booked with ${selectedRide.driver}!`);
+      } else {
+        toast.error(result.error?.message || 'Failed to book ride');
+      }
     }
   };
 
-  const handleOfferRide = () => {
+  const handleOfferRide = async () => {
     const newRide: ExtendedRide = {
       id: `r-${Date.now()}`,
       driver: 'You',
@@ -212,12 +257,36 @@ export default function FindRide() {
     setRides([newRide, ...rides]);
     setIsOfferDialogOpen(false);
     resetOfferForm();
-    toast.success('Your ride has been posted!');
+
+    const result = await offerRideMutation.execute({
+      origin_address: offerData.origin,
+      destination_address: offerData.destination,
+      departure_time: offerData.departureTime,
+      seats_available: parseInt(offerData.seatsAvailable),
+      vehicle_type: offerData.vehicleType,
+      vehicle_make: offerData.vehicleMake,
+      preferences: offerData.preferences,
+    });
+
+    if (result.success) {
+      toast.success('Your ride has been posted!');
+    } else {
+      toast.error(result.error?.message || 'Failed to post ride');
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (selectedRide && message.trim()) {
-      toast.success(`Message sent to ${selectedRide.driver}`);
+      const result = await sendMessageMutation.execute({
+        threadId: selectedRide.id, // In real app, would be the thread ID
+        content: message,
+      });
+
+      if (result.success) {
+        toast.success(`Message sent to ${selectedRide.driver}`);
+      } else {
+        toast.error(result.error?.message || 'Failed to send message');
+      }
       setIsMessageDialogOpen(false);
       setMessage('');
     }
@@ -855,9 +924,9 @@ export default function FindRide() {
             </Button>
             <Button
               onClick={handleBookRide}
-              disabled={!bookingData.pickupLocation.trim()}
+              disabled={!bookingData.pickupLocation.trim() || requestRideMutation.loading}
             >
-              Confirm Booking
+              {requestRideMutation.loading ? 'Booking...' : 'Confirm Booking'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -997,10 +1066,11 @@ export default function FindRide() {
                 !offerData.destination ||
                 !offerData.departureTime ||
                 !offerData.vehicleType ||
-                !offerData.vehicleMake
+                !offerData.vehicleMake ||
+                offerRideMutation.loading
               }
             >
-              Post Ride
+              {offerRideMutation.loading ? 'Posting...' : 'Post Ride'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1027,8 +1097,8 @@ export default function FindRide() {
             <Button variant="outline" onClick={() => setIsMessageDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSendMessage} disabled={!message.trim()}>
-              Send Message
+            <Button onClick={handleSendMessage} disabled={!message.trim() || sendMessageMutation.loading}>
+              {sendMessageMutation.loading ? 'Sending...' : 'Send Message'}
             </Button>
           </DialogFooter>
         </DialogContent>

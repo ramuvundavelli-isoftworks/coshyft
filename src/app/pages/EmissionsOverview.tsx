@@ -30,6 +30,8 @@ import {
 import { Activity, TrendingDown, MapPin, BarChart3, Download, Eye, GitBranch, RefreshCw } from 'lucide-react';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
+import { useApi } from '../api';
+import { emissionsApi } from '../api';
 import { mockEmissionData, mockModeDistribution, mockLocationPerformance } from '../data/mockData';
 import { toast } from 'sonner';
 
@@ -42,7 +44,18 @@ export default function EmissionsOverview() {
   const [isRecalculateDialogOpen, setIsRecalculateDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
-  const totalEmissions = mockEmissionData.reduce((sum, d) => sum + (d.actual || 0), 0);
+  // API data fetching
+  const { data: summary, loading: summaryLoading } = useApi(() => emissionsApi.getSummary());
+  const { data: trends } = useApi(() => emissionsApi.getTrends());
+  const { data: modeSplit } = useApi(() => emissionsApi.getModeSplit());
+  const { data: locations } = useApi(() => emissionsApi.getLocationPerformance());
+
+  // Fallback to mock data while loading
+  const emissionData = (trends as any[]) || mockEmissionData;
+  const modeData = (modeSplit as any[]) || mockModeDistribution;
+  const locationData = (locations as any[]) || mockLocationPerformance;
+
+  const totalEmissions = emissionData.reduce((sum: number, d: any) => sum + (d.actual || 0), 0);
 
   const handleExport = () => {
     toast.success('Exporting emissions report...');
@@ -136,9 +149,9 @@ export default function EmissionsOverview() {
           <div style={{ height: '320px', width: '100%' }}>
             <Doughnut
               data={{
-                labels: mockModeDistribution.map(d => d.mode),
+                labels: modeData.map(d => d.mode),
                 datasets: [{
-                  data: mockModeDistribution.map(d => d.percentage),
+                  data: modeData.map(d => d.percentage),
                   backgroundColor: [
                     colors.chart.blue,
                     colors.chart.green,
@@ -159,10 +172,10 @@ export default function EmissionsOverview() {
           <div style={{ height: '320px', width: '100%' }}>
             <Line
               data={{
-                labels: mockEmissionData.slice(0, 8).map(d => d.month),
+                labels: emissionData.slice(0, 8).map(d => d.month),
                 datasets: [{
                   label: 'Actual Emissions',
-                  data: mockEmissionData.slice(0, 8).map(d => d.actual),
+                  data: emissionData.slice(0, 8).map(d => d.actual),
                   borderColor: colors.chart.blue,
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   fill: true,
@@ -183,7 +196,7 @@ export default function EmissionsOverview() {
             variant="outline"
             size="sm"
             onClick={() => {
-              setSelectedItem(mockLocationPerformance[0]);
+              setSelectedItem(locationData[0]);
               setIsBreakdownDialogOpen(true);
             }}
           >
@@ -203,7 +216,7 @@ export default function EmissionsOverview() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockLocationPerformance.map((loc) => (
+            {locationData.map((loc) => (
               <TableRow key={loc.location} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{loc.location}</TableCell>
                 <TableCell>{loc.emissions} tCO₂e</TableCell>
@@ -276,7 +289,7 @@ export default function EmissionsOverview() {
           </DialogHeader>
           <div className="py-4">
             <div className="space-y-3">
-              {mockModeDistribution.map((mode, idx) => (
+              {modeData.map((mode, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
                     <div 

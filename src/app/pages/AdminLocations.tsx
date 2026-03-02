@@ -24,6 +24,8 @@ import {
   Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiMutation } from '../api';
+import { adminApi } from '../api';
 
 interface Location {
   id: string;
@@ -58,7 +60,18 @@ export default function AdminLocations() {
     country: '',
   });
 
-  const handleAddLocation = () => {
+  // API mutations
+  const createLocationMutation = useApiMutation((data: any) =>
+    adminApi.createLocation(data)
+  );
+  const updateLocationMutation = useApiMutation((data: { id: string; payload: any }) =>
+    adminApi.updateLocation(data.id, data.payload)
+  );
+  const deleteLocationMutation = useApiMutation((id: string) =>
+    adminApi.deleteLocation(id)
+  );
+
+  const handleAddLocation = async () => {
     const newLocation: Location = {
       id: `loc-${Date.now()}`,
       name: formData.name,
@@ -71,30 +84,70 @@ export default function AdminLocations() {
       emissions: 0,
       status: 'active',
     };
+    // Optimistic update
     setLocations([...locations, newLocation]);
     setIsAddDialogOpen(false);
     resetForm();
-    toast.success('Location added successfully');
+
+    const result = await createLocationMutation.execute({
+      name: formData.name,
+      address: formData.address,
+      city: formData.city,
+      country: formData.country,
+    });
+
+    if (result.success) {
+      toast.success('Location added successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to add location (saved locally)');
+    }
   };
 
-  const handleEditLocation = () => {
+  const handleEditLocation = async () => {
     if (selectedLocation) {
       const updated = locations.map(l =>
         l.id === selectedLocation.id
           ? { ...l, name: formData.name, address: formData.address, city: formData.city, country: formData.country }
           : l
       );
+      // Optimistic update
       setLocations(updated);
       setIsEditDialogOpen(false);
-      toast.success('Location updated successfully');
+
+      const result = await updateLocationMutation.execute({
+        id: selectedLocation.id,
+        payload: {
+          name: formData.name,
+          address: formData.address,
+          city: formData.city,
+          country: formData.country,
+        },
+      });
+
+      if (result.success) {
+        toast.success('Location updated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to update location');
+      }
     }
   };
 
-  const handleDeleteLocation = () => {
+  const handleDeleteLocation = async () => {
     if (selectedLocation) {
+      const previousLocations = [...locations];
+      // Optimistic update
       setLocations(locations.filter(l => l.id !== selectedLocation.id));
       setIsDeleteDialogOpen(false);
-      toast.success('Location deleted successfully');
+
+      const result = await deleteLocationMutation.execute(selectedLocation.id);
+
+      if (result.success) {
+        toast.success('Location deleted successfully');
+      } else {
+        // Rollback on failure
+        setLocations(previousLocations);
+        toast.error(result.error?.message || 'Failed to delete location');
+      }
     }
   };
 
@@ -300,8 +353,8 @@ export default function AdminLocations() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddLocation} disabled={!formData.name || !formData.address || !formData.city || !formData.country}>
-              Add Location
+            <Button onClick={handleAddLocation} disabled={!formData.name || !formData.address || !formData.city || !formData.country || createLocationMutation.loading}>
+              {createLocationMutation.loading ? 'Adding...' : 'Add Location'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -352,7 +405,9 @@ export default function AdminLocations() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleEditLocation}>Save Changes</Button>
+            <Button onClick={handleEditLocation} disabled={updateLocationMutation.loading}>
+              {updateLocationMutation.loading ? 'Saving...' : 'Save Changes'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -414,7 +469,9 @@ export default function AdminLocations() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDeleteLocation}>Delete Location</Button>
+            <Button variant="destructive" onClick={handleDeleteLocation} disabled={deleteLocationMutation.loading}>
+              {deleteLocationMutation.loading ? 'Deleting...' : 'Delete Location'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -19,10 +19,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { Shield, CheckCircle, AlertTriangle, Clock, Download, Plus, Eye, Calendar } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table';
+import { KPICard } from '../components/KPICard';
+import {
+  Shield,
+  CheckCircle,
+  AlertTriangle,
+  FileText,
+  Eye,
+  Download,
+  Plus,
+  Calendar,
+  Clock,
+} from 'lucide-react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { doughnutChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi, useApiMutation } from '../api';
+import { auditorApi } from '../api';
 
 const auditStatusData = [
   { name: 'Verified', value: 72, color: '#10b981' },
@@ -53,8 +74,25 @@ export default function AuditorOverview() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [finding, setFinding] = useState('');
 
-  const handleAddFinding = () => {
-    toast.success('Audit finding added successfully');
+  // API mutations
+  const addFindingMutation = useApiMutation((data: { area: string; description: string }) =>
+    auditorApi.addFinding(data)
+  );
+  const scheduleReviewMutation = useApiMutation((data: { area: string }) =>
+    auditorApi.scheduleReview(data)
+  );
+
+  const handleAddFinding = async () => {
+    const result = await addFindingMutation.execute({
+      area: selectedItem?.area || 'General',
+      description: finding,
+    });
+
+    if (result.success) {
+      toast.success('Audit finding added successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to add finding');
+    }
     setIsAddFindingDialogOpen(false);
     setFinding('');
   };
@@ -64,8 +102,16 @@ export default function AuditorOverview() {
     setIsExportDialogOpen(false);
   };
 
-  const handleSchedule = () => {
-    toast.success('Review scheduled successfully');
+  const handleSchedule = async () => {
+    const result = await scheduleReviewMutation.execute({
+      area: selectedItem?.area || 'General Review',
+    });
+
+    if (result.success) {
+      toast.success('Review scheduled successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to schedule review');
+    }
     setIsScheduleDialogOpen(false);
   };
 
@@ -336,8 +382,8 @@ export default function AuditorOverview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddFindingDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddFinding} disabled={!finding}>
-              Add Finding
+            <Button onClick={handleAddFinding} disabled={!finding || addFindingMutation.loading}>
+              {addFindingMutation.loading ? 'Adding...' : 'Add Finding'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -402,9 +448,9 @@ export default function AuditorOverview() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsScheduleDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSchedule}>
+            <Button onClick={handleSchedule} disabled={scheduleReviewMutation.loading}>
               <Calendar className="h-4 w-4 mr-2" />
-              Schedule
+              {scheduleReviewMutation.loading ? 'Scheduling...' : 'Schedule'}
             </Button>
           </DialogFooter>
         </DialogContent>

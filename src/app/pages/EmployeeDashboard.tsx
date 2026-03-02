@@ -28,13 +28,9 @@ import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import { lineChartOptions, doughnutChartOptions, barChartOptions, colors } from '../utils/chartConfig';
-
-const impactData = [
-  { week: 'Week 1', co2: 12.5 },
-  { week: 'Week 2', co2: 15.2 },
-  { week: 'Week 3', co2: 18.7 },
-  { week: 'Week 4', co2: 21.3 },
-];
+import { useApi } from '../api';
+import { commuteApi, gamificationApi, carpoolingApi, useApiMutation } from '../api';
+import type { CommuteEntryCreate, CommuteEntry as ApiCommuteEntry } from '../api/commute.api';
 
 // Mock commute data for February 2026
 const mockCommuteData = [
@@ -62,13 +58,47 @@ export default function EmployeeDashboard() {
   const [isLogCommuteOpen, setIsLogCommuteOpen] = useState(false);
   const [commuteEntries, setCommuteEntries] = useState<CommuteEntry[]>([]);
   const [hoveredDay, setHoveredDay] = useState<{ day: number; mode?: string; distance?: number; month: string } | null>(null);
-  
-  const upcomingRides = mockRides.filter(r => r.status === 'scheduled');
 
-  const handleLogCommute = (entry: CommuteEntry) => {
+  // API hooks
+  const { data: commuteStats } = useApi(() => commuteApi.getStats());
+  const { data: gamificationProfile } = useApi(() => gamificationApi.getProfile());
+  const { data: apiRides } = useApi(() => carpoolingApi.getMyRides());
+
+  // Mutation hook for logging commutes
+  const logCommuteMutation = useApiMutation<CommuteEntryCreate, ApiCommuteEntry>(
+    (data) => commuteApi.logCommute(data)
+  );
+
+  const upcomingRides = ((apiRides as any)?.items ?? mockRides).filter((r: any) => r.status === 'scheduled');
+
+  // Weekly impact data for chart
+  const impactData = [
+    { week: 'Week 1', co2: 4.2 },
+    { week: 'Week 2', co2: 6.1 },
+    { week: 'Week 3', co2: 5.8 },
+    { week: 'Week 4', co2: 5.2 },
+  ];
+
+  const handleLogCommute = async (entry: CommuteEntry) => {
+    // Optimistic local update
     setCommuteEntries(prev => [...prev, entry]);
-    console.log('Commute logged:', entry);
-    toast.success('Commute logged successfully!');
+
+    // Map LogCommuteModal entry to API format
+    const apiPayload: CommuteEntryCreate = {
+      date: entry.date,
+      transport_mode_id: entry.mode.toLowerCase().replace(/\s+/g, '-'),
+      distance_km: entry.distance,
+      is_return_trip: true,
+      carpool_passengers: entry.carpoolDetails?.passengers,
+      verification_method: 'manual',
+    };
+
+    const result = await logCommuteMutation.execute(apiPayload);
+    if (!result.success) {
+      // Rollback optimistic update on failure
+      setCommuteEntries(prev => prev.filter(e => e.id !== entry.id));
+      toast.error(result.error?.message || 'Failed to log commute');
+    }
   };
 
   return (
