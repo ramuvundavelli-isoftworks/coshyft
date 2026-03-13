@@ -8,7 +8,7 @@ PUT  /auth/me, /auth/me/gdpr-consent, /auth/me/password
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.jwt import create_access_token, create_refresh_token, verify_token
@@ -169,7 +169,7 @@ async def update_me(
     update_data = update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(user, key, value)
-    user.updated_at = datetime.now(timezone.utc)
+    user.updated_at = datetime.utcnow()
 
     session.add(user)
     await session.flush()
@@ -198,7 +198,7 @@ async def change_password(
         )
 
     user.hashed_password = hash_password(request.new_password)
-    user.updated_at = datetime.now(timezone.utc)
+    user.updated_at = datetime.utcnow()
     session.add(user)
 
     await log_action(
@@ -226,7 +226,7 @@ async def update_gdpr_consent(
         existing.analytics = consent.analytics
         existing.marketing = consent.marketing
         existing.data_sharing_carpooling = consent.data_sharing_carpooling
-        existing.consent_date = datetime.now(timezone.utc)
+        existing.consent_date = datetime.utcnow()
         existing.ip_address = req.client.host if req.client else None
         session.add(existing)
     else:

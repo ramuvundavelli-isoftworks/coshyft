@@ -19,6 +19,7 @@ class TenantRead(BaseModel):
     max_offices: int
     contact_email: str
     contact_name: str
+    billing_email: Optional[str] = None
     user_count: Optional[int] = None
     office_count: Optional[int] = None
     total_emissions: Optional[float] = None
@@ -48,6 +49,72 @@ class TenantUpdate(BaseModel):
     max_offices: Optional[int] = None
     contact_email: Optional[str] = None
     contact_name: Optional[str] = None
+    billing_email: Optional[str] = None
+
+
+class TenantConfigRead(BaseModel):
+    tenant_id: str
+    default_locale: str
+    default_currency: str
+    emission_factor_region: str
+    oxypoints_enabled: bool
+    carpooling_enabled: bool
+    csrd_reporting_enabled: bool
+    gdpr_strict_mode: bool
+    data_retention_years: int
+    custom_branding: Optional[dict] = None
+    features: Optional[dict] = None
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class TenantConfigUpdate(BaseModel):
+    default_locale: Optional[str] = None
+    default_currency: Optional[str] = None
+    emission_factor_region: Optional[str] = None
+    oxypoints_enabled: Optional[bool] = None
+    carpooling_enabled: Optional[bool] = None
+    csrd_reporting_enabled: Optional[bool] = None
+    gdpr_strict_mode: Optional[bool] = None
+    data_retention_years: Optional[int] = None
+    custom_branding: Optional[dict] = None
+    features: Optional[dict] = None
+
+
+class UserSummaryRead(BaseModel):
+    id: str
+    email: str
+    name: str
+    role: str
+    department: Optional[str] = None
+    tenant_id: Optional[str] = None
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class UserRoleUpdate(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class AuditLogRead(BaseModel):
+    id: str
+    timestamp: datetime
+    user_id: str
+    user_role: str
+    action: str
+    entity_type: str
+    entity_id: str
+    description: Optional[str] = None
+    ip_address: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class SystemHealthRead(BaseModel):

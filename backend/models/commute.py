@@ -5,7 +5,7 @@ CommuteProfile: user commute preferences and defaults
 """
 
 import uuid
-from datetime import datetime, date, timezone
+from datetime import datetime, date
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -28,7 +28,8 @@ class CommuteEntry(SQLModel, table=True):
         max_length=36,
     )
     user_id: str = Field(foreign_key="users.id", index=True, max_length=36)
-    date: date = Field(index=True)
+    # date: date = Field(index=True)
+    commute_date: date = Field(index=True)
     transport_mode_id: str = Field(max_length=20)
     transport_mode_label: str = Field(max_length=100)
     distance_km: float = Field(ge=0)
@@ -53,8 +54,8 @@ class CommuteEntry(SQLModel, table=True):
         )
     )
     notes: Optional[str] = Field(default=None, max_length=500)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class CommuteProfile(SQLModel, table=True):
@@ -72,4 +73,4 @@ class CommuteProfile(SQLModel, table=True):
     work_days_per_week: int = Field(default=5)
     remote_days_per_week: int = Field(default=0)
     preferences: Optional[dict] = Field(default=None, sa_column=Column(JSON))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())

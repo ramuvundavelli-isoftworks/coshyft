@@ -9,7 +9,7 @@ DELETE /admin/locations/{id}, /admin/policies/{id}
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -146,7 +146,7 @@ async def update_location(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(office, key, value)
-    office.updated_at = datetime.now(timezone.utc)
+    office.updated_at = datetime.utcnow()
     session.add(office)
     await session.flush()
     await session.refresh(office)
@@ -210,7 +210,7 @@ async def update_policy(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(p, key, value)
-    p.updated_at = datetime.now(timezone.utc)
+    p.updated_at = datetime.utcnow()
     session.add(p)
     await session.flush()
     await session.refresh(p)
@@ -284,7 +284,7 @@ async def delete_location(
         raise HTTPException(status_code=404, detail="Office not found")
 
     office.is_active = False
-    office.updated_at = datetime.now(timezone.utc)
+    office.updated_at = datetime.utcnow()
     session.add(office)
 
     await log_action(

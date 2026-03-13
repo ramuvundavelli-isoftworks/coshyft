@@ -5,7 +5,7 @@ EmissionRecord: aggregated emission records for reporting
 """
 
 import uuid
-from datetime import datetime, date, timezone
+from datetime import datetime, date
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum
@@ -53,8 +53,8 @@ class EmissionFactor(SQLModel, table=True):
     grid_intensity: Optional[float] = Field(default=None)
     approved_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
     approved_at: Optional[datetime] = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class EmissionRecord(SQLModel, table=True):
@@ -78,4 +78,4 @@ class EmissionRecord(SQLModel, table=True):
     intensity_per_employee: float = Field(default=0)
     forecast_emissions_kg: Optional[float] = Field(default=None)
     target_emissions_kg: Optional[float] = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())

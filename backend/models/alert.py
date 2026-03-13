@@ -4,7 +4,7 @@ Maps to TypeScript: Alert
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum
@@ -31,7 +31,7 @@ class Alert(SQLModel, table=True):
     )
     title: str = Field(max_length=300)
     description: str = Field(max_length=1000)
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    timestamp: datetime = Field(default_factory=lambda: datetime.utcnow(), index=True)
     resolved: bool = Field(default=False)
     resolved_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
     resolved_at: Optional[datetime] = Field(default=None)
@@ -39,4 +39,4 @@ class Alert(SQLModel, table=True):
     linked_entity: Optional[str] = Field(default=None, max_length=100)
     linked_entity_id: Optional[str] = Field(default=None, max_length=36)
     target_roles: Optional[str] = Field(default=None, max_length=200)  # Comma-separated roles
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())

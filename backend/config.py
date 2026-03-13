@@ -9,13 +9,13 @@ from typing import List
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "CoShift"
+    APP_NAME: str = "CoShyft"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     API_V1_PREFIX: str = "/api/v1"
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/coshift"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:admin@localhost:5432/coshyft"
 
     # JWT
     JWT_SECRET_KEY: str = "your-super-secret-key-change-in-production"

@@ -4,7 +4,7 @@ Tenant, TenantConfig
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -47,8 +47,8 @@ class Tenant(SQLModel, table=True):
     contact_email: str = Field(max_length=255)
     contact_name: str = Field(max_length=200)
     billing_email: Optional[str] = Field(default=None, max_length=255)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class TenantConfig(SQLModel, table=True):
@@ -65,4 +65,4 @@ class TenantConfig(SQLModel, table=True):
     data_retention_years: int = Field(default=7)
     custom_branding: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     features: Optional[dict] = Field(default=None, sa_column=Column(JSON))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())

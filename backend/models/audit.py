@@ -5,7 +5,7 @@ Maps to TypeScript: GDPRAuditLog
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -58,7 +58,7 @@ class AuditLog(SQLModel, table=True):
         primary_key=True,
         max_length=36,
     )
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    timestamp: datetime = Field(default_factory=lambda: datetime.utcnow(), index=True)
     user_id: str = Field(foreign_key="users.id", index=True, max_length=36)
     user_role: str = Field(max_length=20)
     action: AuditActionEnum = Field(
@@ -84,7 +84,7 @@ class GDPRAuditLog(SQLModel, table=True):
         primary_key=True,
         max_length=36,
     )
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    timestamp: datetime = Field(default_factory=lambda: datetime.utcnow(), index=True)
     user_id: str = Field(foreign_key="users.id", index=True, max_length=36)
     user_role: str = Field(max_length=20)
     action: AuditActionEnum = Field(
@@ -129,7 +129,7 @@ class EvidenceItem(SQLModel, table=True):
     uploaded_by: str = Field(foreign_key="users.id", max_length=36)
     verified_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
     verified_at: Optional[datetime] = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class FindingSeverityEnum(str, enum.Enum):
@@ -171,8 +171,8 @@ class AuditFinding(SQLModel, table=True):
     created_by: str = Field(foreign_key="users.id", max_length=36)
     assigned_to: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
     resolved_at: Optional[datetime] = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class AuditNote(SQLModel, table=True):
@@ -192,4 +192,4 @@ class AuditNote(SQLModel, table=True):
     linked_entity_type: Optional[str] = Field(default=None, max_length=50)
     linked_entity_id: Optional[str] = Field(default=None, max_length=36)
     created_by: str = Field(foreign_key="users.id", max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())

@@ -9,7 +9,7 @@ GET  /emission-factors/{id}/history
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import require_role, get_current_user
@@ -107,7 +107,7 @@ async def update_factor(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(f, key, value)
-    f.updated_at = datetime.now(timezone.utc)
+    f.updated_at = datetime.utcnow()
     session.add(f)
     await session.flush()
     await session.refresh(f)
@@ -132,7 +132,7 @@ async def submit_factor(
         raise HTTPException(status_code=400, detail="Only draft factors can be submitted")
 
     f.approval_status = "pending"
-    f.updated_at = datetime.now(timezone.utc)
+    f.updated_at = datetime.utcnow()
     session.add(f)
 
     return ApiResponse(success=True, meta={"message": "Factor submitted for approval"})
@@ -155,11 +155,11 @@ async def approve_factor(
     if data.approved:
         f.approval_status = "approved"
         f.approved_by = user.id
-        f.approved_at = datetime.now(timezone.utc)
+        f.approved_at = datetime.utcnow()
     else:
         f.approval_status = "rejected"
 
-    f.updated_at = datetime.now(timezone.utc)
+    f.updated_at = datetime.utcnow()
     session.add(f)
 
     action = "approve" if data.approved else "reject"

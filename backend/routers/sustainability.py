@@ -8,7 +8,7 @@ Data Quality, Methodology, CSRD Compliance, Climate Action Plan, DPIA
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, date, timezone
+from datetime import datetime, date
 
 from database import get_session
 from auth.dependencies import require_role
@@ -98,7 +98,7 @@ async def lock_baseline(
     b.locked = True
     b.approved_by = lock_data.approved_by
     b.approved_date = date.today()
-    b.updated_at = datetime.now(timezone.utc)
+    b.updated_at = datetime.utcnow()
     session.add(b)
 
     await log_action(session, user.id, "sustainability", "approve", "baseline", b.id)
@@ -257,7 +257,7 @@ async def update_initiative(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(i, key, value)
-    i.updated_at = datetime.now(timezone.utc)
+    i.updated_at = datetime.utcnow()
     session.add(i)
     await session.flush()
     await session.refresh(i)
@@ -301,7 +301,7 @@ async def update_risk(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(r, key, value)
-    r.updated_at = datetime.now(timezone.utc)
+    r.updated_at = datetime.utcnow()
     session.add(r)
     await session.flush()
     await session.refresh(r)
@@ -436,7 +436,7 @@ async def approve_request(
 
     if initiative:
         initiative.status = "approved"
-        initiative.updated_at = datetime.now(timezone.utc)
+        initiative.updated_at = datetime.utcnow()
         session.add(initiative)
     else:
         raise HTTPException(status_code=404, detail="Approval item not found")
@@ -463,7 +463,7 @@ async def reject_request(
 
     if initiative:
         initiative.status = "draft"
-        initiative.updated_at = datetime.now(timezone.utc)
+        initiative.updated_at = datetime.utcnow()
         session.add(initiative)
     else:
         raise HTTPException(status_code=404, detail="Approval item not found")

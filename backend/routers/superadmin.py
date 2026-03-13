@@ -1,24 +1,44 @@
 """
 Super Admin Router
-GET  /superadmin/dashboard, /tenants, /usage, /health, /settings
-POST /superadmin/tenants
-PUT  /superadmin/tenants/{id}, /settings
-POST /superadmin/tenants/{id}/suspend
+GET    /superadmin/dashboard
+GET    /superadmin/tenants
+POST   /superadmin/tenants
+GET    /superadmin/tenants/{id}
+PUT    /superadmin/tenants/{id}
+DELETE /superadmin/tenants/{id}
+POST   /superadmin/tenants/{id}/suspend
+POST   /superadmin/tenants/{id}/activate
+GET    /superadmin/tenants/{id}/config
+PUT    /superadmin/tenants/{id}/config
+GET    /superadmin/tenants/{id}/users
+GET    /superadmin/users
+PUT    /superadmin/users/{id}
+GET    /superadmin/usage
+GET    /superadmin/health
+GET    /superadmin/settings
+PUT    /superadmin/settings
+GET    /superadmin/audit-log
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import require_role
 from models.user import User
-from models.tenant import Tenant, TenantConfig
+from models.tenant import Tenant, TenantConfig, TenantStatusEnum
 from models.commute import CommuteEntry
 from models.carpooling import Ride
+from models.organization import Office
+from models.audit import AuditLog
 from schemas.superadmin import (
     TenantRead, TenantCreate, TenantUpdate,
+    TenantConfigRead, TenantConfigUpdate,
+    UserSummaryRead, UserRoleUpdate,
+    AuditLogRead,
     SystemHealthRead, UsageAnalyticsRead, PlatformSettings,
 )
 from schemas.common import ApiResponse
@@ -26,6 +46,31 @@ from schemas.common import ApiResponse
 router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
 
 
+# ---------------------------------------------------------------------------
+# Helper: build TenantRead with computed counts
+# ---------------------------------------------------------------------------
+async def _tenant_with_counts(t: Tenant, session: AsyncSession) -> dict:
+    user_count = (await session.execute(
+        select(func.count(User.id)).where(User.tenant_id == t.id)
+    )).scalar_one()
+    office_count = (await session.execute(
+        select(func.count(Office.id)).where(Office.tenant_id == t.id, Office.is_active == True)
+    )).scalar_one()
+    total_emissions = float((await session.execute(
+        select(func.coalesce(func.sum(Office.total_emissions), 0)).where(Office.tenant_id == t.id)
+    )).scalar_one())
+
+    return {
+        **TenantRead.model_validate(t).model_dump(),
+        "user_count": user_count,
+        "office_count": office_count,
+        "total_emissions": round(total_emissions, 2),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Dashboard
+# ---------------------------------------------------------------------------
 @router.get("/dashboard", response_model=ApiResponse)
 async def get_dashboard(
     user=Depends(require_role("superadmin")),
@@ -50,25 +95,17 @@ async def get_dashboard(
     })
 
 
+# ---------------------------------------------------------------------------
+# Tenants — list & create
+# ---------------------------------------------------------------------------
 @router.get("/tenants", response_model=ApiResponse)
 async def list_tenants(
     user=Depends(require_role("superadmin")),
     session: AsyncSession = Depends(get_session),
 ):
-    """List all tenants."""
+    """List all tenants with user, office, and emission counts."""
     tenants = (await session.execute(select(Tenant))).scalars().all()
-
-    data = []
-    for t in tenants:
-        user_count = (await session.execute(
-            select(func.count(User.id)).where(User.tenant_id == t.id)
-        )).scalar_one()
-
-        data.append({
-            **TenantRead.model_validate(t).model_dump(),
-            "user_count": user_count,
-        })
-
+    data = [await _tenant_with_counts(t, session) for t in tenants]
     return ApiResponse(success=True, data=data)
 
 
@@ -79,7 +116,9 @@ async def create_tenant(
     session: AsyncSession = Depends(get_session),
 ):
     """Onboard a new tenant."""
-    existing = (await session.execute(select(Tenant).where(Tenant.slug == data.slug))).scalar_one_or_none()
+    existing = (await session.execute(
+        select(Tenant).where(Tenant.slug == data.slug)
+    )).scalar_one_or_none()
     if existing:
         raise HTTPException(status_code=409, detail="Tenant slug already exists")
 
@@ -87,13 +126,31 @@ async def create_tenant(
     session.add(tenant)
     await session.flush()
 
-    # Create default config
     config = TenantConfig(tenant_id=tenant.id)
     session.add(config)
     await session.flush()
     await session.refresh(tenant)
 
     return ApiResponse(success=True, data=TenantRead.model_validate(tenant))
+
+
+# ---------------------------------------------------------------------------
+# Tenants — single tenant CRUD
+# ---------------------------------------------------------------------------
+@router.get("/tenants/{tenant_id}", response_model=ApiResponse)
+async def get_tenant(
+    tenant_id: str,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get a single tenant with computed counts."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    return ApiResponse(success=True, data=await _tenant_with_counts(t, session))
 
 
 @router.put("/tenants/{tenant_id}", response_model=ApiResponse[TenantRead])
@@ -103,19 +160,41 @@ async def update_tenant(
     user=Depends(require_role("superadmin")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Update tenant configuration."""
-    t = (await session.execute(select(Tenant).where(Tenant.id == tenant_id))).scalar_one_or_none()
+    """Update tenant details."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
     if t is None:
         raise HTTPException(status_code=404, detail="Tenant not found")
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(t, key, value)
-    t.updated_at = datetime.now(timezone.utc)
+    t.updated_at = datetime.utcnow()
     session.add(t)
     await session.flush()
     await session.refresh(t)
 
     return ApiResponse(success=True, data=TenantRead.model_validate(t))
+
+
+@router.delete("/tenants/{tenant_id}", response_model=ApiResponse)
+async def deactivate_tenant(
+    tenant_id: str,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Permanently deactivate a tenant."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    t.status = TenantStatusEnum.DEACTIVATED
+    t.updated_at = datetime.utcnow()
+    session.add(t)
+
+    return ApiResponse(success=True, meta={"message": f"Tenant {t.name} deactivated"})
 
 
 @router.post("/tenants/{tenant_id}/suspend", response_model=ApiResponse)
@@ -125,26 +204,186 @@ async def suspend_tenant(
     session: AsyncSession = Depends(get_session),
 ):
     """Suspend a tenant."""
-    t = (await session.execute(select(Tenant).where(Tenant.id == tenant_id))).scalar_one_or_none()
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
     if t is None:
         raise HTTPException(status_code=404, detail="Tenant not found")
 
-    t.status = "suspended"
-    t.updated_at = datetime.now(timezone.utc)
+    t.status = TenantStatusEnum.SUSPENDED
+    t.updated_at = datetime.utcnow()
     session.add(t)
 
     return ApiResponse(success=True, meta={"message": f"Tenant {t.name} suspended"})
 
 
+@router.post("/tenants/{tenant_id}/activate", response_model=ApiResponse)
+async def activate_tenant(
+    tenant_id: str,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Reactivate a suspended or trial tenant."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    if t.status == TenantStatusEnum.DEACTIVATED:
+        raise HTTPException(status_code=400, detail="Deactivated tenants cannot be reactivated")
+
+    t.status = TenantStatusEnum.ACTIVE
+    t.updated_at = datetime.utcnow()
+    session.add(t)
+
+    return ApiResponse(success=True, meta={"message": f"Tenant {t.name} activated"})
+
+
+# ---------------------------------------------------------------------------
+# Tenant config
+# ---------------------------------------------------------------------------
+@router.get("/tenants/{tenant_id}/config", response_model=ApiResponse[TenantConfigRead])
+async def get_tenant_config(
+    tenant_id: str,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get a tenant's feature configuration."""
+    config = (await session.execute(
+        select(TenantConfig).where(TenantConfig.tenant_id == tenant_id)
+    )).scalar_one_or_none()
+    if config is None:
+        raise HTTPException(status_code=404, detail="Tenant config not found")
+
+    return ApiResponse(success=True, data=TenantConfigRead.model_validate(config))
+
+
+@router.put("/tenants/{tenant_id}/config", response_model=ApiResponse[TenantConfigRead])
+async def update_tenant_config(
+    tenant_id: str,
+    update: TenantConfigUpdate,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Update a tenant's feature flags and settings."""
+    config = (await session.execute(
+        select(TenantConfig).where(TenantConfig.tenant_id == tenant_id)
+    )).scalar_one_or_none()
+    if config is None:
+        raise HTTPException(status_code=404, detail="Tenant config not found")
+
+    for key, value in update.model_dump(exclude_unset=True).items():
+        setattr(config, key, value)
+    config.updated_at = datetime.utcnow()
+    session.add(config)
+    await session.flush()
+    await session.refresh(config)
+
+    return ApiResponse(success=True, data=TenantConfigRead.model_validate(config))
+
+
+# ---------------------------------------------------------------------------
+# Tenant users
+# ---------------------------------------------------------------------------
+@router.get("/tenants/{tenant_id}/users", response_model=ApiResponse)
+async def list_tenant_users(
+    tenant_id: str,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, le=200),
+):
+    """List all users belonging to a specific tenant."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    users = (await session.execute(
+        select(User).where(User.tenant_id == tenant_id).offset(skip).limit(limit)
+    )).scalars().all()
+
+    total = (await session.execute(
+        select(func.count(User.id)).where(User.tenant_id == tenant_id)
+    )).scalar_one()
+
+    return ApiResponse(
+        success=True,
+        data=[UserSummaryRead.model_validate(u).model_dump() for u in users],
+        meta={"total": total, "skip": skip, "limit": limit},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Cross-tenant user management
+# ---------------------------------------------------------------------------
+@router.get("/users", response_model=ApiResponse)
+async def list_all_users(
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, le=200),
+    tenant_id: Optional[str] = Query(default=None),
+    role: Optional[str] = Query(default=None),
+):
+    """List all users across all tenants, with optional filters."""
+    query = select(User)
+    count_query = select(func.count(User.id))
+
+    if tenant_id:
+        query = query.where(User.tenant_id == tenant_id)
+        count_query = count_query.where(User.tenant_id == tenant_id)
+    if role:
+        query = query.where(User.role == role)
+        count_query = count_query.where(User.role == role)
+
+    total = (await session.execute(count_query)).scalar_one()
+    users = (await session.execute(query.offset(skip).limit(limit))).scalars().all()
+
+    return ApiResponse(
+        success=True,
+        data=[UserSummaryRead.model_validate(u).model_dump() for u in users],
+        meta={"total": total, "skip": skip, "limit": limit},
+    )
+
+
+@router.put("/users/{user_id}", response_model=ApiResponse[UserSummaryRead])
+async def update_user(
+    user_id: str,
+    update: UserRoleUpdate,
+    current_user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Update a user's role or active status across any tenant."""
+    u = (await session.execute(
+        select(User).where(User.id == user_id)
+    )).scalar_one_or_none()
+    if u is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    for key, value in update.model_dump(exclude_unset=True).items():
+        setattr(u, key, value)
+    u.updated_at = datetime.utcnow()
+    session.add(u)
+    await session.flush()
+    await session.refresh(u)
+
+    return ApiResponse(success=True, data=UserSummaryRead.model_validate(u))
+
+
+# ---------------------------------------------------------------------------
+# Usage analytics
+# ---------------------------------------------------------------------------
 @router.get("/usage", response_model=ApiResponse[UsageAnalyticsRead])
 async def get_usage(
     user=Depends(require_role("superadmin")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Usage analytics across tenants."""
+    """Usage analytics across all tenants."""
     total_tenants = (await session.execute(select(func.count(Tenant.id)))).scalar_one()
     active_tenants = (await session.execute(
-        select(func.count(Tenant.id)).where(Tenant.status == "active")
+        select(func.count(Tenant.id)).where(Tenant.status == TenantStatusEnum.ACTIVE)
     )).scalar_one()
     total_users = (await session.execute(select(func.count(User.id)))).scalar_one()
     total_commutes = (await session.execute(select(func.count(CommuteEntry.id)))).scalar_one()
@@ -154,6 +393,21 @@ async def get_usage(
     total_co2 = float((await session.execute(
         select(func.coalesce(func.sum(Ride.co2_saved), 0))
     )).scalar_one())
+
+    # Per-tenant breakdown
+    tenants = (await session.execute(select(Tenant))).scalars().all()
+    tenant_breakdown = []
+    for t in tenants:
+        u_count = (await session.execute(
+            select(func.count(User.id)).where(User.tenant_id == t.id)
+        )).scalar_one()
+        tenant_breakdown.append({
+            "tenant_id": t.id,
+            "name": t.name,
+            "plan": t.plan,
+            "status": t.status,
+            "user_count": u_count,
+        })
 
     return ApiResponse(success=True, data=UsageAnalyticsRead(
         total_tenants=total_tenants,
@@ -168,10 +422,13 @@ async def get_usage(
         api_calls_today=0,
         storage_used_gb=0,
         revenue_monthly=0,
-        tenant_breakdown=[],
+        tenant_breakdown=tenant_breakdown,
     ))
 
 
+# ---------------------------------------------------------------------------
+# System health
+# ---------------------------------------------------------------------------
 @router.get("/health", response_model=ApiResponse[SystemHealthRead])
 async def get_system_health(
     user=Depends(require_role("superadmin")),
@@ -193,10 +450,13 @@ async def get_system_health(
             {"name": "Redis Cache", "status": "healthy", "latency_ms": 3},
             {"name": "Background Workers", "status": "healthy", "latency_ms": None},
         ],
-        last_checked=datetime.now(timezone.utc),
+        last_checked=datetime.utcnow(),
     ))
 
 
+# ---------------------------------------------------------------------------
+# Platform settings
+# ---------------------------------------------------------------------------
 @router.get("/settings", response_model=ApiResponse[PlatformSettings])
 async def get_settings(
     user=Depends(require_role("superadmin")),
@@ -212,3 +472,40 @@ async def update_settings(
 ):
     """Update platform settings."""
     return ApiResponse(success=True, data=settings_update)
+
+
+# ---------------------------------------------------------------------------
+# Platform audit log
+# ---------------------------------------------------------------------------
+@router.get("/audit-log", response_model=ApiResponse)
+async def get_audit_log(
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, le=200),
+    action: Optional[str] = Query(default=None),
+    entity_type: Optional[str] = Query(default=None),
+    user_id: Optional[str] = Query(default=None),
+):
+    """Platform-wide audit log with optional filters."""
+    query = select(AuditLog).order_by(AuditLog.timestamp.desc())
+    count_query = select(func.count(AuditLog.id))
+
+    if action:
+        query = query.where(AuditLog.action == action)
+        count_query = count_query.where(AuditLog.action == action)
+    if entity_type:
+        query = query.where(AuditLog.entity_type == entity_type)
+        count_query = count_query.where(AuditLog.entity_type == entity_type)
+    if user_id:
+        query = query.where(AuditLog.user_id == user_id)
+        count_query = count_query.where(AuditLog.user_id == user_id)
+
+    total = (await session.execute(count_query)).scalar_one()
+    logs = (await session.execute(query.offset(skip).limit(limit))).scalars().all()
+
+    return ApiResponse(
+        success=True,
+        data=[AuditLogRead.model_validate(log).model_dump() for log in logs],
+        meta={"total": total, "skip": skip, "limit": limit},
+    )

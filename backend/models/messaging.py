@@ -4,7 +4,7 @@ MessageThread, Message, ThreadParticipant
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -40,8 +40,8 @@ class MessageThread(SQLModel, table=True):
     is_pinned: bool = Field(default=False)
     last_message_at: Optional[datetime] = Field(default=None)
     last_message_preview: Optional[str] = Field(default=None, max_length=200)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class ThreadParticipant(SQLModel, table=True):
@@ -58,7 +58,7 @@ class ThreadParticipant(SQLModel, table=True):
     is_online: bool = Field(default=False)
     last_seen: Optional[datetime] = Field(default=None)
     unread_count: int = Field(default=0)
-    joined_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    joined_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Message(SQLModel, table=True):
@@ -78,5 +78,5 @@ class Message(SQLModel, table=True):
     )
     is_read: bool = Field(default=False)
     reactions: Optional[list] = Field(default=None, sa_column=Column(JSON))
-    metadata: Optional[dict] = Field(default=None, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    message_metadata: Optional[dict] = Field(default=None, sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())

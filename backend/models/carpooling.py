@@ -5,7 +5,7 @@ Maps to TypeScript: Ride, ExtendedRide, RecurringRideTemplate
 """
 
 import uuid
-from datetime import datetime, date, time, timezone
+from datetime import datetime, date, time
 from typing import Optional, List
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -86,8 +86,8 @@ class Ride(SQLModel, table=True):
     preferences: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     preferences_tags: Optional[list] = Field(default=None, sa_column=Column(JSON))
     share_code: Optional[str] = Field(default=None, max_length=10)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class RideRequest(SQLModel, table=True):
@@ -111,7 +111,7 @@ class RideRequest(SQLModel, table=True):
     pickup_lat: Optional[float] = Field(default=None)
     pickup_lng: Optional[float] = Field(default=None)
     message: Optional[str] = Field(default=None, max_length=300)
-    requested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    requested_at: datetime = Field(default_factory=lambda: datetime.utcnow())
     responded_at: Optional[datetime] = Field(default=None)
 
 
@@ -151,8 +151,8 @@ class RecurringRideTemplate(SQLModel, table=True):
     total_rides_completed: int = Field(default=0)
     total_co2_saved: float = Field(default=0)
     average_passengers: float = Field(default=0)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class RideException(SQLModel, table=True):
@@ -170,4 +170,4 @@ class RideException(SQLModel, table=True):
     )
     reason: Optional[str] = Field(default=None, max_length=300)
     modified_departure_time: Optional[str] = Field(default=None, max_length=5)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())

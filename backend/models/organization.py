@@ -5,7 +5,7 @@ Maps to TypeScript: LocationPerformance, Baseline, Initiative, Scenario, Risk
 """
 
 import uuid
-from datetime import datetime, date, timezone
+from datetime import datetime, date
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -78,8 +78,8 @@ class Office(SQLModel, table=True):
     ev_chargers: int = Field(default=0)
     tenant_id: Optional[str] = Field(default=None, foreign_key="tenants.id", max_length=36)
     is_active: bool = Field(default=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Baseline(SQLModel, table=True):
@@ -100,8 +100,8 @@ class Baseline(SQLModel, table=True):
     locked: bool = Field(default=False)
     approved_by: Optional[str] = Field(default=None, max_length=200)
     approved_date: Optional[date] = Field(default=None)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Initiative(SQLModel, table=True):
@@ -124,8 +124,8 @@ class Initiative(SQLModel, table=True):
     start_date: date
     end_date: date
     description: Optional[str] = Field(default=None, max_length=1000)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Scenario(SQLModel, table=True):
@@ -148,7 +148,7 @@ class Scenario(SQLModel, table=True):
     payback: float = Field(default=0)
     parameters: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     created_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Risk(SQLModel, table=True):
@@ -175,8 +175,8 @@ class Risk(SQLModel, table=True):
     )
     linked_initiative_id: Optional[str] = Field(default=None, max_length=36)
     mitigation_plan: Optional[str] = Field(default=None, max_length=2000)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Policy(SQLModel, table=True):
@@ -196,5 +196,5 @@ class Policy(SQLModel, table=True):
     )
     effective_date: Optional[date] = Field(default=None)
     created_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())

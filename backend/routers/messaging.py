@@ -8,7 +8,7 @@ PUT  /messages/threads/{id}/read, /threads/{id}/pin
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import get_current_user
@@ -156,7 +156,7 @@ async def send_message(
         sender_name=user.name,
         content=data.content,
         type=data.type,
-        metadata=data.metadata,
+        message_metadata=data.metadata,
     )
     session.add(msg)
 
@@ -164,9 +164,9 @@ async def send_message(
     thread = (await session.execute(
         select(MessageThread).where(MessageThread.id == thread_id)
     )).scalar_one()
-    thread.last_message_at = datetime.now(timezone.utc)
+    thread.last_message_at = datetime.utcnow()
     thread.last_message_preview = data.content[:200]
-    thread.updated_at = datetime.now(timezone.utc)
+    thread.updated_at = datetime.utcnow()
     session.add(thread)
 
     # Increment unread for other participants

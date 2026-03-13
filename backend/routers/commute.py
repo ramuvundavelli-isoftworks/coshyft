@@ -13,7 +13,7 @@ POST /commute/calculate       - Preview emission calc
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, date, timezone, timedelta
+from datetime import datetime, date, timedelta
 
 from database import get_session
 from auth.dependencies import get_current_user
@@ -205,7 +205,7 @@ async def update_commute(
         raise HTTPException(status_code=404, detail="Commute entry not found")
 
     # 48-hour edit window
-    if (datetime.now(timezone.utc) - entry.created_at).total_seconds() > 48 * 3600:
+    if (datetime.utcnow() - entry.created_at).total_seconds() > 48 * 3600:
         raise HTTPException(status_code=403, detail="Edit window (48 hours) has expired")
 
     update_data = update.model_dump(exclude_unset=True)
@@ -226,7 +226,7 @@ async def update_commute(
         entry.emission_factor_value = calc["emission_factor_used"]
         entry.oxypoints_earned = calc["oxypoints"]
 
-    entry.updated_at = datetime.now(timezone.utc)
+    entry.updated_at = datetime.utcnow()
     session.add(entry)
     await session.flush()
     await session.refresh(entry)

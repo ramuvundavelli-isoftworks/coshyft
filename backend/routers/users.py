@@ -10,7 +10,7 @@ POST /users/{id}/deactivate (admin)
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import require_role
@@ -103,7 +103,7 @@ async def update_user(
     update_data = update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(target, key, value)
-    target.updated_at = datetime.now(timezone.utc)
+    target.updated_at = datetime.utcnow()
 
     session.add(target)
     await session.flush()
@@ -128,7 +128,7 @@ async def update_user_role(
         raise HTTPException(status_code=404, detail="User not found")
 
     target.role = role_update.role
-    target.updated_at = datetime.now(timezone.utc)
+    target.updated_at = datetime.utcnow()
     session.add(target)
     await session.flush()
     await session.refresh(target)
@@ -151,7 +151,7 @@ async def deactivate_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     target.is_active = False
-    target.updated_at = datetime.now(timezone.utc)
+    target.updated_at = datetime.utcnow()
     session.add(target)
 
     return ApiResponse(success=True, meta={"message": f"User {user_id} deactivated"})

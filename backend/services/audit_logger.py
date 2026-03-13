@@ -3,7 +3,7 @@ Audit Logger Service
 GDPR-compliant audit logging for all data-modifying operations.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -33,7 +33,7 @@ async def log_action(
         changes=changes,
         ip_address=ip_address,
         user_agent=user_agent,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.utcnow(),
     )
     session.add(log)
     await session.flush()
@@ -65,7 +65,7 @@ async def log_gdpr_action(
         gdpr_basis=gdpr_basis,
         data_retention_date=data_retention_date,
         region=region,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.utcnow(),
     )
     session.add(log)
     await session.flush()

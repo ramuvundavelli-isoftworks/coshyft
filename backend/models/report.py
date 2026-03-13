@@ -4,7 +4,7 @@ Report, ReportTemplate, CSRDSubmission
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON
@@ -62,8 +62,8 @@ class Report(SQLModel, table=True):
     parameters: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     generated_by: str = Field(foreign_key="users.id", max_length=36)
     approved_by: Optional[str] = Field(default=None, max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class ReportTemplate(SQLModel, table=True):
@@ -80,7 +80,7 @@ class ReportTemplate(SQLModel, table=True):
     sections: Optional[list] = Field(default=None, sa_column=Column(JSON))
     default_parameters: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     is_system: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class CSRDSubmission(SQLModel, table=True):
@@ -104,5 +104,5 @@ class CSRDSubmission(SQLModel, table=True):
     report_id: Optional[str] = Field(default=None, foreign_key="reports.id", max_length=36)
     submitted_at: Optional[datetime] = Field(default=None)
     submitted_by: Optional[str] = Field(default=None, foreign_key="users.id", max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())

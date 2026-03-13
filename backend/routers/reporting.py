@@ -7,7 +7,7 @@ POST /reports/generate, /reports/csrd-export
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import require_role
@@ -86,7 +86,7 @@ async def generate_report(
     report.status = "ready"
     report.file_url = f"/reports/{report.id}/download"
     report.file_size_bytes = 1024000
-    report.updated_at = datetime.now(timezone.utc)
+    report.updated_at = datetime.utcnow()
     session.add(report)
     await session.flush()
     await session.refresh(report)
@@ -141,7 +141,7 @@ async def export_csrd(
 
     if existing:
         existing.status = "in_progress"
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = datetime.utcnow()
         session.add(existing)
         await session.flush()
         await session.refresh(existing)
@@ -171,7 +171,7 @@ async def get_regulatory_status(
         RegulatoryStatusRead(
             framework="CSRD / ESRS E1",
             status="in_progress",
-            deadline=datetime(2027, 6, 30, tzinfo=timezone.utc),
+            deadline=datetime(2027, 6, 30),
             completeness=78.5,
             gaps=["E1-9 Financial risk assessment incomplete", "Data quality below 80% threshold"],
             next_steps=["Complete E1-9 disclosure", "Improve data quality to 80%+", "Schedule external audit"],
@@ -179,7 +179,7 @@ async def get_regulatory_status(
         RegulatoryStatusRead(
             framework="EPA Climate Action Plan",
             status="compliant",
-            deadline=datetime(2026, 12, 31, tzinfo=timezone.utc),
+            deadline=datetime(2026, 12, 31),
             completeness=92.0,
             gaps=["Annual reporting due Q4"],
             next_steps=["Submit annual report by December 31"],

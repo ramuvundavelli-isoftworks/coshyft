@@ -11,7 +11,7 @@ Recurring: POST/GET/PUT/DELETE /rides/recurring, pause/resume/exception
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 import uuid
 
 from database import get_session
@@ -205,7 +205,7 @@ async def update_ride(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(ride, key, value)
-    ride.updated_at = datetime.now(timezone.utc)
+    ride.updated_at = datetime.utcnow()
 
     session.add(ride)
     await session.flush()
@@ -229,7 +229,7 @@ async def cancel_ride(
         raise HTTPException(status_code=404, detail="Ride not found or not authorized")
 
     ride.status = "cancelled"
-    ride.updated_at = datetime.now(timezone.utc)
+    ride.updated_at = datetime.utcnow()
     session.add(ride)
 
     return ApiResponse(success=True, meta={"message": "Ride cancelled"})
@@ -287,7 +287,7 @@ async def accept_request(
         raise HTTPException(status_code=404, detail="Request not found")
 
     req.status = "accepted"
-    req.responded_at = datetime.now(timezone.utc)
+    req.responded_at = datetime.utcnow()
     ride.seats_available = max(0, ride.seats_available - 1)
 
     session.add(req)
@@ -317,7 +317,7 @@ async def reject_request(
         raise HTTPException(status_code=404, detail="Request not found")
 
     req.status = "rejected"
-    req.responded_at = datetime.now(timezone.utc)
+    req.responded_at = datetime.utcnow()
     session.add(req)
 
     return ApiResponse(success=True, meta={"message": "Request rejected"})
@@ -337,7 +337,7 @@ async def start_ride(
         raise HTTPException(status_code=404, detail="Ride not found")
 
     ride.status = "active"
-    ride.updated_at = datetime.now(timezone.utc)
+    ride.updated_at = datetime.utcnow()
     session.add(ride)
 
     return ApiResponse(success=True, meta={"message": "Ride started"})
@@ -357,7 +357,7 @@ async def complete_ride(
         raise HTTPException(status_code=404, detail="Ride not found")
 
     ride.status = "completed"
-    ride.updated_at = datetime.now(timezone.utc)
+    ride.updated_at = datetime.utcnow()
 
     passengers_count = ride.seats_total - ride.seats_available - 1
     ride.co2_saved = calculate_carpool_co2_savings(ride.distance_km, max(passengers_count, 1))
@@ -440,7 +440,7 @@ async def update_recurring_template(
 
     for key, value in update.model_dump(exclude_unset=True).items():
         setattr(t, key, value)
-    t.updated_at = datetime.now(timezone.utc)
+    t.updated_at = datetime.utcnow()
     session.add(t)
     await session.flush()
     await session.refresh(t)
@@ -486,7 +486,7 @@ async def pause_template(
         raise HTTPException(status_code=404, detail="Template not found")
 
     t.status = "paused"
-    t.updated_at = datetime.now(timezone.utc)
+    t.updated_at = datetime.utcnow()
     session.add(t)
 
     return ApiResponse(success=True, meta={"message": "Template paused"})
@@ -509,7 +509,7 @@ async def resume_template(
         raise HTTPException(status_code=404, detail="Template not found")
 
     t.status = "active"
-    t.updated_at = datetime.now(timezone.utc)
+    t.updated_at = datetime.utcnow()
     session.add(t)
 
     return ApiResponse(success=True, meta={"message": "Template resumed"})

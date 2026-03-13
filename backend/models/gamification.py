@@ -5,7 +5,7 @@ Maps to TypeScript: UserProfile, Achievement, Badge, Challenge
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum
@@ -78,7 +78,7 @@ class OxyPointsLedger(SQLModel, table=True):
     )
     description: Optional[str] = Field(default=None, max_length=300)
     reference_id: Optional[str] = Field(default=None, max_length=36)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow(), index=True)
 
 
 class UserAchievement(SQLModel, table=True):
@@ -124,7 +124,7 @@ class UserBadge(SQLModel, table=True):
     description: str = Field(max_length=300)
     icon: str = Field(max_length=10)
     color: str = Field(max_length=20)
-    earned_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    earned_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class Challenge(SQLModel, table=True):
@@ -152,7 +152,7 @@ class Challenge(SQLModel, table=True):
         sa_column=Column(SAEnum(ChallengeStatusEnum), nullable=False, default=ChallengeStatusEnum.ACTIVE)
     )
     participant_count: int = Field(default=0)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
 
 class ChallengeParticipant(SQLModel, table=True):
@@ -170,4 +170,4 @@ class ChallengeParticipant(SQLModel, table=True):
     progress: int = Field(default=0)
     completed: bool = Field(default=False)
     completed_at: Optional[datetime] = Field(default=None)
-    joined_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    joined_at: datetime = Field(default_factory=lambda: datetime.utcnow())

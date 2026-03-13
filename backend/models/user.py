@@ -4,7 +4,7 @@ Maps to TypeScript: User, GDPRConsent, DataRetentionPolicy
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column, String, Enum as SAEnum
@@ -67,8 +67,8 @@ class User(SQLModel, table=True):
     )
     tenant_id: Optional[str] = Field(default=None, foreign_key="tenants.id", max_length=36)
     is_active: bool = Field(default=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
     # Relationships
     gdpr_consent: Optional["GDPRConsent"] = Relationship(back_populates="user")
@@ -83,7 +83,7 @@ class GDPRConsent(SQLModel, table=True):
     analytics: bool = Field(default=False)
     marketing: bool = Field(default=False)
     data_sharing_carpooling: bool = Field(default=False)
-    consent_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    consent_date: datetime = Field(default_factory=lambda: datetime.utcnow())
     ip_address: Optional[str] = Field(default=None, max_length=45)
     user_agent: Optional[str] = Field(default=None, max_length=500)
 

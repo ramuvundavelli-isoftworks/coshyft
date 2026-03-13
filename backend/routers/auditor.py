@@ -12,7 +12,7 @@ PUT  /auditor/reviews/{area}/approve, /factors/{id}/approve
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
 
@@ -52,7 +52,7 @@ async def get_overview(
         evidence_items=evidence_count,
         verified_evidence=verified_count,
         compliance_score=78.5,
-        last_audit_date=datetime(2026, 2, 15, tzinfo=timezone.utc),
+        last_audit_date=datetime(2026, 2, 15),
     ))
 
 
@@ -212,7 +212,7 @@ async def verify_evidence(
 
     e.status = "verified"
     e.verified_by = user.id
-    e.verified_at = datetime.now(timezone.utc)
+    e.verified_at = datetime.utcnow()
     session.add(e)
 
     return ApiResponse(success=True, meta={"message": "Evidence verified"})
@@ -266,11 +266,11 @@ async def add_finding(
         description=data.description,
     )
     return ApiResponse(success=True, data={
-        "id": f"f-{datetime.now(timezone.utc).timestamp()}",
+        "id": f"f-{datetime.utcnow().timestamp()}",
         "area": data.area,
         "description": data.description,
         "severity": data.severity,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.utcnow().isoformat(),
     })
 
 
@@ -423,7 +423,7 @@ async def approve_factor(
 
     factor.approval_status = "approved"
     factor.approved_by = user.id
-    factor.approved_date = datetime.now(timezone.utc).date()
+    factor.approved_date = datetime.utcnow().date()
     session.add(factor)
 
     await log_action(

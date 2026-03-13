@@ -57,8 +57,16 @@ app = FastAPI(
 )
 
 # --- Middleware ---
+# Note: middlewares are applied in reverse order (last added = outermost = first to run).
+# CORS must be outermost so it always sets headers, even when inner middleware raises.
 
-# CORS
+# Audit Logging (innermost)
+app.add_middleware(AuditMiddleware)
+
+# Rate Limiter
+app.add_middleware(RateLimiterMiddleware)
+
+# CORS (outermost — added last so it runs first)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
@@ -66,12 +74,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Rate Limiter
-app.add_middleware(RateLimiterMiddleware)
-
-# Audit Logging
-app.add_middleware(AuditMiddleware)
 
 
 # --- Routers ---

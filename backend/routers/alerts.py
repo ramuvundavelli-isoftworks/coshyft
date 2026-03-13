@@ -7,7 +7,7 @@ PUT  /alerts/{id}/resolve, /alerts/{id}/dismiss
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
+from datetime import datetime
 
 from database import get_session
 from auth.dependencies import get_current_user
@@ -92,7 +92,7 @@ async def resolve_alert(
 
     alert.resolved = True
     alert.resolved_by = user.id
-    alert.resolved_at = datetime.now(timezone.utc)
+    alert.resolved_at = datetime.utcnow()
     session.add(alert)
 
     return ApiResponse(success=True, meta={"message": "Alert resolved"})

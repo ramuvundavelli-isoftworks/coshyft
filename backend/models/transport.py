@@ -4,7 +4,7 @@ IrishTransportMode, IrishWorkplaceBenefit
 Maps to TypeScript: IrishTransportMode, IrishWorkplaceBenefit
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, Enum as SAEnum, JSON

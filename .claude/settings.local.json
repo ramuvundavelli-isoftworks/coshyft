@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"robocopy f:\\\\coshyft\\\\src f:\\\\coshyft\\\\frontend\\\\src /E /MOVE\")",
+      "Bash(python seed.py)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import bcrypt; print\\(bcrypt.__version__\\)\")",
+      "Bash(python -m pip show bcrypt)",
+      "Bash(venv/Scripts/python.exe -m pip install \"bcrypt==3.2.2\")",
+      "Bash(venv/Scripts/python.exe -c \"import bcrypt; print\\(bcrypt.__version__\\)\")",
+      "Bash(find . -name \"*.py\" -not -path \"./venv/*\" -exec grep -l \"datetime\\\\.now\\(timezone\\\\.utc\\)\" {})",
+      "Bash(xargs sed:*)",
+      "Bash(sed -i 's/from datetime import datetime, timedelta, timezone/from datetime import datetime, timedelta/g' auth/jwt.py)",
+      "Bash(sed -i 's/from datetime import datetime, date, time, timezone/from datetime import datetime, date, time/g' models/carpooling.py)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"getAuditLog\\\\|AuditLog\" /f/coshyft/frontend/src/app/pages --include=*.tsx)",
+      "Bash(grep -rn \"superadminApi\\\\.\" /f/coshyft/frontend/src/app/pages/Super*.tsx)"
+    ]
+  }
+}
