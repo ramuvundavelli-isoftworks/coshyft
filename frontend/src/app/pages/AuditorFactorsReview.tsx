@@ -96,8 +96,8 @@ export default function AuditorFactorsReview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Factors Review</h1>
-          <p className="text-gray-600 mt-1">Emission factor verification and validation</p>
+          <h1 className="text-3xl font-bold text-foreground">Factors Review</h1>
+          <p className="text-muted-foreground mt-1">Emission factor verification and validation</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => setIsAddCommentDialogOpen(true)}>
@@ -115,45 +115,45 @@ export default function AuditorFactorsReview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Database className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Database className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Factors</p>
-              <p className="text-2xl font-bold text-gray-900">{factors.length}</p>
+              <p className="text-sm text-muted-foreground">Total Factors</p>
+              <p className="text-2xl font-bold text-foreground">{factors.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Verified</p>
-              <p className="text-2xl font-bold text-green-600">3</p>
+              <p className="text-sm text-muted-foreground">Verified</p>
+              <p className="text-2xl font-bold text-success">3</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Lock className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Lock className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Locked</p>
-              <p className="text-2xl font-bold text-gray-900">3</p>
+              <p className="text-sm text-muted-foreground">Locked</p>
+              <p className="text-2xl font-bold text-foreground">3</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Database className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Database className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Data Source</p>
-              <p className="text-lg font-bold text-gray-900">DEFRA 2024</p>
+              <p className="text-sm text-muted-foreground">Data Source</p>
+              <p className="text-lg font-bold text-foreground">DEFRA 2024</p>
             </div>
           </div>
         </Card>
@@ -161,7 +161,7 @@ export default function AuditorFactorsReview() {
 
       {/* Factors Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Emission Factors</h3>
+        <h3 className="font-semibold text-foreground mb-4">Emission Factors</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -183,19 +183,19 @@ export default function AuditorFactorsReview() {
                 <TableCell>{factor.source}</TableCell>
                 <TableCell>
                   {factor.locked ? (
-                    <Badge className="bg-purple-100 text-purple-700">
+                    <Badge className="bg-info-subtle text-info">
                       <Lock className="h-3 w-3 mr-1" />
                       Locked
                     </Badge>
                   ) : (
-                    <Badge className="bg-gray-100 text-gray-700">Unlocked</Badge>
+                    <Badge className="bg-muted text-foreground">Unlocked</Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   {factor.verified ? (
-                    <Badge className="bg-green-100 text-green-700">Verified</Badge>
+                    <Badge className="bg-success-subtle text-success">Verified</Badge>
                   ) : (
-                    <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                    <Badge className="bg-warning-subtle text-warning">Pending</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -241,26 +241,26 @@ export default function AuditorFactorsReview() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Value</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedFactor.value}</p>
+                  <Label className="text-sm text-muted-foreground">Value</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedFactor.value}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Unit</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedFactor.unit}</p>
+                  <Label className="text-sm text-muted-foreground">Unit</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedFactor.unit}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Source</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedFactor.source}</p>
+                <Label className="text-sm text-muted-foreground">Source</Label>
+                <p className="font-medium text-foreground mt-1">{selectedFactor.source}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Lock Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedFactor.locked ? 'Locked' : 'Unlocked'}</p>
+                  <Label className="text-sm text-muted-foreground">Lock Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedFactor.locked ? 'Locked' : 'Unlocked'}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Verification</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedFactor.verified ? 'Verified' : 'Pending'}</p>
+                  <Label className="text-sm text-muted-foreground">Verification</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedFactor.verified ? 'Verified' : 'Pending'}</p>
                 </div>
               </div>
             </div>
@@ -329,14 +329,14 @@ export default function AuditorFactorsReview() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
-              <p className="text-sm text-green-900">
+            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg mb-4">
+              <p className="text-sm text-success">
                 <strong>Factor:</strong> {selectedFactor?.name}
               </p>
-              <p className="text-sm text-green-900">
+              <p className="text-sm text-success">
                 <strong>Value:</strong> {selectedFactor?.value} {selectedFactor?.unit}
               </p>
-              <p className="text-sm text-green-900">
+              <p className="text-sm text-success">
                 <strong>Source:</strong> {selectedFactor?.source}
               </p>
             </div>

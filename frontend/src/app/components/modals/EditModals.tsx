@@ -83,7 +83,7 @@ export function EditLocationModal({ isOpen, onClose, onUpdate, location }: EditL
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Edit className="h-5 w-5 text-[#00bc7d]" />
+            <Edit className="h-5 w-5 text-brand-500" />
             Edit Location
           </DialogTitle>
           <DialogDescription>
@@ -183,10 +183,10 @@ export function EditLocationModal({ isOpen, onClose, onUpdate, location }: EditL
             />
           </div>
 
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="p-3 bg-warning-subtle border border-warning/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-800">
+              <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-warning">
                 Changes will affect all users assigned to this location. Deactivating will prevent new assignments.
               </p>
             </div>
@@ -270,7 +270,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Edit className="h-5 w-5 text-[#00bc7d]" />
+            <Edit className="h-5 w-5 text-brand-500" />
             Edit Commute Profile
           </DialogTitle>
           <DialogDescription>
@@ -281,7 +281,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
         <div className="space-y-5 py-4">
           {/* Home Location */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900">Home Location</h3>
+            <h3 className="text-sm font-semibold text-foreground">Home Location</h3>
             <div>
               <Label htmlFor="homeAddress">Home Address *</Label>
               <Input
@@ -304,7 +304,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
 
           {/* Work Details */}
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-sm font-semibold text-gray-900">Work Details</h3>
+            <h3 className="text-sm font-semibold text-foreground">Work Details</h3>
             <div>
               <Label htmlFor="workLocation">Primary Work Location *</Label>
               <Select 
@@ -347,7 +347,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
 
           {/* Carpool Settings */}
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-sm font-semibold text-gray-900">Carpool Settings</h3>
+            <h3 className="text-sm font-semibold text-foreground">Carpool Settings</h3>
             
             <div className="space-y-3">
               <div className="flex items-center gap-2">
@@ -358,7 +358,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
                   onChange={(e) => setFormData({ ...formData, flexibleHours: e.target.checked })}
                   className="rounded"
                 />
-                <label htmlFor="flexibleHours" className="text-sm text-gray-700 cursor-pointer">
+                <label htmlFor="flexibleHours" className="text-sm text-foreground cursor-pointer">
                   I have flexible working hours
                 </label>
               </div>
@@ -371,14 +371,14 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
                   onChange={(e) => setFormData({ ...formData, availableForCarpool: e.target.checked })}
                   className="rounded"
                 />
-                <label htmlFor="availableForCarpool" className="text-sm text-gray-700 cursor-pointer">
+                <label htmlFor="availableForCarpool" className="text-sm text-foreground cursor-pointer">
                   Available for carpooling
                 </label>
               </div>
             </div>
 
             {formData.availableForCarpool && (
-              <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+              <div className="p-4 bg-background-subtle rounded-lg space-y-4">
                 <div>
                   <Label htmlFor="musicPreference">Music Preference</Label>
                   <Select 
@@ -428,7 +428,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
                       })}
                       className="rounded"
                     />
-                    <label htmlFor="smokingAllowed" className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor="smokingAllowed" className="text-sm text-foreground cursor-pointer">
                       Smoking allowed
                     </label>
                   </div>
@@ -444,7 +444,7 @@ export function EditCommuteProfileModal({ isOpen, onClose, onUpdate, profile }: 
                       })}
                       className="rounded"
                     />
-                    <label htmlFor="petsAllowed" className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor="petsAllowed" className="text-sm text-foreground cursor-pointer">
                       Pets allowed
                     </label>
                   </div>
@@ -521,7 +521,7 @@ export function EditRideModal({ isOpen, onClose, onUpdate, ride }: EditRideModal
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Edit className="h-5 w-5 text-[#00bc7d]" />
+            <Edit className="h-5 w-5 text-brand-500" />
             Edit Ride
           </DialogTitle>
           <DialogDescription>

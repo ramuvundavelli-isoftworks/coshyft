@@ -100,8 +100,8 @@ export default function ScenarioModeling() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Scenario Modeling</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Scenario Modeling</h1>
+          <p className="text-muted-foreground mt-1">
             What-if analysis and emissions projections
           </p>
         </div>
@@ -121,45 +121,45 @@ export default function ScenarioModeling() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Target className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Target className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Scenarios</p>
-              <p className="text-2xl font-bold text-gray-900">{scenarios.length}</p>
+              <p className="text-sm text-muted-foreground">Total Scenarios</p>
+              <p className="text-2xl font-bold text-foreground">{scenarios.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Best Scenario</p>
-              <p className="text-lg font-bold text-green-600">-35%</p>
+              <p className="text-sm text-muted-foreground">Best Scenario</p>
+              <p className="text-lg font-bold text-success">-35%</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Play className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Play className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Status</p>
-              <p className="text-lg font-bold text-gray-900">3 Completed</p>
+              <p className="text-sm text-muted-foreground">Status</p>
+              <p className="text-lg font-bold text-foreground">3 Completed</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Target className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Target className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Target Year</p>
-              <p className="text-2xl font-bold text-gray-900">2030</p>
+              <p className="text-sm text-muted-foreground">Target Year</p>
+              <p className="text-2xl font-bold text-foreground">2030</p>
             </div>
           </div>
         </Card>
@@ -168,7 +168,7 @@ export default function ScenarioModeling() {
       {/* Scenario Comparison Chart */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Scenario Projections</h3>
+          <h3 className="font-semibold text-foreground">Scenario Projections</h3>
           <Button variant="outline" size="sm" onClick={() => setIsExportDialogOpen(true)}>
             <Download className="h-4 w-4 mr-1" />
             Export Results
@@ -209,33 +209,33 @@ export default function ScenarioModeling() {
 
       {/* Scenarios List */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Defined Scenarios</h3>
+        <h3 className="font-semibold text-foreground mb-4">Defined Scenarios</h3>
         <div className="space-y-3">
           {scenarios.map((scenario) => (
             <div key={scenario.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-medium text-gray-900">{scenario.name}</h4>
+                    <h4 className="font-medium text-foreground">{scenario.name}</h4>
                     <Badge
                       className={
                         scenario.status === 'completed'
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-success-subtle text-success'
                           : scenario.status === 'running'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-info-subtle text-info'
+                          : 'bg-muted text-foreground'
                       }
                     >
                       {scenario.status}
                     </Badge>
                     {scenario.reduction > 0 && (
-                      <Badge className="bg-green-100 text-green-700">
+                      <Badge className="bg-success-subtle text-success">
                         -{scenario.reduction}% emissions
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{scenario.description}</p>
-                  <p className="text-xs text-gray-500">Target Year: {scenario.targetYear}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{scenario.description}</p>
+                  <p className="text-xs text-muted-foreground">Target Year: {scenario.targetYear}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -391,14 +391,14 @@ export default function ScenarioModeling() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900 mb-2">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info mb-2">
                 <strong>Scenario:</strong> {selectedScenario?.name}
               </p>
-              <p className="text-sm text-blue-900 mb-2">
+              <p className="text-sm text-info mb-2">
                 <strong>Target Year:</strong> {selectedScenario?.targetYear}
               </p>
-              <p className="text-sm text-blue-700 mt-3">
+              <p className="text-sm text-info mt-3">
                 Model will calculate emissions projections based on scenario assumptions. Results typically available in 2-3 minutes.
               </p>
             </div>

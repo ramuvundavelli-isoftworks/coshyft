@@ -101,8 +101,8 @@ export default function AuditorEmissionsReview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Emissions Review</h1>
-          <p className="text-gray-600 mt-1">Sample-based testing and verification</p>
+          <h1 className="text-3xl font-bold text-foreground">Emissions Review</h1>
+          <p className="text-muted-foreground mt-1">Sample-based testing and verification</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => setIsApproveDialogOpen(true)}>
@@ -120,45 +120,45 @@ export default function AuditorEmissionsReview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Activity className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Activity className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Samples Tested</p>
-              <p className="text-2xl font-bold text-gray-900">4</p>
+              <p className="text-sm text-muted-foreground">Samples Tested</p>
+              <p className="text-2xl font-bold text-foreground">4</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Verified</p>
-              <p className="text-2xl font-bold text-green-600">3</p>
+              <p className="text-sm text-muted-foreground">Verified</p>
+              <p className="text-2xl font-bold text-success">3</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Issues Found</p>
-              <p className="text-2xl font-bold text-yellow-600">1</p>
+              <p className="text-sm text-muted-foreground">Issues Found</p>
+              <p className="text-2xl font-bold text-warning">1</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <FileText className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Avg Data Quality</p>
-              <p className="text-2xl font-bold text-gray-900">94%</p>
+              <p className="text-sm text-muted-foreground">Avg Data Quality</p>
+              <p className="text-2xl font-bold text-foreground">94%</p>
             </div>
           </div>
         </Card>
@@ -166,7 +166,7 @@ export default function AuditorEmissionsReview() {
 
       {/* Sample Review */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Emissions Samples</h3>
+        <h3 className="font-semibold text-foreground mb-4">Emissions Samples</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -185,15 +185,15 @@ export default function AuditorEmissionsReview() {
                 <TableCell>{sample.emissions}</TableCell>
                 <TableCell>{sample.trips}</TableCell>
                 <TableCell>
-                  <Badge className={sample.quality >= 95 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>
+                  <Badge className={sample.quality >= 95 ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'}>
                     {sample.quality}%
                   </Badge>
                 </TableCell>
                 <TableCell>
                   {sample.verified ? (
-                    <Badge className="bg-green-100 text-green-700">Verified</Badge>
+                    <Badge className="bg-success-subtle text-success">Verified</Badge>
                   ) : (
-                    <Badge className="bg-yellow-100 text-yellow-700">In Review</Badge>
+                    <Badge className="bg-warning-subtle text-warning">In Review</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -239,20 +239,20 @@ export default function AuditorEmissionsReview() {
             <div className="py-4">
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Emissions</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedSample.emissions} tCO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Emissions</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedSample.emissions} tCO₂e</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Trips</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedSample.trips}</p>
+                  <Label className="text-sm text-muted-foreground">Total Trips</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedSample.trips}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Data Quality</Label>
-                  <p className="text-2xl font-bold text-green-600 mt-1">{selectedSample.quality}%</p>
+                  <Label className="text-sm text-muted-foreground">Data Quality</Label>
+                  <p className="text-2xl font-bold text-success mt-1">{selectedSample.quality}%</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="text-lg font-bold text-gray-900 mt-1">
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="text-lg font-bold text-foreground mt-1">
                     {selectedSample.verified ? 'Verified' : 'In Review'}
                   </p>
                 </Card>
@@ -347,9 +347,9 @@ export default function AuditorEmissionsReview() {
             <DialogDescription>Download emissions review documentation</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Export includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Sample testing results</li>
                 <li>Data quality assessment</li>
                 <li>Flagged issues</li>

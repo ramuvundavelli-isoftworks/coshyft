@@ -29,6 +29,7 @@ from datetime import datetime
 from database import get_session
 from auth.dependencies import require_role
 from models.user import User
+from auth.passwords import hash_password
 from models.tenant import Tenant, TenantConfig, TenantStatusEnum
 from models.commute import CommuteEntry
 from models.carpooling import Ride
@@ -37,7 +38,7 @@ from models.audit import AuditLog
 from schemas.superadmin import (
     TenantRead, TenantCreate, TenantUpdate,
     TenantConfigRead, TenantConfigUpdate,
-    UserSummaryRead, UserRoleUpdate,
+    TenantUserCreate, UserSummaryRead, UserRoleUpdate,
     AuditLogRead,
     SystemHealthRead, UsageAnalyticsRead, PlatformSettings,
 )
@@ -313,6 +314,44 @@ async def list_tenant_users(
         data=[UserSummaryRead.model_validate(u).model_dump() for u in users],
         meta={"total": total, "skip": skip, "limit": limit},
     )
+
+
+@router.post("/tenants/{tenant_id}/users", response_model=ApiResponse[UserSummaryRead], status_code=201)
+async def create_tenant_user(
+    tenant_id: str,
+    data: TenantUserCreate,
+    user=Depends(require_role("superadmin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Create a new user for a specific tenant (e.g. a corporate admin)."""
+    t = (await session.execute(
+        select(Tenant).where(Tenant.id == tenant_id)
+    )).scalar_one_or_none()
+    if t is None:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    existing = (await session.execute(
+        select(User).where(User.email == data.email)
+    )).scalar_one_or_none()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    new_user = User(
+        email=data.email,
+        name=data.name,
+        hashed_password=hash_password(data.password),
+        role=data.role,
+        department=data.department,
+        tenant_id=tenant_id,
+        locale="en-IE",
+        region=t.primary_region,
+        is_active=True,
+    )
+    session.add(new_user)
+    await session.flush()
+    await session.refresh(new_user)
+
+    return ApiResponse(success=True, data=UserSummaryRead.model_validate(new_user))
 
 
 # ---------------------------------------------------------------------------

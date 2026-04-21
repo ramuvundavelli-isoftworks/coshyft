@@ -121,7 +121,7 @@ export default function AdvancedSearchModal({
               </DialogDescription>
             </div>
             {activeFiltersCount > 0 && (
-              <Badge variant="default" className="bg-blue-600">
+              <Badge variant="default" className="bg-info">
                 {activeFiltersCount} active
               </Badge>
             )}
@@ -131,7 +131,7 @@ export default function AdvancedSearchModal({
         <div className="space-y-6 py-4">
           {/* Route & Distance */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <MapPin className="h-4 w-4" />
               Route Preferences
             </div>
@@ -139,7 +139,7 @@ export default function AdvancedSearchModal({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Maximum Distance</Label>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-foreground">
                   {filters.maxDistance} km
                 </span>
               </div>
@@ -151,7 +151,7 @@ export default function AdvancedSearchModal({
                 step={5}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
                 <span>5 km</span>
                 <span>50 km</span>
               </div>
@@ -160,7 +160,7 @@ export default function AdvancedSearchModal({
 
           {/* Time Window */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <Clock className="h-4 w-4" />
               Departure Time Window
             </div>
@@ -189,7 +189,7 @@ export default function AdvancedSearchModal({
 
           {/* Seats & Rating */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <Users className="h-4 w-4" />
               Capacity & Rating
             </div>
@@ -236,7 +236,7 @@ export default function AdvancedSearchModal({
 
           {/* Vehicle Type */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <Car className="h-4 w-4" />
               Vehicle Preferences
             </div>
@@ -255,14 +255,14 @@ export default function AdvancedSearchModal({
                     onClick={() => toggleVehicleType(type.value)}
                     className={`flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
                       filters.vehicleTypes?.includes(type.value)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-info bg-info-subtle'
+                        : 'border-border hover:border-border'
                     }`}
                   >
                     <span className="text-xl">{type.icon}</span>
                     <span className="text-sm font-medium">{type.label}</span>
                     {filters.vehicleTypes?.includes(type.value) && (
-                      <Star className="h-4 w-4 ml-auto text-blue-600 fill-current" />
+                      <Star className="h-4 w-4 ml-auto text-info fill-current" />
                     )}
                   </div>
                 ))}
@@ -272,7 +272,7 @@ export default function AdvancedSearchModal({
 
           {/* Ride Preferences */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <MessageCircle className="h-4 w-4" />
               Ride Atmosphere Preferences
             </div>
@@ -346,13 +346,13 @@ export default function AdvancedSearchModal({
           </div>
 
           {/* Save Search */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Save className="h-5 w-5 text-blue-600" />
+                <Save className="h-5 w-5 text-info" />
                 <div>
-                  <p className="text-sm font-medium text-blue-900">Save this search</p>
-                  <p className="text-xs text-blue-700">Get notified when matching rides are posted</p>
+                  <p className="text-sm font-medium text-info">Save this search</p>
+                  <p className="text-xs text-info">Get notified when matching rides are posted</p>
                 </div>
               </div>
               <Button

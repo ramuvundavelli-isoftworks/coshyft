@@ -33,11 +33,11 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  EMPLOYEE:       'bg-blue-100 text-blue-700',
-  ADMIN:          'bg-purple-100 text-purple-700',
-  SUSTAINABILITY: 'bg-green-100 text-green-700',
-  AUDITOR:        'bg-orange-100 text-orange-700',
-  SUPERADMIN:     'bg-red-100 text-red-700',
+  EMPLOYEE:       'bg-info-subtle text-info',
+  ADMIN:          'bg-info-subtle text-info',
+  SUSTAINABILITY: 'bg-success-subtle text-success',
+  AUDITOR:        'bg-warning-subtle text-warning',
+  SUPERADMIN:     'bg-destructive-subtle text-destructive',
 };
 
 const PAGE_SIZE = 20;
@@ -139,8 +139,8 @@ export default function UserManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage employee accounts and access</p>
+          <h1 className="text-3xl font-bold text-foreground">User Management</h1>
+          <p className="text-muted-foreground mt-1">Manage employee accounts and access</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => refetch()} disabled={loading}>
@@ -157,17 +157,17 @@ export default function UserManagement() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {([
-          ['Total Users',  total,          'bg-blue-100',   Users,       'text-blue-600'],
-          ['Active',       activeCount,    'bg-green-100',  UserCheck,   'text-green-600'],
-          ['Suspended',    suspendedCount, 'bg-red-100',    Ban,         'text-red-600'],
-          ['Privileged',   adminCount,     'bg-purple-100', Shield,      'text-purple-600'],
+          ['Total Users',  total,          'bg-info-subtle',   Users,       'text-info'],
+          ['Active',       activeCount,    'bg-success-subtle',  UserCheck,   'text-success'],
+          ['Suspended',    suspendedCount, 'bg-destructive-subtle',    Ban,         'text-destructive'],
+          ['Privileged',   adminCount,     'bg-info-subtle', Shield,      'text-info'],
         ] as any[]).map(([label, val, bg, Icon, ic]) => (
           <Card key={label} className="p-6">
             <div className="flex items-center gap-3">
               <div className={`p-2 ${bg} rounded-lg`}><Icon className={`h-5 w-5 ${ic}`} /></div>
               <div>
-                <p className="text-sm text-gray-600">{label}</p>
-                <p className="text-2xl font-bold text-gray-900">{loading ? '—' : val}</p>
+                <p className="text-sm text-muted-foreground">{label}</p>
+                <p className="text-2xl font-bold text-foreground">{loading ? '—' : val}</p>
               </div>
             </div>
           </Card>
@@ -228,25 +228,25 @@ export default function UserManagement() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-gray-500">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : users.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-gray-500">No users found</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">No users found</TableCell></TableRow>
               ) : users.map((u: any) => (
-                <TableRow key={u.id} className="hover:bg-gray-50">
+                <TableRow key={u.id} className="hover:bg-background-subtle">
                   <TableCell className="font-medium">{u.name}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{u.email}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
                   <TableCell className="text-sm">{u.department ?? '—'}</TableCell>
                   <TableCell>
-                    <Badge className={ROLE_COLORS[u.role] ?? 'bg-gray-100 text-gray-700'}>
+                    <Badge className={ROLE_COLORS[u.role] ?? 'bg-muted text-foreground'}>
                       {ROLE_LABELS[u.role] ?? u.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                    <Badge className={u.is_active ? 'bg-success-subtle text-success' : 'bg-destructive-subtle text-destructive'}>
                       {u.is_active ? 'Active' : 'Suspended'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {u.created_at ? new Date(u.created_at).toLocaleDateString('en-IE') : '—'}
                   </TableCell>
                   <TableCell>
@@ -264,7 +264,7 @@ export default function UserManagement() {
                         <Ban className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" title="Delete" onClick={() => openDelete(u)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </div>
                   </TableCell>
@@ -276,15 +276,15 @@ export default function UserManagement() {
 
         {/* Pagination */}
         {!loading && total > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
-            <p className="text-sm text-gray-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-background-subtle">
+            <p className="text-sm text-muted-foreground">
               Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} users
             </p>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setPage(p => p - 1)} disabled={page === 1}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
+              <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
               <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -329,7 +329,7 @@ export default function UserManagement() {
             <DialogDescription>Update role for {selectedUser?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-3">
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+            <div className="p-3 bg-info-subtle border border-info/25 rounded-lg text-sm">
               Current: <Badge className={ROLE_COLORS[selectedUser?.role] ?? ''}>{ROLE_LABELS[selectedUser?.role] ?? selectedUser?.role}</Badge>
             </div>
             <Label>New Role</Label>
@@ -363,7 +363,7 @@ export default function UserManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {selectedUser?.is_active
                 ? 'This user will lose access to the platform until reactivated.'
                 : 'This user will regain full access to the platform.'}
@@ -390,7 +390,7 @@ export default function UserManagement() {
             <DialogDescription>Send reset email to {selectedUser?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               A password reset link will be sent to <strong>{selectedUser?.email}</strong>.
             </p>
           </div>
@@ -411,8 +411,8 @@ export default function UserManagement() {
             <DialogDescription>Remove platform access for {selectedUser?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">
+            <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg">
+              <p className="text-sm text-destructive">
                 <strong>Warning:</strong> This will deactivate the account. The user will no longer be able to log in.
               </p>
             </div>

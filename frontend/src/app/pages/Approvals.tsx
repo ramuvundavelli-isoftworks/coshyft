@@ -143,8 +143,8 @@ export default function Approvals() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Approvals</h1>
-          <p className="text-gray-600 mt-1">Manage approval requests and workflows</p>
+          <h1 className="text-3xl font-bold text-foreground">Approvals</h1>
+          <p className="text-muted-foreground mt-1">Manage approval requests and workflows</p>
         </div>
         <Button onClick={() => setIsExportDialogOpen(true)}>
           <Download className="h-4 w-4 mr-2" />
@@ -156,45 +156,45 @@ export default function Approvals() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Clock className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+              <p className="text-sm text-muted-foreground">Pending</p>
+              <p className="text-2xl font-bold text-warning">{pendingCount}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
+              <p className="text-sm text-muted-foreground">Approved</p>
+              <p className="text-2xl font-bold text-success">{approvedCount}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <XCircle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <XCircle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Rejected</p>
-              <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
+              <p className="text-sm text-muted-foreground">Rejected</p>
+              <p className="text-2xl font-bold text-destructive">{rejectedCount}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <CheckSquare className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <CheckSquare className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Requests</p>
-              <p className="text-2xl font-bold text-gray-900">{approvals.length}</p>
+              <p className="text-sm text-muted-foreground">Total Requests</p>
+              <p className="text-2xl font-bold text-foreground">{approvals.length}</p>
             </div>
           </div>
         </Card>
@@ -226,7 +226,7 @@ export default function Approvals() {
 
       {/* Approvals Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Approval Requests</h3>
+        <h3 className="font-semibold text-foreground mb-4">Approval Requests</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -244,29 +244,29 @@ export default function Approvals() {
               <TableRow key={approval.id}>
                 <TableCell className="font-medium">{approval.title}</TableCell>
                 <TableCell>
-                  <Badge className="bg-gray-100 text-gray-700">{approval.type}</Badge>
+                  <Badge className="bg-muted text-foreground">{approval.type}</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-gray-400" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                     {approval.requestedBy}
                   </div>
                 </TableCell>
                 <TableCell>{approval.requestDate}</TableCell>
                 <TableCell>
                   <Badge className={
-                    approval.priority === 'high' ? 'bg-red-100 text-red-700' :
-                    approval.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-gray-100 text-gray-700'
+                    approval.priority === 'high' ? 'bg-destructive-subtle text-destructive' :
+                    approval.priority === 'medium' ? 'bg-warning-subtle text-warning' :
+                    'bg-muted text-foreground'
                   }>
                     {approval.priority}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge className={
-                    approval.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                    approval.status === 'approved' ? 'bg-green-100 text-green-700' :
-                    'bg-red-100 text-red-700'
+                    approval.status === 'pending' ? 'bg-warning-subtle text-warning' :
+                    approval.status === 'approved' ? 'bg-success-subtle text-success' :
+                    'bg-destructive-subtle text-destructive'
                   }>
                     {approval.status}
                   </Badge>
@@ -294,7 +294,7 @@ export default function Approvals() {
                             setIsApproveDialogOpen(true);
                           }}
                         >
-                          <CheckCircle className="h-4 w-4 mr-1 text-green-600" />
+                          <CheckCircle className="h-4 w-4 mr-1 text-success" />
                           Approve
                         </Button>
                         <Button
@@ -305,7 +305,7 @@ export default function Approvals() {
                             setIsRejectDialogOpen(true);
                           }}
                         >
-                          <XCircle className="h-4 w-4 mr-1 text-red-600" />
+                          <XCircle className="h-4 w-4 mr-1 text-destructive" />
                           Reject
                         </Button>
                       </>
@@ -329,29 +329,29 @@ export default function Approvals() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Type</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedApproval.type}</p>
+                  <Label className="text-sm text-muted-foreground">Type</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedApproval.type}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedApproval.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedApproval.status}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Priority</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedApproval.priority}</p>
+                  <Label className="text-sm text-muted-foreground">Priority</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedApproval.priority}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Request Date</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedApproval.requestDate}</p>
+                  <Label className="text-sm text-muted-foreground">Request Date</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedApproval.requestDate}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Requested By</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedApproval.requestedBy}</p>
+                <Label className="text-sm text-muted-foreground">Requested By</Label>
+                <p className="font-medium text-foreground mt-1">{selectedApproval.requestedBy}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Description</Label>
-                <p className="text-gray-900 mt-1">{selectedApproval.description}</p>
+                <Label className="text-sm text-muted-foreground">Description</Label>
+                <p className="text-foreground mt-1">{selectedApproval.description}</p>
               </div>
             </div>
           )}
@@ -369,11 +369,11 @@ export default function Approvals() {
             <DialogDescription>Approve {selectedApproval?.title}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
-              <p className="text-sm text-green-900">
+            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg mb-4">
+              <p className="text-sm text-success">
                 <strong>Request:</strong> {selectedApproval?.title}
               </p>
-              <p className="text-sm text-green-900">
+              <p className="text-sm text-success">
                 <strong>Type:</strong> {selectedApproval?.type}
               </p>
             </div>
@@ -404,8 +404,8 @@ export default function Approvals() {
             <DialogDescription>Reject {selectedApproval?.title}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
-              <p className="text-sm text-red-900">
+            <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg mb-4">
+              <p className="text-sm text-destructive">
                 This will reject the approval request. Please provide a reason.
               </p>
             </div>

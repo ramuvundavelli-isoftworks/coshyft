@@ -82,7 +82,7 @@ const transportModes: TransportMode[] = [
     name: 'Work from Home',
     icon: Home,
     emissions: 0,
-    color: 'bg-green-100 text-green-700 border-green-300',
+    color: 'bg-success-subtle text-success border-success/40',
     description: 'No commute',
     factor: { value: 0, source: 'N/A' },
   },
@@ -91,7 +91,7 @@ const transportModes: TransportMode[] = [
     name: 'Walking',
     icon: Footprints,
     emissions: 0,
-    color: 'bg-green-100 text-green-700 border-green-300',
+    color: 'bg-success-subtle text-success border-success/40',
     description: 'Active travel',
     factor: { value: 0, source: 'N/A' },
   },
@@ -100,7 +100,7 @@ const transportModes: TransportMode[] = [
     name: 'Bicycle',
     icon: Bike,
     emissions: 0,
-    color: 'bg-green-100 text-green-700 border-green-300',
+    color: 'bg-success-subtle text-success border-success/40',
     description: 'Active travel',
     factor: { value: 0, source: 'N/A' },
   },
@@ -109,7 +109,7 @@ const transportModes: TransportMode[] = [
     name: 'E-Bike',
     icon: Zap,
     emissions: 0.005,
-    color: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+    color: 'bg-success-subtle text-success border-success/40',
     description: 'Electric bicycle',
     factor: { value: 0.005, source: 'SEAI 2024' },
   },
@@ -118,7 +118,7 @@ const transportModes: TransportMode[] = [
     name: 'DART',
     icon: Train,
     emissions: 0.025,
-    color: 'bg-blue-100 text-blue-700 border-blue-300',
+    color: 'bg-info-subtle text-info border-info/40',
     description: 'Electric rail',
     factor: { value: 0.025, source: 'SEAI 2024' },
   },
@@ -127,7 +127,7 @@ const transportModes: TransportMode[] = [
     name: 'Luas',
     icon: Train,
     emissions: 0.025,
-    color: 'bg-blue-100 text-blue-700 border-blue-300',
+    color: 'bg-info-subtle text-info border-info/40',
     description: 'Tram',
     factor: { value: 0.025, source: 'SEAI 2024' },
   },
@@ -136,7 +136,7 @@ const transportModes: TransportMode[] = [
     name: 'Bus',
     icon: Bus,
     emissions: 0.089,
-    color: 'bg-cyan-100 text-cyan-700 border-cyan-300',
+    color: 'bg-info-subtle text-info border-info/40',
     description: 'Public bus',
     factor: { value: 0.089, source: 'SEAI 2024' },
   },
@@ -145,7 +145,7 @@ const transportModes: TransportMode[] = [
     name: 'Electric Car',
     icon: Car,
     emissions: 0.053,
-    color: 'bg-teal-100 text-teal-700 border-teal-300',
+    color: 'bg-success-subtle text-success border-success/40',
     description: 'Battery EV',
     factor: { value: 0.053, source: 'SEAI 2024' },
   },
@@ -154,7 +154,7 @@ const transportModes: TransportMode[] = [
     name: 'Carpool',
     icon: Users,
     emissions: 0.084,
-    color: 'bg-purple-100 text-purple-700 border-purple-300',
+    color: 'bg-info-subtle text-info border-info/40',
     description: 'Shared ride',
     factor: { value: 0.084, source: 'SEAI 2024' },
     requiresCarpool: true,
@@ -164,7 +164,7 @@ const transportModes: TransportMode[] = [
     name: 'Drive Solo',
     icon: Car,
     emissions: 0.168,
-    color: 'bg-orange-100 text-orange-700 border-orange-300',
+    color: 'bg-warning-subtle text-warning border-warning/40',
     description: 'Petrol car',
     factor: { value: 0.168, source: 'SEAI 2024' },
   },
@@ -258,7 +258,7 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <TrendingDown className="h-6 w-6 text-[#00bc7d]" />
+            <TrendingDown className="h-6 w-6 text-brand-500" />
             Log Your Commute
           </DialogTitle>
           <DialogDescription>
@@ -316,19 +316,19 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
                     onClick={() => setSelectedMode(mode)}
                     className={`p-4 border-2 rounded-lg transition-all text-left ${
                       isSelected
-                        ? 'border-[#00bc7d] bg-green-50 shadow-md scale-105'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                        ? 'border-brand-500 bg-success-subtle shadow-md scale-105'
+                        : 'border-border hover:border-border hover:shadow-sm'
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-[#00bc7d] text-white' : mode.color}`}>
+                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-brand-500 text-white' : mode.color}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="flex-1">
-                        <p className={`font-semibold text-sm ${isSelected ? 'text-[#00bc7d]' : 'text-gray-900'}`}>
+                        <p className={`font-semibold text-sm ${isSelected ? 'text-brand-500' : 'text-foreground'}`}>
                           {mode.name}
                         </p>
-                        <p className="text-xs text-gray-500">{mode.description}</p>
+                        <p className="text-xs text-muted-foreground">{mode.description}</p>
                       </div>
                     </div>
                     <Badge variant="outline" className={`text-xs ${mode.color}`}>
@@ -356,7 +356,7 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
                 onChange={(e) => setDistance(e.target.value)}
                 placeholder="e.g., 15.5"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 We'll calculate round-trip emissions automatically
               </p>
             </div>
@@ -364,10 +364,10 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
 
           {/* Carpool Details */}
           {selectedMode?.requiresCarpool && (
-            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg space-y-4">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg space-y-4">
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-600" />
-                <p className="font-medium text-purple-900">Carpool Details</p>
+                <Users className="h-5 w-5 text-info" />
+                <p className="font-medium text-foreground">Carpool Details</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -404,9 +404,9 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
                 )}
               </div>
 
-              <div className="flex items-start gap-2 p-3 bg-white rounded-lg">
-                <Info className="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-purple-700">
+              <div className="flex items-start gap-2 p-3 bg-card rounded-lg">
+                <Info className="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-info">
                   {carpoolRole === 'driver' 
                     ? `Emissions are split among ${carpoolPassengers} passengers`
                     : 'As a passenger, you share the vehicle emissions'
@@ -418,41 +418,41 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
 
           {/* Impact Preview */}
           {selectedMode && distance && parseFloat(distance) > 0 && (
-            <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg">
+            <div className="p-4 bg-gradient-to-br from-success-subtle to-success-subtle border-2 border-success/25 rounded-lg">
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <p className="font-semibold text-green-900">Your Impact Today</p>
+                <CheckCircle className="h-5 w-5 text-success" />
+                <p className="font-semibold text-success">Your Impact Today</p>
               </div>
               
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-xs text-green-700 mb-1">Round Trip</p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-xs text-success mb-1">Round Trip</p>
+                  <p className="text-2xl font-bold text-success">
                     {(parseFloat(distance) * 2).toFixed(1)}
                   </p>
-                  <p className="text-xs text-green-600">km</p>
+                  <p className="text-xs text-success">km</p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-green-700 mb-1">Emissions</p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-xs text-success mb-1">Emissions</p>
+                  <p className="text-2xl font-bold text-success">
                     {emissions.toFixed(2)}
                   </p>
-                  <p className="text-xs text-green-600">kg CO₂e</p>
+                  <p className="text-xs text-success">kg CO₂e</p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-green-700 mb-1">Saved vs. Solo Drive</p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-xs text-success mb-1">Saved vs. Solo Drive</p>
+                  <p className="text-2xl font-bold text-success">
                     {savedEmissions.toFixed(2)}
                   </p>
-                  <p className="text-xs text-green-600">kg CO₂e</p>
+                  <p className="text-xs text-success">kg CO₂e</p>
                 </div>
               </div>
 
               {savedEmissions > 0 && (
-                <div className="mt-3 pt-3 border-t border-green-200">
-                  <p className="text-sm text-green-800 flex items-center gap-2">
+                <div className="mt-3 pt-3 border-t border-success/25">
+                  <p className="text-sm text-success flex items-center gap-2">
                     <TrendingDown className="h-4 w-4" />
                     <strong>Great choice!</strong> You reduced emissions by {((savedEmissions / (0.168 * parseFloat(distance) * 2)) * 100).toFixed(0)}% today
                   </p>
@@ -463,12 +463,12 @@ export function LogCommuteModal({ isOpen, onClose, onSubmit }: LogCommuteModalPr
 
           {/* Emission Factor Transparency */}
           {selectedMode && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-3 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <Info className="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs text-blue-900 font-medium">Emission Factor</p>
-                  <p className="text-xs text-blue-700 mt-1">
+                  <p className="text-xs text-info font-medium">Emission Factor</p>
+                  <p className="text-xs text-info mt-1">
                     Using {selectedMode.factor.value} kg CO₂e/km from {selectedMode.factor.source}
                   </p>
                 </div>

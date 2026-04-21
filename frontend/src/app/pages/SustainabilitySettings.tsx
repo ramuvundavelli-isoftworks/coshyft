@@ -29,8 +29,8 @@ export default function SustainabilitySettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+          <p className="text-muted-foreground mt-1">
             Configure platform settings and preferences
           </p>
         </div>
@@ -42,8 +42,8 @@ export default function SustainabilitySettings() {
 
       {/* Organization Settings */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-blue-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-info" />
           Organization Settings
         </h2>
         <div className="space-y-4">
@@ -70,8 +70,8 @@ export default function SustainabilitySettings() {
 
       {/* Reporting Settings */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-purple-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-info" />
           Reporting Periods
         </h2>
         <div className="grid grid-cols-3 gap-4">
@@ -104,8 +104,8 @@ export default function SustainabilitySettings() {
 
       {/* Data Settings */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Database className="h-5 w-5 text-green-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Database className="h-5 w-5 text-success" />
           Data & Calculations
         </h2>
         <div className="space-y-4">
@@ -119,8 +119,8 @@ export default function SustainabilitySettings() {
           </div>
           <div className="flex items-center justify-between py-3 border-t">
             <div>
-              <p className="font-medium text-gray-900">Automatic Calculation</p>
-              <p className="text-sm text-gray-600">Recalculate emissions daily</p>
+              <p className="font-medium text-foreground">Automatic Calculation</p>
+              <p className="text-sm text-muted-foreground">Recalculate emissions daily</p>
             </div>
             <Switch
               checked={settings.autoCalculation}
@@ -132,15 +132,15 @@ export default function SustainabilitySettings() {
 
       {/* Notification Settings */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Bell className="h-5 w-5 text-orange-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Bell className="h-5 w-5 text-warning" />
           Notifications
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="font-medium text-gray-900">Data Quality Alerts</p>
-              <p className="text-sm text-gray-600">Notify when data quality falls below threshold</p>
+              <p className="font-medium text-foreground">Data Quality Alerts</p>
+              <p className="text-sm text-muted-foreground">Notify when data quality falls below threshold</p>
             </div>
             <Switch
               checked={settings.notifyDataQuality}
@@ -149,8 +149,8 @@ export default function SustainabilitySettings() {
           </div>
           <div className="flex items-center justify-between py-3 border-t">
             <div>
-              <p className="font-medium text-gray-900">Target Progress Updates</p>
-              <p className="text-sm text-gray-600">Monthly updates on target achievement</p>
+              <p className="font-medium text-foreground">Target Progress Updates</p>
+              <p className="text-sm text-muted-foreground">Monthly updates on target achievement</p>
             </div>
             <Switch
               checked={settings.notifyTargetProgress}

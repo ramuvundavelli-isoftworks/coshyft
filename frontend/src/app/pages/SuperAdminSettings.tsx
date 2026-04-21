@@ -49,7 +49,7 @@ export default function SuperAdminSettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Loading settings...</p>
+        <p className="text-muted-foreground">Loading settings...</p>
       </div>
     );
   }
@@ -58,8 +58,8 @@ export default function SuperAdminSettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Platform Settings</h1>
-          <p className="text-gray-600 mt-1">Global platform configuration</p>
+          <h1 className="text-3xl font-bold text-foreground">Platform Settings</h1>
+          <p className="text-muted-foreground mt-1">Global platform configuration</p>
         </div>
         <Button onClick={handleSave} disabled={updateMutation.loading}>
           <Save className="h-4 w-4 mr-2" />
@@ -69,15 +69,15 @@ export default function SuperAdminSettings() {
 
       {/* System Settings */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Activity className="h-5 w-5 text-blue-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Activity className="h-5 w-5 text-info" />
           System Settings
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b">
             <div>
-              <p className="font-medium text-gray-900">Maintenance Mode</p>
-              <p className="text-sm text-gray-600">Temporarily disable platform access for all tenants</p>
+              <p className="font-medium text-foreground">Maintenance Mode</p>
+              <p className="text-sm text-muted-foreground">Temporarily disable platform access for all tenants</p>
             </div>
             <Switch
               checked={settings.maintenance_mode}
@@ -87,8 +87,8 @@ export default function SuperAdminSettings() {
 
           <div className="flex items-center justify-between py-3 border-b">
             <div>
-              <p className="font-medium text-gray-900">New Tenant Registration</p>
-              <p className="text-sm text-gray-600">Allow new organisations to sign up</p>
+              <p className="font-medium text-foreground">New Tenant Registration</p>
+              <p className="text-sm text-muted-foreground">Allow new organisations to sign up</p>
             </div>
             <Switch
               checked={settings.registration_enabled}
@@ -120,8 +120,8 @@ export default function SuperAdminSettings() {
 
       {/* API & Rate Limits */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Settings className="h-5 w-5 text-green-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Settings className="h-5 w-5 text-success" />
           API & Rate Limits
         </h2>
         <div className="space-y-4">
@@ -134,22 +134,22 @@ export default function SuperAdminSettings() {
               onChange={(e) => setSettings({ ...settings, global_rate_limit: parseInt(e.target.value) || 60 })}
               className="max-w-xs"
             />
-            <p className="text-sm text-gray-500">Applied to all API endpoints across all tenants</p>
+            <p className="text-sm text-muted-foreground">Applied to all API endpoints across all tenants</p>
           </div>
         </div>
       </Card>
 
       {/* Notifications */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-          <Bell className="h-5 w-5 text-purple-600" />
+        <h2 className="text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+          <Bell className="h-5 w-5 text-info" />
           System Notifications
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b">
             <div>
-              <p className="font-medium text-gray-900">Email Alerts for Critical Events</p>
-              <p className="text-sm text-gray-600">Notify platform admins on errors and threshold breaches</p>
+              <p className="font-medium text-foreground">Email Alerts for Critical Events</p>
+              <p className="text-sm text-muted-foreground">Notify platform admins on errors and threshold breaches</p>
             </div>
             <Switch
               checked={settings.feature_flags?.email_alerts ?? true}
@@ -160,8 +160,8 @@ export default function SuperAdminSettings() {
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="font-medium text-gray-900">New Tenant Onboarding Notifications</p>
-              <p className="text-sm text-gray-600">Alert superadmins when a new tenant signs up</p>
+              <p className="font-medium text-foreground">New Tenant Onboarding Notifications</p>
+              <p className="text-sm text-muted-foreground">Alert superadmins when a new tenant signs up</p>
             </div>
             <Switch
               checked={settings.feature_flags?.tenant_signup_alerts ?? true}
@@ -174,12 +174,12 @@ export default function SuperAdminSettings() {
       </Card>
 
       {/* Security */}
-      <Card className="p-6 bg-gray-50">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-600" />
+      <Card className="p-6 bg-background-subtle">
+        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Shield className="h-5 w-5 text-info" />
           Security Information
         </h3>
-        <div className="space-y-2 text-sm text-gray-700">
+        <div className="space-y-2 text-sm text-foreground">
           <p>• SSL/TLS encryption enabled for all connections</p>
           <p>• AES-256 encryption for data at rest</p>
           <p>• Automated security scanning enabled</p>

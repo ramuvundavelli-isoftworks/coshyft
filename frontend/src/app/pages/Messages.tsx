@@ -115,8 +115,8 @@ export default function Messages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Messages</h1>
+          <p className="text-muted-foreground mt-1">
             Chat with your carpool partners and commute buddies
           </p>
         </div>
@@ -131,28 +131,28 @@ export default function Messages() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Total Conversations</span>
-            <MessageCircle className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Total Conversations</span>
+            <MessageCircle className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             {threads.filter((t) => !t.isArchived).length}
           </p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Unread Messages</span>
-            <Badge className="bg-red-600">{unreadCount}</Badge>
+            <span className="text-sm text-muted-foreground">Unread Messages</span>
+            <Badge className="bg-destructive">{unreadCount}</Badge>
           </div>
-          <p className="text-2xl font-bold text-red-600">{unreadCount}</p>
+          <p className="text-2xl font-bold text-destructive">{unreadCount}</p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Active Rides</span>
-            <Car className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">Active Rides</span>
+            <Car className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-2xl font-bold text-success">
             {threads.filter((t) => t.type === 'ride').length}
           </p>
         </Card>
@@ -161,9 +161,9 @@ export default function Messages() {
       {/* Messages List */}
       <Card className="overflow-hidden">
         {/* Search Bar */}
-        <div className="p-4 border-b bg-gray-50">
+        <div className="p-4 border-b bg-background-subtle">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -177,11 +177,11 @@ export default function Messages() {
         <div className="divide-y">
           {filteredThreads.length === 0 ? (
             <div className="p-12 text-center">
-              <MessageCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 No conversations found
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchQuery
                   ? 'Try adjusting your search'
                   : 'Start a conversation with your carpool partners'}
@@ -200,8 +200,8 @@ export default function Messages() {
               return (
                 <div
                   key={thread.id}
-                  className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                    thread.unreadCount > 0 ? 'bg-blue-50' : ''
+                  className={`p-4 hover:bg-background-subtle cursor-pointer transition-colors ${
+                    thread.unreadCount > 0 ? 'bg-info-subtle' : ''
                   }`}
                   onClick={() => handleThreadClick(thread)}
                 >
@@ -209,8 +209,8 @@ export default function Messages() {
                     {/* Avatar */}
                     <div className="relative">
                       {thread.type === 'group' ? (
-                        <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
-                          <Users className="h-6 w-6 text-purple-600" />
+                        <div className="h-12 w-12 bg-info-subtle rounded-full flex items-center justify-center">
+                          <Users className="h-6 w-6 text-info" />
                         </div>
                       ) : (
                         <Avatar className="h-12 w-12">
@@ -223,7 +223,7 @@ export default function Messages() {
                         </Avatar>
                       )}
                       {otherParticipants[0]?.isOnline && (
-                        <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        <div className="absolute bottom-0 right-0 h-3 w-3 bg-success rounded-full border-2 border-white"></div>
                       )}
                     </div>
 
@@ -231,13 +231,13 @@ export default function Messages() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {thread.isPinned && (
-                          <Pin className="h-3 w-3 text-blue-600" />
+                          <Pin className="h-3 w-3 text-info" />
                         )}
                         <h3
                           className={`font-semibold truncate ${
                             thread.unreadCount > 0
-                              ? 'text-gray-900'
-                              : 'text-gray-700'
+                              ? 'text-foreground'
+                              : 'text-foreground'
                           }`}
                         >
                           {thread.name}
@@ -256,19 +256,19 @@ export default function Messages() {
                           <p
                             className={`text-sm truncate flex-1 ${
                               thread.unreadCount > 0
-                                ? 'text-gray-900 font-medium'
-                                : 'text-gray-600'
+                                ? 'text-foreground font-medium'
+                                : 'text-muted-foreground'
                             }`}
                           >
                             {thread.lastMessage.senderId === 'user-current' && (
                               <>
-                                <CheckCheck className="h-3 w-3 inline mr-1 text-blue-600" />
+                                <CheckCheck className="h-3 w-3 inline mr-1 text-info" />
                                 You:{' '}
                               </>
                             )}
                             {getMessagePreview(thread.lastMessage)}
                           </p>
-                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
                             {formatMessageTime(thread.lastMessage.timestamp)}
                           </span>
                         </div>
@@ -276,7 +276,7 @@ export default function Messages() {
 
                       {/* Metadata */}
                       {thread.type === 'ride' && thread.metadata?.rideDate && (
-                        <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           <span>
                             {new Date(thread.metadata.rideDate).toLocaleDateString()}
@@ -288,7 +288,7 @@ export default function Messages() {
                     {/* Actions & Badge */}
                     <div className="flex items-center gap-2">
                       {thread.unreadCount > 0 && (
-                        <Badge className="bg-red-600">{thread.unreadCount}</Badge>
+                        <Badge className="bg-destructive">{thread.unreadCount}</Badge>
                       )}
 
                       {/* Dropdown Menu */}
@@ -302,24 +302,24 @@ export default function Messages() {
                         </Button>
 
                         {/* Dropdown - simplified for demo */}
-                        <div className="absolute right-0 top-full mt-1 bg-white shadow-lg rounded-lg border py-1 min-w-[150px] opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-10">
+                        <div className="absolute right-0 top-full mt-1 bg-card shadow-lg rounded-lg border py-1 min-w-[150px] opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-10">
                           <button
                             onClick={(e) => handlePinThread(thread.id, e)}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-background-subtle flex items-center gap-2"
                           >
                             <Pin className="h-3 w-3" />
                             {thread.isPinned ? 'Unpin' : 'Pin'}
                           </button>
                           <button
                             onClick={(e) => handleArchiveThread(thread.id, e)}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-background-subtle flex items-center gap-2"
                           >
                             <Archive className="h-3 w-3" />
                             Archive
                           </button>
                           <button
                             onClick={(e) => handleDeleteThread(thread.id, e)}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600"
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-background-subtle flex items-center gap-2 text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
                             Delete

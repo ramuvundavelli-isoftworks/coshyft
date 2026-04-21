@@ -99,8 +99,8 @@ export default function EvidenceRepository() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Evidence Repository</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Evidence Repository</h1>
+          <p className="text-muted-foreground mt-1">
             Centralized document management and evidence tracking
           </p>
         </div>
@@ -114,45 +114,45 @@ export default function EvidenceRepository() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Documents</p>
-              <p className="text-2xl font-bold text-gray-900">{evidence.length}</p>
+              <p className="text-sm text-muted-foreground">Total Documents</p>
+              <p className="text-2xl font-bold text-foreground">{evidence.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <FileText className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Verified</p>
-              <p className="text-2xl font-bold text-green-600">{verifiedCount}</p>
+              <p className="text-sm text-muted-foreground">Verified</p>
+              <p className="text-2xl font-bold text-success">{verifiedCount}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <FileText className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Storage</p>
-              <p className="text-2xl font-bold text-gray-900">{totalSize} MB</p>
+              <p className="text-sm text-muted-foreground">Total Storage</p>
+              <p className="text-2xl font-bold text-foreground">{totalSize} MB</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <FileText className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Categories</p>
-              <p className="text-2xl font-bold text-gray-900">5</p>
+              <p className="text-sm text-muted-foreground">Categories</p>
+              <p className="text-2xl font-bold text-foreground">5</p>
             </div>
           </div>
         </Card>
@@ -186,7 +186,7 @@ export default function EvidenceRepository() {
 
       {/* Evidence Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Evidence Documents</h3>
+        <h3 className="font-semibold text-foreground mb-4">Evidence Documents</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -205,24 +205,24 @@ export default function EvidenceRepository() {
               <TableRow key={item.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-gray-400" />
+                    <FileText className="h-4 w-4 text-muted-foreground" />
                     {item.name}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-gray-100 text-gray-700">{item.type}</Badge>
+                  <Badge className="bg-muted text-foreground">{item.type}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-blue-100 text-blue-700">{item.category}</Badge>
+                  <Badge className="bg-info-subtle text-info">{item.category}</Badge>
                 </TableCell>
                 <TableCell>{item.uploadedBy}</TableCell>
                 <TableCell>{item.uploadDate}</TableCell>
                 <TableCell>{item.size}</TableCell>
                 <TableCell>
                   <Badge className={
-                    item.status === 'verified' ? 'bg-green-100 text-green-700' :
-                    item.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
+                    item.status === 'verified' ? 'bg-success-subtle text-success' :
+                    item.status === 'pending' ? 'bg-warning-subtle text-warning' :
+                    'bg-destructive-subtle text-destructive'
                   }>
                     {item.status}
                   </Badge>
@@ -345,29 +345,29 @@ export default function EvidenceRepository() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Type</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEvidence.type}</p>
+                  <Label className="text-sm text-muted-foreground">Type</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEvidence.type}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Category</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEvidence.category}</p>
+                  <Label className="text-sm text-muted-foreground">Category</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEvidence.category}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Upload Date</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEvidence.uploadDate}</p>
+                  <Label className="text-sm text-muted-foreground">Upload Date</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEvidence.uploadDate}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Size</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEvidence.size}</p>
+                  <Label className="text-sm text-muted-foreground">Size</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEvidence.size}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Uploaded By</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedEvidence.uploadedBy}</p>
+                <Label className="text-sm text-muted-foreground">Uploaded By</Label>
+                <p className="font-medium text-foreground mt-1">{selectedEvidence.uploadedBy}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Status</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedEvidence.status}</p>
+                <Label className="text-sm text-muted-foreground">Status</Label>
+                <p className="font-medium text-foreground mt-1">{selectedEvidence.status}</p>
               </div>
             </div>
           )}
@@ -391,7 +391,7 @@ export default function EvidenceRepository() {
             <DialogDescription>Remove {selectedEvidence?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               This will permanently delete this evidence document. This action cannot be undone.
             </p>
           </div>

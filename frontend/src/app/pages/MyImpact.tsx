@@ -79,6 +79,8 @@ const peerComparison = [
 ];
 
 export default function MyImpact() {
+  const { data: commuteStats } = useApi(() => commuteApi.getStats(), { deps: [] });
+
   const [dateRange, setDateRange] = useState('6m');
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
@@ -111,18 +113,29 @@ export default function MyImpact() {
     setIsCertificateDialogOpen(false);
   };
 
-  const totalCO2Saved = 89.7;
-  const totalDistance = 1248;
-  const totalCostSaved = 548.20;
+  const totalCO2Saved = (commuteStats as any)?.co2_saved_vs_car ?? 89.7;
+  const totalDistance = (commuteStats as any)?.total_distance_km ?? 1248;
+  const totalCostSaved = 548.20; // Placeholder — no cost data in backend yet
   const treesEquivalent = Math.round(totalCO2Saved / 22);
+
+  const modeColors = ['#3b82f6', '#ef4444', '#10b981', '#22c55e', '#f59e0b', '#8b5cf6'];
+  const liveModeDistribution: typeof modeDistribution = (commuteStats as any)?.modal_split?.map(
+    (m: any, i: number) => ({
+      mode: m.mode,
+      count: m.count,
+      co2: 0,
+      percentage: m.percentage,
+      color: modeColors[i % modeColors.length],
+    })
+  ) ?? modeDistribution;
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Impact</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">My Impact</h1>
+          <p className="text-muted-foreground mt-1">
             Track your environmental contribution and achievements
           </p>
         </div>
@@ -140,53 +153,53 @@ export default function MyImpact() {
 
       {/* Impact Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="p-6 bg-gradient-to-br from-success-subtle to-success-subtle border-success/25">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-600 rounded-lg">
+            <div className="p-2 bg-success rounded-lg">
               <TrendingDown className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-green-800">CO₂ Saved</p>
-              <p className="text-2xl font-bold text-green-900">{totalCO2Saved} kg</p>
+              <p className="text-sm text-success">CO₂ Saved</p>
+              <p className="text-2xl font-bold text-success">{totalCO2Saved} kg</p>
             </div>
           </div>
-          <p className="text-xs text-green-700 mt-2">
+          <p className="text-xs text-success mt-2">
             ↓ 28% vs last period
           </p>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <MapPin className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <MapPin className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Distance</p>
-              <p className="text-2xl font-bold text-gray-900">{totalDistance} km</p>
+              <p className="text-sm text-muted-foreground">Distance</p>
+              <p className="text-2xl font-bold text-foreground">{totalDistance} km</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+        <Card className="p-6 bg-gradient-to-br from-warning-subtle to-warning-subtle border-warning/25">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-600 rounded-lg">
+            <div className="p-2 bg-warning rounded-lg">
               <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-yellow-800">Cost Saved</p>
-              <p className="text-2xl font-bold text-yellow-900">${totalCostSaved}</p>
+              <p className="text-sm text-warning">Cost Saved</p>
+              <p className="text-2xl font-bold text-warning">${totalCostSaved}</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
+        <Card className="p-6 bg-gradient-to-br from-success-subtle to-success-subtle border-success/25">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-emerald-600 rounded-lg">
+            <div className="p-2 bg-success rounded-lg">
               <TreeDeciduous className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-emerald-800">Trees Equivalent</p>
-              <p className="text-2xl font-bold text-emerald-900">{treesEquivalent} trees</p>
+              <p className="text-sm text-success">Trees Equivalent</p>
+              <p className="text-2xl font-bold text-success">{treesEquivalent} trees</p>
             </div>
           </div>
         </Card>
@@ -195,7 +208,7 @@ export default function MyImpact() {
       {/* Filter Bar */}
       <Card className="p-4">
         <div className="flex items-center gap-4">
-          <Filter className="h-5 w-5 text-gray-400" />
+          <Filter className="h-5 w-5 text-muted-foreground" />
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
@@ -213,7 +226,7 @@ export default function MyImpact() {
 
       {/* Emissions Trend */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Emissions Trend</h3>
+        <h3 className="font-semibold text-foreground mb-4">Emissions Trend</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <Line
             data={{
@@ -245,15 +258,15 @@ export default function MyImpact() {
       {/* Mode Distribution & Weekly Pattern */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Transport Mode Distribution</h3>
+          <h3 className="font-semibold text-foreground mb-4">Transport Mode Distribution</h3>
           <div style={{ height: '250px', width: '100%' }}>
             <Doughnut
               data={{
-                labels: modeDistribution.map(d => d.mode),
+                labels: liveModeDistribution.map(d => d.mode),
                 datasets: [
                   {
-                    data: modeDistribution.map(d => d.count),
-                    backgroundColor: modeDistribution.map(d => d.color),
+                    data: liveModeDistribution.map(d => d.count),
+                    backgroundColor: liveModeDistribution.map(d => d.color),
                     borderWidth: 0,
                   },
                 ],
@@ -264,7 +277,7 @@ export default function MyImpact() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Weekly Pattern</h3>
+          <h3 className="font-semibold text-foreground mb-4">Weekly Pattern</h3>
           <div style={{ height: '250px', width: '100%' }}>
             <Bar
               data={{
@@ -285,7 +298,7 @@ export default function MyImpact() {
 
       {/* Peer Comparison */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Peer Comparison</h3>
+        <h3 className="font-semibold text-foreground mb-4">Peer Comparison</h3>
         <div style={{ height: '200px', width: '100%' }}>
           <Bar
             data={{
@@ -301,8 +314,8 @@ export default function MyImpact() {
             options={barChartOptions}
           />
         </div>
-        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-700">
+        <div className="mt-4 p-4 bg-success-subtle border border-success/25 rounded-lg">
+          <p className="text-sm text-success">
             🎉 You're performing <strong>29% better</strong> than the department average!
           </p>
         </div>
@@ -310,13 +323,13 @@ export default function MyImpact() {
 
       {/* Achievements */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Achievements</h3>
+        <h3 className="font-semibold text-foreground mb-4">Achievements</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {achievements.map((achievement) => (
             <div
               key={achievement.id}
               className={`p-4 border rounded-lg text-center cursor-pointer hover:shadow-lg transition-all ${
-                achievement.unlocked ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200' : 'bg-gray-50 border-gray-200 opacity-60'
+                achievement.unlocked ? 'bg-gradient-to-br from-warning-subtle to-warning-subtle border-warning/25' : 'bg-background-subtle border-border opacity-60'
               }`}
               onClick={() => {
                 if (achievement.unlocked) {
@@ -326,16 +339,16 @@ export default function MyImpact() {
               }}
             >
               <div className={`mx-auto mb-2 w-12 h-12 rounded-full flex items-center justify-center ${
-                achievement.unlocked ? `bg-${achievement.color}-100` : 'bg-gray-200'
+                achievement.unlocked ? `bg-${achievement.color}-100` : 'bg-muted'
               }`}>
                 <achievement.icon className={`h-6 w-6 ${
-                  achievement.unlocked ? `text-${achievement.color}-600` : 'text-gray-400'
+                  achievement.unlocked ? `text-${achievement.color}-600` : 'text-muted-foreground'
                 }`} />
               </div>
-              <p className="font-medium text-sm text-gray-900 mb-1">{achievement.title}</p>
-              <p className="text-xs text-gray-600">{achievement.description}</p>
+              <p className="font-medium text-sm text-foreground mb-1">{achievement.title}</p>
+              <p className="text-xs text-muted-foreground">{achievement.description}</p>
               {achievement.unlocked && (
-                <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Unlocked</Badge>
+                <Badge className="mt-2 bg-success-subtle text-success text-xs">Unlocked</Badge>
               )}
             </div>
           ))}
@@ -352,10 +365,10 @@ export default function MyImpact() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-              <TrendingDown className="h-12 w-12 text-green-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-green-900">{totalCO2Saved} kg CO₂</p>
-              <p className="text-sm text-green-700">saved this period</p>
+            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg text-center">
+              <TrendingDown className="h-12 w-12 text-success mx-auto mb-2" />
+              <p className="text-2xl font-bold text-success">{totalCO2Saved} kg CO₂</p>
+              <p className="text-sm text-success">saved this period</p>
             </div>
 
             <div>
@@ -437,11 +450,11 @@ export default function MyImpact() {
               </SelectContent>
             </Select>
 
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="mt-4 p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 <strong>Report includes:</strong>
               </p>
-              <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
+              <ul className="text-sm text-info mt-2 space-y-1 list-disc list-inside">
                 <li>Total CO₂ emissions saved</li>
                 <li>Distance traveled by mode</li>
                 <li>Cost savings breakdown</li>
@@ -474,13 +487,13 @@ export default function MyImpact() {
           </DialogHeader>
           {selectedAchievement && (
             <div className="py-4">
-              <div className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-lg text-center">
-                <div className="mx-auto mb-4 w-20 h-20 rounded-full bg-yellow-200 flex items-center justify-center">
-                  <selectedAchievement.icon className="h-12 w-12 text-yellow-700" />
+              <div className="p-6 bg-gradient-to-br from-warning-subtle to-warning-subtle border-2 border-warning/40 rounded-lg text-center">
+                <div className="mx-auto mb-4 w-20 h-20 rounded-full bg-warning-subtle flex items-center justify-center">
+                  <selectedAchievement.icon className="h-12 w-12 text-warning" />
                 </div>
-                <h3 className="text-2xl font-bold text-yellow-900 mb-2">{selectedAchievement.title}</h3>
-                <p className="text-yellow-700 mb-4">{selectedAchievement.description}</p>
-                <Badge className="bg-green-100 text-green-700">
+                <h3 className="text-2xl font-bold text-warning mb-2">{selectedAchievement.title}</h3>
+                <p className="text-warning mb-4">{selectedAchievement.description}</p>
+                <Badge className="bg-success-subtle text-success">
                   Unlocked on {selectedAchievement.date && new Date(selectedAchievement.date).toLocaleDateString()}
                 </Badge>
               </div>

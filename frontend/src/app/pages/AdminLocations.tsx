@@ -1,311 +1,188 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription,
+  DialogFooter, DialogHeader, DialogTitle,
 } from '../components/ui/dialog';
 import {
-  MapPin,
-  Plus,
-  Edit,
-  Users,
-  Building2,
-  TrendingDown,
-  CheckCircle,
-  Trash2,
-  Eye,
+  MapPin, Plus, Edit, Users, Building2, TrendingDown, Trash2, Eye, RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useApiMutation } from '../api';
-import { adminApi } from '../api';
-
-interface Location {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  country: string;
-  employees: number;
-  enrolled: number;
-  active: number;
-  emissions: number;
-  status: 'active' | 'inactive';
-}
-
-const mockLocations: Location[] = [
-  { id: 'loc1', name: 'HQ - Tech Park', address: '123 Innovation Drive', city: 'San Francisco', country: 'USA', employees: 1240, enrolled: 1048, active: 967, emissions: 458.3, status: 'active' },
-  { id: 'loc2', name: 'Downtown Office', address: '456 Market Street', city: 'San Francisco', country: 'USA', employees: 680, enrolled: 612, active: 571, emissions: 245.7, status: 'active' },
-  { id: 'loc3', name: 'East Campus', address: '789 Tech Boulevard', city: 'San Jose', country: 'USA', employees: 520, enrolled: 494, active: 473, emissions: 198.4, status: 'active' },
-];
+import { useApi, useApiMutation, adminApi } from '../api';
 
 export default function AdminLocations() {
-  const [locations, setLocations] = useState<Location[]>(mockLocations);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    city: '',
-    country: '',
-  });
+  const [isAddOpen, setIsAddOpen]     = useState(false);
+  const [isEditOpen, setIsEditOpen]   = useState(false);
+  const [isViewOpen, setIsViewOpen]   = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selected, setSelected]       = useState<any>(null);
+  const [addForm, setAddForm]         = useState({ name: '', address: '', city: '', country: 'Ireland' });
+  const [editForm, setEditForm]       = useState({ name: '', employee_count: 0 });
 
-  // API mutations
-  const createLocationMutation = useApiMutation((data: any) =>
-    adminApi.createLocation(data)
-  );
-  const updateLocationMutation = useApiMutation((data: { id: string; payload: any }) =>
-    adminApi.updateLocation(data.id, data.payload)
-  );
-  const deleteLocationMutation = useApiMutation((id: string) =>
-    adminApi.deleteLocation(id)
-  );
+  const { data, loading, refetch } = useApi(() => adminApi.getLocations(), { deps: [] });
+  const locations: any[] = Array.isArray(data) ? data : [];
 
-  const handleAddLocation = async () => {
-    const newLocation: Location = {
-      id: `loc-${Date.now()}`,
-      name: formData.name,
-      address: formData.address,
-      city: formData.city,
-      country: formData.country,
-      employees: 0,
-      enrolled: 0,
-      active: 0,
-      emissions: 0,
-      status: 'active',
-    };
-    // Optimistic update
-    setLocations([...locations, newLocation]);
-    setIsAddDialogOpen(false);
-    resetForm();
+  const createMutation = useApiMutation((d: any) => adminApi.createLocation(d));
+  const updateMutation = useApiMutation((d: { id: string; payload: any }) =>
+    adminApi.updateLocation(d.id, d.payload));
+  const deleteMutation = useApiMutation((id: string) => adminApi.deleteLocation(id));
 
-    const result = await createLocationMutation.execute({
-      name: formData.name,
-      address: formData.address,
-      city: formData.city,
-      country: formData.country,
-    });
+  const totalEmployees = locations.reduce((s, l) => s + (l.employee_count ?? 0), 0);
+  const totalEmissions = locations.reduce((s, l) => s + (l.total_emissions ?? 0), 0);
+  const avgParticipation = locations.length
+    ? locations.reduce((s, l) => s + (l.participation_rate ?? 0), 0) / locations.length
+    : 0;
 
-    if (result.success) {
-      toast.success('Location added successfully');
+  const handleAdd = async () => {
+    if (!addForm.name || !addForm.city || !addForm.country) return;
+    const r = await createMutation.execute({ ...addForm, region: 'IE' });
+    if (r.success) {
+      toast.success('Location added');
+      refetch();
+      setIsAddOpen(false);
+      setAddForm({ name: '', address: '', city: '', country: 'Ireland' });
     } else {
-      toast.error(result.error?.message || 'Failed to add location (saved locally)');
+      toast.error(r.error?.message ?? 'Failed to add location');
     }
   };
 
-  const handleEditLocation = async () => {
-    if (selectedLocation) {
-      const updated = locations.map(l =>
-        l.id === selectedLocation.id
-          ? { ...l, name: formData.name, address: formData.address, city: formData.city, country: formData.country }
-          : l
-      );
-      // Optimistic update
-      setLocations(updated);
-      setIsEditDialogOpen(false);
-
-      const result = await updateLocationMutation.execute({
-        id: selectedLocation.id,
-        payload: {
-          name: formData.name,
-          address: formData.address,
-          city: formData.city,
-          country: formData.country,
-        },
-      });
-
-      if (result.success) {
-        toast.success('Location updated successfully');
-      } else {
-        toast.error(result.error?.message || 'Failed to update location');
-      }
+  const handleEdit = async () => {
+    if (!selected) return;
+    const r = await updateMutation.execute({ id: selected.id, payload: editForm });
+    if (r.success) {
+      toast.success('Location updated');
+      refetch();
+      setIsEditOpen(false);
+    } else {
+      toast.error(r.error?.message ?? 'Failed to update location');
     }
   };
 
-  const handleDeleteLocation = async () => {
-    if (selectedLocation) {
-      const previousLocations = [...locations];
-      // Optimistic update
-      setLocations(locations.filter(l => l.id !== selectedLocation.id));
-      setIsDeleteDialogOpen(false);
-
-      const result = await deleteLocationMutation.execute(selectedLocation.id);
-
-      if (result.success) {
-        toast.success('Location deleted successfully');
-      } else {
-        // Rollback on failure
-        setLocations(previousLocations);
-        toast.error(result.error?.message || 'Failed to delete location');
-      }
+  const handleDelete = async () => {
+    if (!selected) return;
+    const r = await deleteMutation.execute(selected.id);
+    if (r.success) {
+      toast.success('Location deactivated');
+      refetch();
+      setIsDeleteOpen(false);
+    } else {
+      toast.error(r.error?.message ?? 'Failed to deactivate location');
     }
-  };
-
-  const selectLocation = (location: Location) => {
-    setSelectedLocation(location);
-    setFormData({
-      name: location.name,
-      address: location.address,
-      city: location.city,
-      country: location.country,
-    });
-  };
-
-  const resetForm = () => {
-    setFormData({ name: '', address: '', city: '', country: '' });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Location Management</h1>
-          <p className="text-gray-600 mt-1">Manage office locations and facilities</p>
+          <h1 className="text-3xl font-bold text-foreground">Location Management</h1>
+          <p className="text-muted-foreground mt-1">Manage office locations and facilities</p>
         </div>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Location
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => refetch()} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setIsAddOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />Add Location
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Locations</p>
-              <p className="text-2xl font-bold text-gray-900">{locations.length}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Users className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Employees</p>
-              <p className="text-2xl font-bold text-gray-900">{locations.reduce((sum, l) => sum + l.employees, 0)}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Enrolled</p>
-              <p className="text-2xl font-bold text-gray-900">{locations.reduce((sum, l) => sum + l.enrolled, 0)}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-red-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Emissions</p>
-              <p className="text-2xl font-bold text-gray-900">{locations.reduce((sum, l) => sum + l.emissions, 0).toFixed(1)} kg</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Locations List */}
-      <div className="space-y-3">
-        {locations.map((location) => (
-          <Card key={location.id} className="p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4 flex-1">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Building2 className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-900">{location.name}</h3>
-                    <Badge className="bg-green-100 text-green-700">Active</Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    <MapPin className="h-3 w-3 inline mr-1" />
-                    {location.address}, {location.city}, {location.country}
-                  </p>
-                  <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-600">Employees</p>
-                      <p className="font-medium text-gray-900">{location.employees}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Enrolled</p>
-                      <p className="font-medium text-gray-900">{location.enrolled}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Active</p>
-                      <p className="font-medium text-green-600">{location.active}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Emissions</p>
-                      <p className="font-medium text-gray-900">{location.emissions} kg</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedLocation(location);
-                    setIsViewDialogOpen(true);
-                  }}
-                >
-                  <Eye className="h-4 w-4 mr-1" />
-                  View
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    selectLocation(location);
-                    setIsEditDialogOpen(true);
-                  }}
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedLocation(location);
-                    setIsDeleteDialogOpen(true);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
+        {([
+          ['Locations',          loading ? '—' : locations.length,                  'bg-info-subtle',   Building2,    'text-info'],
+          ['Total Employees',    loading ? '—' : totalEmployees,                    'bg-success-subtle',  Users,        'text-success'],
+          ['Avg Participation',  loading ? '—' : `${avgParticipation.toFixed(1)}%`, 'bg-info-subtle', MapPin,       'text-info'],
+          ['Total Emissions',    loading ? '—' : `${totalEmissions.toFixed(1)} kg`, 'bg-destructive-subtle',    TrendingDown, 'text-destructive'],
+        ] as any[]).map(([label, val, bg, Icon, ic]) => (
+          <Card key={label} className="p-6">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 ${bg} rounded-lg`}><Icon className={`h-5 w-5 ${ic}`} /></div>
+              <div>
+                <p className="text-sm text-muted-foreground">{label}</p>
+                <p className="text-2xl font-bold text-foreground">{val}</p>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      {/* Add Location Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      {/* Locations List */}
+      {loading ? (
+        <Card className="p-12 text-center text-muted-foreground">Loading locations...</Card>
+      ) : locations.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Building2 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No locations yet. Add your first office location.</p>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {locations.map((loc: any) => (
+            <Card key={loc.id} className="p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="p-3 bg-info-subtle rounded-lg">
+                    <Building2 className="h-6 w-6 text-info" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-semibold text-foreground">{loc.name}</h3>
+                      <Badge className={loc.is_active ? 'bg-success-subtle text-success' : 'bg-muted text-muted-foreground'}>
+                        {loc.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      <MapPin className="h-3 w-3 inline mr-1" />
+                      {[loc.address, loc.city, loc.country].filter(Boolean).join(', ')}
+                    </p>
+                    <div className="grid grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Employees</p>
+                        <p className="font-semibold">{loc.employee_count}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Participation</p>
+                        <p className="font-semibold">{loc.participation_rate?.toFixed(1)}%</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Emissions</p>
+                        <p className="font-semibold">{loc.total_emissions?.toFixed(1)} kg</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Intensity</p>
+                        <p className="font-semibold">{loc.emission_intensity?.toFixed(2)} kg/emp</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 ml-4">
+                  <Button variant="outline" size="sm" onClick={() => { setSelected(loc); setIsViewOpen(true); }}>
+                    <Eye className="h-4 w-4 mr-1" />View
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setSelected(loc);
+                    setEditForm({ name: loc.name, employee_count: loc.employee_count });
+                    setIsEditOpen(true);
+                  }}>
+                    <Edit className="h-4 w-4 mr-1" />Edit
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => { setSelected(loc); setIsDeleteOpen(true); }}>
+                    <Trash2 className="h-4 w-4 mr-1" />Remove
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Add Dialog */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Location</DialogTitle>
@@ -313,164 +190,120 @@ export default function AdminLocations() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="name">Location Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Downtown Office"
-              />
+              <Label>Location Name *</Label>
+              <Input value={addForm.name} onChange={e => setAddForm({ ...addForm, name: e.target.value })} placeholder="e.g., Dublin HQ" />
             </div>
             <div>
-              <Label htmlFor="address">Address *</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="123 Main Street"
-              />
+              <Label>Address</Label>
+              <Input value={addForm.address} onChange={e => setAddForm({ ...addForm, address: e.target.value })} placeholder="123 Main Street" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  placeholder="San Francisco"
-                />
+                <Label>City *</Label>
+                <Input value={addForm.city} onChange={e => setAddForm({ ...addForm, city: e.target.value })} placeholder="Dublin" />
               </div>
               <div>
-                <Label htmlFor="country">Country *</Label>
-                <Input
-                  id="country"
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder="USA"
-                />
+                <Label>Country *</Label>
+                <Input value={addForm.country} onChange={e => setAddForm({ ...addForm, country: e.target.value })} placeholder="Ireland" />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddLocation} disabled={!formData.name || !formData.address || !formData.city || !formData.country || createLocationMutation.loading}>
-              {createLocationMutation.loading ? 'Adding...' : 'Add Location'}
+            <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
+            <Button onClick={handleAdd} disabled={!addForm.name || !addForm.city || !addForm.country || createMutation.loading}>
+              {createMutation.loading ? 'Adding...' : 'Add Location'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Location Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      {/* Edit Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Location</DialogTitle>
-            <DialogDescription>Update location details</DialogDescription>
+            <DialogDescription>Update {selected?.name}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="edit-name">Location Name *</Label>
-              <Input
-                id="edit-name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
+              <Label>Location Name</Label>
+              <Input value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
             </div>
             <div>
-              <Label htmlFor="edit-address">Address *</Label>
-              <Input
-                id="edit-address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-city">City *</Label>
-                <Input
-                  id="edit-city"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-country">Country *</Label>
-                <Input
-                  id="edit-country"
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                />
-              </div>
+              <Label>Employee Count</Label>
+              <Input type="number" min={0} value={editForm.employee_count}
+                onChange={e => setEditForm({ ...editForm, employee_count: parseInt(e.target.value) || 0 })} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleEditLocation} disabled={updateLocationMutation.loading}>
-              {updateLocationMutation.loading ? 'Saving...' : 'Save Changes'}
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+            <Button onClick={handleEdit} disabled={updateMutation.loading}>
+              {updateMutation.loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* View Location Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      {/* View Dialog */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{selectedLocation?.name}</DialogTitle>
-            <DialogDescription>Location details and metrics</DialogDescription>
+            <DialogTitle>{selected?.name}</DialogTitle>
+            <DialogDescription>
+              {[selected?.address, selected?.city, selected?.country].filter(Boolean).join(', ')}
+            </DialogDescription>
           </DialogHeader>
-          {selectedLocation && (
+          {selected && (
             <div className="space-y-4 py-4">
-              <div>
-                <Label className="text-sm text-gray-600">Address</Label>
-                <p className="text-gray-900 mt-1">
-                  {selectedLocation.address}, {selectedLocation.city}, {selectedLocation.country}
-                </p>
-              </div>
               <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Employees</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedLocation.employees}</p>
-                </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Enrolled</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedLocation.enrolled}</p>
-                </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Active</Label>
-                  <p className="text-2xl font-bold text-green-600 mt-1">{selectedLocation.active}</p>
-                </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Emissions</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedLocation.emissions} kg</p>
-                </Card>
+                {([
+                  ['Employees',    selected.employee_count],
+                  ['Participation', `${selected.participation_rate?.toFixed(1)}%`],
+                  ['Total Emissions', `${selected.total_emissions?.toFixed(1)} kg`],
+                  ['Intensity',    `${selected.emission_intensity?.toFixed(2)} kg/emp`],
+                  ['Parking Spaces', selected.parking_spaces],
+                  ['Bike Parking', selected.bike_parking],
+                  ['EV Chargers',  selected.ev_chargers],
+                  ['Region',       selected.region],
+                ] as [string, any][]).map(([k, v]) => (
+                  <Card key={k} className="p-3">
+                    <Label className="text-xs text-muted-foreground">{k}</Label>
+                    <p className="font-semibold mt-1">{v}</p>
+                  </Card>
+                ))}
               </div>
+              {selected.public_transport_access && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">Public Transport Access</Label>
+                  <p className="font-medium mt-1 capitalize">{selected.public_transport_access}</p>
+                </div>
+              )}
             </div>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
+            <Button onClick={() => setIsViewOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Location Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      {/* Delete Dialog */}
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Location</DialogTitle>
-            <DialogDescription>Permanently remove {selectedLocation?.name}</DialogDescription>
+            <DialogTitle>Deactivate Location</DialogTitle>
+            <DialogDescription>Remove {selected?.name} from active locations</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">
-                <strong>Warning:</strong> This action cannot be undone. All data associated with this location will be permanently deleted.
+            <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg">
+              <p className="text-sm text-destructive">
+                This will deactivate the location. It won't be visible in reports, but historical data is preserved.
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDeleteLocation} disabled={deleteLocationMutation.loading}>
-              {deleteLocationMutation.loading ? 'Deleting...' : 'Delete Location'}
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.loading}>
+              {deleteMutation.loading ? 'Deactivating...' : 'Deactivate'}
             </Button>
           </DialogFooter>
         </DialogContent>

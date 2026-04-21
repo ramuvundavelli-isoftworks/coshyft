@@ -4,17 +4,11 @@
  * Usage:
  *   import { authApi, commuteApi, emissionsApi } from './api';
  *
- * Mock mode (default):
- *   Uses frontend mock data with simulated delays.
- *   Set VITE_USE_MOCK=false in .env to switch to live backend.
- *
- * Live mode:
- *   Set VITE_API_BASE_URL=http://localhost:8000/api/v1
- *   Set VITE_USE_MOCK=false
+ * Configure VITE_API_BASE_URL in .env to point at the backend (default: http://localhost:8000/api/v1)
  */
 
 // Core client
-export { api, isMockMode, getToken, setTokens, clearTokens, simulateDelay } from './client';
+export { api, getToken, setTokens, clearTokens } from './client';
 export type { ApiResponse, PaginatedResponse, RequestConfig } from './client';
 
 // Hooks

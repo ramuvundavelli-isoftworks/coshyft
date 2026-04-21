@@ -81,8 +81,8 @@ export default function AuditTrail() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Audit Trail</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Audit Trail</h1>
+          <p className="text-muted-foreground mt-1">
             Comprehensive activity log and change tracking
           </p>
         </div>
@@ -96,45 +96,45 @@ export default function AuditTrail() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <History className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <History className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Logs</p>
-              <p className="text-2xl font-bold text-gray-900">{logs.length}</p>
+              <p className="text-sm text-muted-foreground">Total Logs</p>
+              <p className="text-2xl font-bold text-foreground">{logs.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <User className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <User className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Users</p>
-              <p className="text-2xl font-bold text-gray-900">5</p>
+              <p className="text-sm text-muted-foreground">Active Users</p>
+              <p className="text-2xl font-bold text-foreground">5</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Clock className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Clock className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Today's Activity</p>
-              <p className="text-2xl font-bold text-gray-900">8</p>
+              <p className="text-sm text-muted-foreground">Today's Activity</p>
+              <p className="text-2xl font-bold text-foreground">8</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <History className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <History className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Retention</p>
-              <p className="text-2xl font-bold text-gray-900">7 Years</p>
+              <p className="text-sm text-muted-foreground">Retention</p>
+              <p className="text-2xl font-bold text-foreground">7 Years</p>
             </div>
           </div>
         </Card>
@@ -179,7 +179,7 @@ export default function AuditTrail() {
 
       {/* Audit Log Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Activity Log</h3>
+        <h3 className="font-semibold text-foreground mb-4">Activity Log</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -198,25 +198,25 @@ export default function AuditTrail() {
                 <TableCell className="font-medium text-sm">{log.timestamp}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-gray-400" />
+                    <User className="h-4 w-4 text-muted-foreground" />
                     {log.user}
                   </div>
                 </TableCell>
                 <TableCell>
                   <Badge className={
-                    log.action === 'Created' || log.action === 'Approved' ? 'bg-green-100 text-green-700' :
-                    log.action === 'Deleted' ? 'bg-red-100 text-red-700' :
-                    log.action === 'Updated' || log.action === 'Modified' ? 'bg-blue-100 text-blue-700' :
-                    'bg-gray-100 text-gray-700'
+                    log.action === 'Created' || log.action === 'Approved' ? 'bg-success-subtle text-success' :
+                    log.action === 'Deleted' ? 'bg-destructive-subtle text-destructive' :
+                    log.action === 'Updated' || log.action === 'Modified' ? 'bg-info-subtle text-info' :
+                    'bg-muted text-foreground'
                   }>
                     {log.action}
                   </Badge>
                 </TableCell>
                 <TableCell>{log.entity}</TableCell>
                 <TableCell>
-                  <Badge className="bg-gray-100 text-gray-700">{log.category}</Badge>
+                  <Badge className="bg-muted text-foreground">{log.category}</Badge>
                 </TableCell>
-                <TableCell className="text-sm text-gray-600">{log.ipAddress}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{log.ipAddress}</TableCell>
                 <TableCell>
                   <Button
                     variant="ghost"
@@ -238,23 +238,23 @@ export default function AuditTrail() {
 
       {/* Retention Policy */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Audit Trail Policy</h3>
+        <h3 className="font-semibold text-foreground mb-4">Audit Trail Policy</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 border rounded-lg">
-            <span className="font-medium text-gray-900">Retention Period</span>
-            <Badge className="bg-blue-100 text-blue-700">7 Years</Badge>
+            <span className="font-medium text-foreground">Retention Period</span>
+            <Badge className="bg-info-subtle text-info">7 Years</Badge>
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
-            <span className="font-medium text-gray-900">Log Storage</span>
-            <Badge className="bg-green-100 text-green-700">Encrypted</Badge>
+            <span className="font-medium text-foreground">Log Storage</span>
+            <Badge className="bg-success-subtle text-success">Encrypted</Badge>
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
-            <span className="font-medium text-gray-900">Tamper Protection</span>
-            <Badge className="bg-green-100 text-green-700">Enabled</Badge>
+            <span className="font-medium text-foreground">Tamper Protection</span>
+            <Badge className="bg-success-subtle text-success">Enabled</Badge>
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
-            <span className="font-medium text-gray-900">Backup Frequency</span>
-            <Badge className="bg-blue-100 text-blue-700">Daily</Badge>
+            <span className="font-medium text-foreground">Backup Frequency</span>
+            <Badge className="bg-info-subtle text-info">Daily</Badge>
           </div>
         </div>
       </Card>
@@ -270,34 +270,34 @@ export default function AuditTrail() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Timestamp</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.timestamp}</p>
+                  <Label className="text-sm text-muted-foreground">Timestamp</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.timestamp}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">User</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.user}</p>
+                  <Label className="text-sm text-muted-foreground">User</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.user}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Action</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.action}</p>
+                  <Label className="text-sm text-muted-foreground">Action</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.action}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Entity</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.entity}</p>
+                  <Label className="text-sm text-muted-foreground">Entity</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.entity}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Changes</Label>
-                <p className="text-gray-900 mt-1">{selectedLog.changes}</p>
+                <Label className="text-sm text-muted-foreground">Changes</Label>
+                <p className="text-foreground mt-1">{selectedLog.changes}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Category</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.category}</p>
+                  <Label className="text-sm text-muted-foreground">Category</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.category}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">IP Address</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedLog.ipAddress}</p>
+                  <Label className="text-sm text-muted-foreground">IP Address</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedLog.ipAddress}</p>
                 </div>
               </div>
             </div>

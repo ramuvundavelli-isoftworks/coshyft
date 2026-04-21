@@ -1,125 +1,320 @@
+/**
+ * SEMANTIC DESIGN TOKENS
+ *
+ * These map *meaning* to primitive values from tokens.css.
+ * Components always reference these — never the primitives directly.
+ * The .dark overrides produce the dark theme automatically.
+ */
+
 @custom-variant dark (&:is(.dark *));
 
+/* ================================================================== */
+/* LIGHT THEME (default)                                               */
+/* ================================================================== */
 :root {
-  --font-size: 16px;
-  --font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  /* --- Typography -------------------------------------------------- */
+  --font-size:          16px;
+  --font-family:        'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                        'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+                        'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* --- Border radius ----------------------------------------------- */
+  --radius: 0.625rem;  /* 10px */
+
+  /* --- Surfaces ----------------------------------------------------- */
+  --background:        var(--ds-neutral-0);
+  --background-subtle: var(--ds-neutral-50);
+  --foreground:        var(--ds-neutral-900);
+  --foreground-subtle: var(--ds-neutral-500);
+
+  /* --- Card --------------------------------------------------------- */
+  --card:              var(--ds-neutral-0);
+  --card-foreground:   var(--ds-neutral-900);
+
+  /* --- Popover ------------------------------------------------------ */
+  --popover:           var(--ds-neutral-0);
+  --popover-foreground: var(--ds-neutral-900);
+
+  /* --- Brand / Primary --------------------------------------------- */
+  --primary:           var(--ds-brand-500);
+  --primary-hover:     var(--ds-brand-600);
+  --primary-active:    var(--ds-brand-700);
+  --primary-subtle:    var(--ds-brand-50);
+  --primary-foreground: var(--ds-neutral-0);
+
+  /* --- Secondary ---------------------------------------------------- */
+  --secondary:          var(--ds-neutral-150);
+  --secondary-foreground: var(--ds-neutral-900);
+
+  /* --- Muted -------------------------------------------------------- */
+  --muted:             var(--ds-neutral-150);
+  --muted-foreground:  var(--ds-neutral-500);
+
+  /* --- Accent ------------------------------------------------------- */
+  --accent:            #e9ebef;
+  --accent-foreground: var(--ds-neutral-900);
+
+  /* --- Status: Success ---------------------------------------------- */
+  --success:           var(--ds-success-500);
+  --success-subtle:    var(--ds-success-50);
+  --success-foreground: var(--ds-neutral-0);
+
+  /* --- Status: Warning ---------------------------------------------- */
+  --warning:           var(--ds-warning-500);
+  --warning-subtle:    var(--ds-warning-50);
+  --warning-foreground: var(--ds-neutral-900);
+
+  /* --- Status: Destructive / Error ---------------------------------- */
+  --destructive:       var(--ds-error-500);
+  --destructive-subtle: var(--ds-error-50);
+  --destructive-foreground: var(--ds-neutral-0);
+
+  /* --- Status: Info ------------------------------------------------- */
+  --info:              var(--ds-info-500);
+  --info-subtle:       var(--ds-info-50);
+  --info-foreground:   var(--ds-neutral-0);
+
+  /* --- Borders ------------------------------------------------------ */
+  --border:        rgba(0, 0, 0, 0.10);
+  --border-strong: var(--ds-neutral-300);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+
+  /* --- Inputs ------------------------------------------------------- */
+  --input:            transparent;
+  --input-background: var(--ds-neutral-100);
+  --switch-background: var(--ds-neutral-300);
+
+  /* --- Focus ring --------------------------------------------------- */
+  --ring: var(--ds-brand-500);
+
+  /* --- Charts ------------------------------------------------------- */
   --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-2: oklch(0.600 0.118 184.704);
+  --chart-3: oklch(0.398 0.070 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --chart-5: oklch(0.769 0.188 70.080);
+
+  /* --- Sidebar ------------------------------------------------------ */
+  --sidebar:                    oklch(0.985 0 0);
+  --sidebar-foreground:         var(--ds-neutral-900);
+  --sidebar-primary:            var(--ds-brand-500);
+  --sidebar-primary-foreground: var(--ds-neutral-0);
+  --sidebar-accent:             oklch(0.97 0 0);
+  --sidebar-accent-foreground:  oklch(0.205 0 0);
+  --sidebar-border:             oklch(0.922 0 0);
+  --sidebar-ring:               oklch(0.708 0 0);
+
+  /* --- Modal backdrop overlay -------------------------------------- */
+  --overlay: var(--ds-overlay-bg);
+
+  /* --- AppShell background ----------------------------------------- */
+  --shell-bg: linear-gradient(242deg, #EDF0F4 -19.37%, #F0F5F7 36.74%, #FFF 92.86%);
 }
 
+/* ================================================================== */
+/* DARK THEME                                                          */
+/* ================================================================== */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
+  /* --- Surfaces ----------------------------------------------------- */
+  --background:        oklch(0.145 0 0);
+  --background-subtle: oklch(0.18  0 0);
+  --foreground:        oklch(0.985 0 0);
+  --foreground-subtle: oklch(0.708 0 0);
+
+  /* --- Card --------------------------------------------------------- */
+  --card:              oklch(0.145 0 0);
+  --card-foreground:   oklch(0.985 0 0);
+
+  /* --- Popover ------------------------------------------------------ */
+  --popover:           oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+
+  /* --- Brand / Primary --------------------------------------------- */
+  --primary:           var(--ds-brand-500);
+  --primary-hover:     var(--ds-brand-400);
+  --primary-active:    var(--ds-brand-300);
+  --primary-subtle:    rgb(0 188 125 / 0.12);
+  --primary-foreground: var(--ds-neutral-0);
+
+  /* --- Secondary ---------------------------------------------------- */
+  --secondary:          oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+
+  /* --- Muted -------------------------------------------------------- */
+  --muted:             oklch(0.269 0 0);
+  --muted-foreground:  oklch(0.708 0 0);
+
+  /* --- Accent ------------------------------------------------------- */
+  --accent:            oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
+
+  /* --- Status: Success ---------------------------------------------- */
+  --success:           var(--ds-success-500);
+  --success-subtle:    rgb(34 197 94 / 0.12);
+  --success-foreground: var(--ds-neutral-0);
+
+  /* --- Status: Warning ---------------------------------------------- */
+  --warning:           var(--ds-warning-500);
+  --warning-subtle:    rgb(245 158 11 / 0.12);
+  --warning-foreground: var(--ds-neutral-900);
+
+  /* --- Status: Destructive / Error ---------------------------------- */
+  --destructive:       oklch(0.396 0.141 25.723);
+  --destructive-subtle: rgb(212 24 61 / 0.12);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
+
+  /* --- Status: Info ------------------------------------------------- */
+  --info:              var(--ds-info-500);
+  --info-subtle:       rgb(59 130 246 / 0.12);
+  --info-foreground:   var(--ds-neutral-0);
+
+  /* --- Borders ------------------------------------------------------ */
+  --border:        oklch(0.269 0 0);
+  --border-strong: oklch(0.35  0 0);
+  --border-subtle: oklch(0.20  0 0);
+
+  /* --- Inputs ------------------------------------------------------- */
+  --input:            oklch(0.269 0 0);
+  --input-background: oklch(0.20  0 0);
+  --switch-background: oklch(0.35 0 0);
+
+  /* --- Focus ring --------------------------------------------------- */
   --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
+
+  /* --- Charts ------------------------------------------------------- */
   --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.170 162.480);
+  --chart-3: oklch(0.769 0.188  70.080);
+  --chart-4: oklch(0.627 0.265 303.900);
+  --chart-5: oklch(0.645 0.246  16.439);
+
+  /* --- Sidebar ------------------------------------------------------ */
+  --sidebar:                    oklch(0.205 0 0);
+  --sidebar-foreground:         oklch(0.985 0 0);
+  --sidebar-primary:            oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar-accent:             oklch(0.269 0 0);
+  --sidebar-accent-foreground:  oklch(0.985 0 0);
+  --sidebar-border:             oklch(0.269 0 0);
+  --sidebar-ring:               oklch(0.439 0 0);
+
+  /* --- AppShell background ----------------------------------------- */
+  --shell-bg: linear-gradient(
+    242deg,
+    oklch(0.16 0 0) -19.37%,
+    oklch(0.18 0 0)  36.74%,
+    oklch(0.145 0 0) 92.86%
+  );
 }
 
+/* ================================================================== */
+/* TAILWIND v4 — Register semantic tokens as utilities                 */
+/* e.g. bg-primary, text-success, shadow-ds-md, border-border          */
+/* ================================================================== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
+  /* Colors */
+  --color-background:        var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-foreground:        var(--foreground);
+  --color-foreground-subtle: var(--foreground-subtle);
+
+  --color-card:              var(--card);
+  --color-card-foreground:   var(--card-foreground);
+
+  --color-popover:           var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+
+  --color-primary:           var(--primary);
+  --color-primary-hover:     var(--primary-hover);
+  --color-primary-active:    var(--primary-active);
+  --color-primary-subtle:    var(--primary-subtle);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
+
+  --color-secondary:         var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
+
+  --color-muted:             var(--muted);
+  --color-muted-foreground:  var(--muted-foreground);
+
+  --color-accent:            var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
+
+  --color-success:           var(--success);
+  --color-success-subtle:    var(--success-subtle);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning:           var(--warning);
+  --color-warning-subtle:    var(--warning-subtle);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-destructive:       var(--destructive);
+  --color-destructive-subtle: var(--destructive-subtle);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
+
+  --color-info:              var(--info);
+  --color-info-subtle:       var(--info-subtle);
+  --color-info-foreground:   var(--info-foreground);
+
+  --color-border:            var(--border);
+  --color-border-strong:     var(--border-strong);
+  --color-border-subtle:     var(--border-subtle);
+
+  --color-input:             var(--input);
+  --color-input-background:  var(--input-background);
   --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+
+  --color-ring:              var(--ring);
+  --color-overlay:           var(--overlay);
+
+  --color-chart-1:           var(--chart-1);
+  --color-chart-2:           var(--chart-2);
+  --color-chart-3:           var(--chart-3);
+  --color-chart-4:           var(--chart-4);
+  --color-chart-5:           var(--chart-5);
+
+  --color-sidebar:                    var(--sidebar);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+
+  /* Brand palette as Tailwind utilities (bg-brand-500, text-brand-600, etc.) */
+  --color-brand-50:  var(--ds-brand-50);
+  --color-brand-100: var(--ds-brand-100);
+  --color-brand-200: var(--ds-brand-200);
+  --color-brand-300: var(--ds-brand-300);
+  --color-brand-400: var(--ds-brand-400);
+  --color-brand-500: var(--ds-brand-500);
+  --color-brand-600: var(--ds-brand-600);
+  --color-brand-700: var(--ds-brand-700);
+  --color-brand-800: var(--ds-brand-800);
+  --color-brand-900: var(--ds-brand-900);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Shadows from primitive tokens */
+  --shadow-xs:  var(--ds-shadow-xs);
+  --shadow-sm:  var(--ds-shadow-sm);
+  --shadow-md:  var(--ds-shadow-md);
+  --shadow-lg:  var(--ds-shadow-lg);
+  --shadow-xl:  var(--ds-shadow-xl);
+  --shadow-2xl: var(--ds-shadow-2xl);
 }
 
+/* ================================================================== */
+/* BASE LAYER — Typography & global element resets                     */
+/* ================================================================== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -129,54 +324,49 @@
     @apply bg-background text-foreground;
   }
 
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
   html {
-    font-size: var(--font-size);
+    font-size:   var(--font-size);
     font-family: var(--font-family);
   }
 
   h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size:   var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.25;
   }
 
   h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size:   var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.375;
   }
 
   h3 {
-    font-size: var(--text-lg);
+    font-size:   var(--text-lg);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   h4 {
-    font-size: var(--text-base);
+    font-size:   var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   label {
-    font-size: var(--text-base);
+    font-size:   var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   button {
-    font-size: var(--text-base);
+    font-size:   var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   input {
-    font-size: var(--text-base);
+    font-size:   var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
   }

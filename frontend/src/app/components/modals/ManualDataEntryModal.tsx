@@ -156,7 +156,7 @@ export function ManualDataEntryModal({ isOpen, onClose, onSubmit }: ManualDataEn
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-[#00bc7d]" />
+            <FileText className="h-6 w-6 text-brand-500" />
             Manual Data Entry
           </DialogTitle>
           <DialogDescription>
@@ -258,17 +258,17 @@ export function ManualDataEntryModal({ isOpen, onClose, onSubmit }: ManualDataEn
 
           {/* Calculated Emissions Display */}
           {calculatedEmissions > 0 && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-900 font-medium">Calculated Emissions</p>
-                  <p className="text-xs text-blue-700 mt-1">
+                  <p className="text-sm text-info font-medium">Calculated Emissions</p>
+                  <p className="text-xs text-info mt-1">
                     {formData.employees} employees × {formData.distance} km × emission factor
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-900">{calculatedEmissions.toFixed(2)}</p>
-                  <p className="text-xs text-blue-700">kg CO₂e</p>
+                  <p className="text-2xl font-bold text-info">{calculatedEmissions.toFixed(2)}</p>
+                  <p className="text-xs text-info">kg CO₂e</p>
                 </div>
               </div>
             </div>
@@ -291,7 +291,7 @@ export function ManualDataEntryModal({ isOpen, onClose, onSubmit }: ManualDataEn
                   <SelectItem key={level.value} value={level.value}>
                     <div>
                       <p className="font-medium">{level.label}</p>
-                      <p className="text-xs text-gray-500">{level.description}</p>
+                      <p className="text-xs text-muted-foreground">{level.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -323,12 +323,12 @@ export function ManualDataEntryModal({ isOpen, onClose, onSubmit }: ManualDataEn
           </div>
 
           {/* CSRD Compliance Note */}
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="p-3 bg-warning-subtle border border-warning/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-amber-900">CSRD Compliance Note</p>
-                <p className="text-xs text-amber-700 mt-1">
+                <p className="text-sm font-medium text-warning">CSRD Compliance Note</p>
+                <p className="text-xs text-warning mt-1">
                   Manual entries must be documented with source and quality level for audit trail compliance.
                 </p>
               </div>

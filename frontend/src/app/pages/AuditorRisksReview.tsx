@@ -56,8 +56,8 @@ export default function AuditorRisksReview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Risks Review</h1>
-          <p className="text-gray-600 mt-1">Risk assessment and mitigation evaluation</p>
+          <h1 className="text-3xl font-bold text-foreground">Risks Review</h1>
+          <p className="text-muted-foreground mt-1">Risk assessment and mitigation evaluation</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => setIsAddFindingDialogOpen(true)}>
@@ -75,45 +75,45 @@ export default function AuditorRisksReview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Shield className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Risks</p>
-              <p className="text-2xl font-bold text-gray-900">{risks.length}</p>
+              <p className="text-sm text-muted-foreground">Total Risks</p>
+              <p className="text-2xl font-bold text-foreground">{risks.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">High Severity</p>
-              <p className="text-2xl font-bold text-red-600">2</p>
+              <p className="text-sm text-muted-foreground">High Severity</p>
+              <p className="text-2xl font-bold text-destructive">2</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Shield className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Mitigated</p>
-              <p className="text-2xl font-bold text-green-600">2</p>
+              <p className="text-sm text-muted-foreground">Mitigated</p>
+              <p className="text-2xl font-bold text-success">2</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Open</p>
-              <p className="text-2xl font-bold text-yellow-600">1</p>
+              <p className="text-sm text-muted-foreground">Open</p>
+              <p className="text-2xl font-bold text-warning">1</p>
             </div>
           </div>
         </Card>
@@ -121,7 +121,7 @@ export default function AuditorRisksReview() {
 
       {/* Risks Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Risk Register</h3>
+        <h3 className="font-semibold text-foreground mb-4">Risk Register</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -140,9 +140,9 @@ export default function AuditorRisksReview() {
                 <TableCell className="font-medium">{risk.title}</TableCell>
                 <TableCell>
                   <Badge className={
-                    risk.severity === 'high' ? 'bg-red-100 text-red-700' :
-                    risk.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-gray-100 text-gray-700'
+                    risk.severity === 'high' ? 'bg-destructive-subtle text-destructive' :
+                    risk.severity === 'medium' ? 'bg-warning-subtle text-warning' :
+                    'bg-muted text-foreground'
                   }>
                     {risk.severity}
                   </Badge>
@@ -151,9 +151,9 @@ export default function AuditorRisksReview() {
                 <TableCell>{risk.impact}</TableCell>
                 <TableCell>
                   <Badge className={
-                    risk.status === 'mitigated' ? 'bg-green-100 text-green-700' :
-                    risk.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                    'bg-yellow-100 text-yellow-700'
+                    risk.status === 'mitigated' ? 'bg-success-subtle text-success' :
+                    risk.status === 'in-progress' ? 'bg-info-subtle text-info' :
+                    'bg-warning-subtle text-warning'
                   }>
                     {risk.status}
                   </Badge>
@@ -191,27 +191,27 @@ export default function AuditorRisksReview() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Severity</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedRisk.severity}</p>
+                  <Label className="text-sm text-muted-foreground">Severity</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedRisk.severity}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedRisk.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedRisk.status}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Likelihood</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedRisk.likelihood}</p>
+                  <Label className="text-sm text-muted-foreground">Likelihood</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedRisk.likelihood}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Impact</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedRisk.impact}</p>
+                  <Label className="text-sm text-muted-foreground">Impact</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedRisk.impact}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Mitigation Strategy</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedRisk.mitigation}</p>
+                <Label className="text-sm text-muted-foreground">Mitigation Strategy</Label>
+                <p className="font-medium text-foreground mt-1">{selectedRisk.mitigation}</p>
               </div>
             </div>
           )}
@@ -283,9 +283,9 @@ export default function AuditorRisksReview() {
             <DialogDescription>Download risk review documentation</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Export includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Risk register</li>
                 <li>Mitigation strategies</li>
                 <li>Control effectiveness</li>

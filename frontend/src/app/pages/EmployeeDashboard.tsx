@@ -107,10 +107,10 @@ export default function EmployeeDashboard() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Greeting */}
         <div>
-          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-foreground tracking-[0.0703px] mb-2">
             Good morning, Alex!
           </h1>
-          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-muted-foreground tracking-[-0.3125px]">
             You have 3 upcoming rides this week. Keep up the great work reducing emissions!
           </p>
         </div>
@@ -119,11 +119,11 @@ export default function EmployeeDashboard() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('/employee/offer-ride')}
-            className="bg-white h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+            className="bg-card h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle transition-all shadow-sm hover:shadow-md"
           >
             <div className="flex items-center gap-2">
-              <Plus className="h-4 w-4 text-[#101828]" />
-              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+              <Plus className="h-4 w-4 text-foreground" />
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-foreground tracking-[-0.1504px]">
                 Offer Ride
               </span>
             </div>
@@ -131,11 +131,11 @@ export default function EmployeeDashboard() {
           
           <button
             onClick={() => navigate('/employee/find-ride')}
-            className="bg-white h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+            className="bg-card h-9 px-4 rounded-lg border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle transition-all shadow-sm hover:shadow-md"
           >
             <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-[#101828]" />
-              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+              <Search className="h-4 w-4 text-foreground" />
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-foreground tracking-[-0.1504px]">
                 Find Ride
               </span>
             </div>
@@ -143,7 +143,7 @@ export default function EmployeeDashboard() {
           
           <button
             onClick={() => setIsLogCommuteOpen(true)}
-            className="bg-[#00bc7d] h-9 px-4 rounded-lg hover:bg-[#00a872] transition-all shadow-md hover:shadow-lg"
+            className="bg-brand-500 h-9 px-4 rounded-lg hover:bg-brand-500 transition-all shadow-md hover:shadow-lg"
           >
             <div className="flex items-center gap-2">
               <Plus className="h-4 w-4 text-white" />
@@ -159,65 +159,65 @@ export default function EmployeeDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-muted-foreground uppercase tracking-wide">
               Total Commutes
             </p>
-            <Calendar className="w-4 h-4 text-[#6a7282]" />
+            <Calendar className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
-            127
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-foreground mb-1">
+            {(commuteStats as any)?.total_commutes ?? '—'}
           </p>
           <div className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+12% from last month</span>
+            <TrendingUp className="w-3 h-3 text-success" />
+            <span className="font-['Geist',sans-serif] text-[12px] text-success">All time</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-muted-foreground uppercase tracking-wide">
               CO₂ Saved
             </p>
-            <Leaf className="w-4 h-4 text-[#6a7282]" />
+            <Leaf className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
-            43.2 kg
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-foreground mb-1">
+            {(commuteStats as any)?.co2_saved_vs_car != null ? `${(commuteStats as any).co2_saved_vs_car} kg` : '—'}
           </p>
           <div className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+8% from last month</span>
+            <TrendingUp className="w-3 h-3 text-success" />
+            <span className="font-['Geist',sans-serif] text-[12px] text-success">vs solo car</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
-              Carpool Rides
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-muted-foreground uppercase tracking-wide">
+              OxyPoints
             </p>
-            <Users className="w-4 h-4 text-[#6a7282]" />
+            <Users className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
-            34
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-foreground mb-1">
+            {(commuteStats as any)?.total_oxypoints != null ? (commuteStats as any).total_oxypoints.toLocaleString() : '—'}
           </p>
           <div className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">+18% from last month</span>
+            <TrendingUp className="w-3 h-3 text-success" />
+            <span className="font-['Geist',sans-serif] text-[12px] text-success">Total earned</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-[#6a7282] uppercase tracking-wide">
-              Active Streaks
+            <p className="font-['Geist',sans-serif] font-medium text-[12px] text-muted-foreground uppercase tracking-wide">
+              Active Streak
             </p>
-            <Zap className="w-4 h-4 text-[#6a7282]" />
+            <Zap className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-[#101828] mb-1">
-            7 days
+          <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[38px] text-foreground mb-1">
+            {(commuteStats as any)?.streak != null ? `${(commuteStats as any).streak} days` : '—'}
           </p>
           <div className="flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-[#00A63E]" />
-            <span className="font-['Geist',sans-serif] text-[12px] text-[#00A63E]">Keep it going!</span>
+            <TrendingUp className="w-3 h-3 text-success" />
+            <span className="font-['Geist',sans-serif] text-[12px] text-success">Keep it going!</span>
           </div>
         </Card>
       </div>
@@ -227,13 +227,13 @@ export default function EmployeeDashboard() {
         {/* Left Column - 2/3 width */}
         <div className="col-span-2 space-y-4">
           {/* Today's Ride */}
-          <div className="bg-white  rounded-[14px] border border-gray-300/50">
+          <div className="bg-card  rounded-[14px] border border-border/50">
             {/* Header */}
-            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100/50">
-              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+            <div className="px-6 py-4 flex items-center justify-between border-b border-border-subtle/50">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-foreground tracking-[-0.4395px]">
                 Today's Ride
               </h2>
-              <div className="bg-[#00bc7d] rounded-lg px-[9px] py-[3px]">
+              <div className="bg-brand-500 rounded-lg px-[9px] py-[3px]">
                 <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-4 text-white">
                   Active
                 </span>
@@ -243,17 +243,17 @@ export default function EmployeeDashboard() {
             {/* Content */}
             <div className="p-6">
               <div className="flex items-start gap-4">
-                <div className="bg-[#096] rounded-[14px] w-12 h-12 flex items-center justify-center">
+                <div className="bg-brand-600 rounded-[14px] w-12 h-12 flex items-center justify-center">
                   <Car className="w-6 h-6 text-white" />
                 </div>
                 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-[27px] text-[#101828] tracking-[-0.4395px]">
+                    <h3 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-[27px] text-foreground tracking-[-0.4395px]">
                       You're driving today
                     </h3>
                     <div className="rounded-lg border border-[rgba(0,0,0,0.1)] px-[9px] py-[3px]">
-                      <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-4 text-[#0a0a0a]">
+                      <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-4 text-foreground">
                         3 passengers
                       </span>
                     </div>
@@ -261,39 +261,39 @@ export default function EmployeeDashboard() {
 
                   <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-[#4a5565]" strokeWidth={1.33} />
-                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
+                      <Clock className="w-4 h-4 text-muted-foreground" strokeWidth={1.33} />
+                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-muted-foreground tracking-[-0.1504px]">
                         8:30 AM departure
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-[#4a5565]" strokeWidth={1.33} />
-                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-[#4a5565] tracking-[-0.1504px]">
+                      <MapPin className="w-4 h-4 text-muted-foreground" strokeWidth={1.33} />
+                      <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-5 text-muted-foreground tracking-[-0.1504px]">
                         Downtown → Tech Park Office
                       </span>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <p className="font-['Geist',sans-serif] font-semibold text-[14px] leading-5 text-[#101828] mb-1">
+                    <p className="font-['Geist',sans-serif] font-semibold text-[14px] leading-5 text-foreground mb-1">
                       Passengers
                     </p>
-                    <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
+                    <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-muted-foreground">
                       Sarah Johnson, Mike Chen, Emma Davis
                     </p>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-['Geist',sans-serif] font-semibold text-[24px] leading-8 text-[#00A63E] mb-1">
+                      <p className="font-['Geist',sans-serif] font-semibold text-[24px] leading-8 text-success mb-1">
                         +2.5 kg
                       </p>
-                      <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-[#6a7282]">
+                      <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-4 text-muted-foreground">
                         CO₂ saved
                       </p>
                     </div>
                     <Link to="/employee/active-trip">
-                      <button className="bg-[#096] hover:bg-[#00a86b] transition-colors rounded-lg px-6 py-2">
+                      <button className="bg-brand-600 hover:bg-brand-500 transition-colors rounded-lg px-6 py-2">
                         <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-white">
                           Start Trip
                         </span>
@@ -305,8 +305,8 @@ export default function EmployeeDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3 border-t border-gray-100/50">
-              <button className="w-full text-center font-['Geist',sans-serif] font-normal text-[14px] text-[#4a5565] hover:text-[#101828] transition-colors">
+            <div className="px-6 py-3 border-t border-border-subtle/50">
+              <button className="w-full text-center font-['Geist',sans-serif] font-normal text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                 View Details
               </button>
             </div>
@@ -315,11 +315,11 @@ export default function EmployeeDashboard() {
           {/* Upcoming Rides */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-foreground tracking-[-0.4395px]">
                 Upcoming Rides
               </h2>
               <Link to="/employee/trips">
-                <button className="font-['Geist',sans-serif] font-medium text-[14px] text-[#155DFC] hover:text-[#0d47d1] transition-colors">
+                <button className="font-['Geist',sans-serif] font-medium text-[14px] text-info hover:text-info transition-colors">
                   View All →
                 </button>
               </Link>
@@ -327,21 +327,21 @@ export default function EmployeeDashboard() {
 
             <div className="space-y-3">
               {upcomingRides.slice(0, 2).map((ride) => (
-                <div key={ride.id} className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+                <div key={ride.id} className="border border-border rounded-lg p-4 hover:border-border transition-colors">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1 inline-block mb-2">
-                        <span className="font-['Geist',sans-serif] font-medium text-[12px] text-orange-700">
+                      <div className="bg-warning-subtle border border-warning/25 rounded-lg px-2 py-1 inline-block mb-2">
+                        <span className="font-['Geist',sans-serif] font-medium text-[12px] text-warning">
                           Scheduled
                         </span>
                       </div>
-                      <p className="font-['Geist',sans-serif] font-semibold text-[14px] text-[#101828]">
+                      <p className="font-['Geist',sans-serif] font-semibold text-[14px] text-foreground">
                         {ride.driverName}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-[12px] text-[#6a7282] mb-3">
+                  <div className="flex items-center gap-4 text-[12px] text-muted-foreground mb-3">
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       <span>{new Date(ride.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
@@ -352,12 +352,12 @@ export default function EmployeeDashboard() {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                    <span className="font-['Geist',sans-serif] font-medium text-[12px] text-[#00A63E]">
+                  <div className="pt-3 border-t border-border-subtle flex items-center justify-between">
+                    <span className="font-['Geist',sans-serif] font-medium text-[12px] text-success">
                       +{ride.co2Saved} kg CO₂ saved
                     </span>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-2 py-1">
-                      <span className="font-['Geist',sans-serif] font-medium text-[12px] text-blue-700">
+                    <div className="bg-info-subtle border border-info/25 rounded-lg px-2 py-1">
+                      <span className="font-['Geist',sans-serif] font-medium text-[12px] text-info">
                         Confirmed
                       </span>
                     </div>
@@ -370,10 +370,10 @@ export default function EmployeeDashboard() {
           {/* 3-Month Commute Calendar - Separate Heatmap Chart */}
           <Card className="p-6">
             <div className="mb-6">
-              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px] mb-1">
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-foreground tracking-[-0.4395px] mb-1">
                 3-Month Commute Calendar
               </h2>
-              <p className="font-['Geist',sans-serif] font-normal text-[12px] text-[#4a5565]">
+              <p className="font-['Geist',sans-serif] font-normal text-[12px] text-muted-foreground">
                 Visual overview of your daily commute patterns
               </p>
             </div>
@@ -382,7 +382,7 @@ export default function EmployeeDashboard() {
             <div className="space-y-4 relative">
               {/* Tooltip */}
               {hoveredDay && (
-                <div className="absolute z-50 bg-gray-900 text-white text-[11px] rounded-lg px-3 py-2 shadow-lg pointer-events-none"
+                <div className="absolute z-50 bg-foreground text-white text-[11px] rounded-lg px-3 py-2 shadow-lg pointer-events-none"
                   style={{
                     left: '50%',
                     top: '-60px',
@@ -399,7 +399,7 @@ export default function EmployeeDashboard() {
                     </div>
                   )}
                   {!hoveredDay.mode && (
-                    <div className="font-['Geist',sans-serif] text-gray-300">No commute</div>
+                    <div className="font-['Geist',sans-serif] text-muted-foreground">No commute</div>
                   )}
                 </div>
               )}
@@ -407,8 +407,8 @@ export default function EmployeeDashboard() {
               {/* February 2026 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">February 2026</p>
-                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">43.0 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-foreground">February 2026</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">43.0 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(28)].map((_, i) => {
@@ -416,12 +416,12 @@ export default function EmployeeDashboard() {
                     const dayData = mockCommuteData.find(d => d.day === day);
                     
                     const modeColors = {
-                      carpool: 'bg-[#00bc7d]',
-                      bike: 'bg-[#00a872]',
-                      bus: 'bg-[#009689]',
-                      walk: 'bg-[#008573]',
-                      drive: 'bg-[#6a7282]',
-                      remote: 'bg-gray-300',
+                      carpool: 'bg-brand-500',
+                      bike: 'bg-brand-500',
+                      bus: 'bg-brand-600',
+                      walk: 'bg-brand-700',
+                      drive: 'bg-muted-foreground',
+                      remote: 'bg-border',
                     };
                     
                     return (
@@ -431,8 +431,8 @@ export default function EmployeeDashboard() {
                           dayData
                             ? modeColors[dayData.mode]
                             : day === 19
-                            ? 'border-2 border-[#00A63E] bg-white'
-                            : 'bg-gray-100'
+                            ? 'border-2 border-[#00A63E] bg-card'
+                            : 'bg-muted'
                         }`}
                         title={dayData ? `Day ${day}: ${dayData.mode} - ${dayData.distance}km` : `Day ${day}`}
                         onMouseEnter={() => setHoveredDay({ day, mode: dayData?.mode, distance: dayData?.distance, month: 'February 2026' })}
@@ -442,19 +442,19 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">7</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">14</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">21</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">28</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">7</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">14</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">21</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">28</span>
                 </div>
               </div>
 
               {/* January 2026 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">January 2026</p>
-                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">45.2 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-foreground">January 2026</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">45.2 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
@@ -464,19 +464,19 @@ export default function EmployeeDashboard() {
                     const randomMode = modes[day % modes.length];
                     
                     const modeColors = {
-                      carpool: 'bg-[#00bc7d]',
-                      bike: 'bg-[#00a872]',
-                      bus: 'bg-[#009689]',
-                      walk: 'bg-[#008573]',
-                      drive: 'bg-[#6a7282]',
-                      remote: 'bg-gray-300',
+                      carpool: 'bg-brand-500',
+                      bike: 'bg-brand-500',
+                      bus: 'bg-brand-600',
+                      walk: 'bg-brand-700',
+                      drive: 'bg-muted-foreground',
+                      remote: 'bg-border',
                     };
                     
                     return (
                       <div
                         key={day}
                         className={`w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-125 cursor-pointer ${
-                          hasCommute ? modeColors[randomMode] : 'bg-gray-100'
+                          hasCommute ? modeColors[randomMode] : 'bg-muted'
                         }`}
                         title={hasCommute ? `Day ${day}: ${randomMode}` : `Day ${day}`}
                         onMouseEnter={() => setHoveredDay({ day, mode: randomMode, month: 'January 2026' })}
@@ -486,19 +486,19 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">8</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">15</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">22</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">31</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">8</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">15</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">22</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">31</span>
                 </div>
               </div>
 
               {/* December 2025 */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-[#101828]">December 2025</p>
-                  <p className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">39.3 kg CO₂ saved</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[11px] text-foreground">December 2025</p>
+                  <p className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">39.3 kg CO₂ saved</p>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
@@ -508,19 +508,19 @@ export default function EmployeeDashboard() {
                     const randomMode = modes[(day + 2) % modes.length];
                     
                     const modeColors = {
-                      carpool: 'bg-[#00bc7d]',
-                      bike: 'bg-[#00a872]',
-                      bus: 'bg-[#009689]',
-                      walk: 'bg-[#008573]',
-                      drive: 'bg-[#6a7282]',
-                      remote: 'bg-gray-300',
+                      carpool: 'bg-brand-500',
+                      bike: 'bg-brand-500',
+                      bus: 'bg-brand-600',
+                      walk: 'bg-brand-700',
+                      drive: 'bg-muted-foreground',
+                      remote: 'bg-border',
                     };
                     
                     return (
                       <div
                         key={day}
                         className={`w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-125 cursor-pointer ${
-                          hasCommute ? modeColors[randomMode] : 'bg-gray-100'
+                          hasCommute ? modeColors[randomMode] : 'bg-muted'
                         }`}
                         title={hasCommute ? `Day ${day}: ${randomMode}` : `Day ${day}`}
                         onMouseEnter={() => setHoveredDay({ day, mode: randomMode, month: 'December 2025' })}
@@ -530,41 +530,41 @@ export default function EmployeeDashboard() {
                   })}
                 </div>
                 <div className="flex justify-between mt-1 px-0.5">
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">1</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">8</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">15</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">22</span>
-                  <span className="font-['Geist',sans-serif] text-[9px] text-[#6a7282]">31</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">1</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">8</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">15</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">22</span>
+                  <span className="font-['Geist',sans-serif] text-[9px] text-muted-foreground">31</span>
                 </div>
               </div>
             </div>
 
             {/* Legend */}
-            <div className="pt-4 border-t border-gray-100 mt-4">
+            <div className="pt-4 border-t border-border-subtle mt-4">
               <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#00bc7d] rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Carpool</span>
+                  <div className="w-3 h-3 bg-brand-500 rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Carpool</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#00a872] rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Bike</span>
+                  <div className="w-3 h-3 bg-brand-500 rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Bike</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#009689] rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Transit</span>
+                  <div className="w-3 h-3 bg-brand-600 rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Transit</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#6a7282] rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Drive</span>
+                  <div className="w-3 h-3 bg-muted-foreground rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Drive</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-[#008573] rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Walk</span>
+                  <div className="w-3 h-3 bg-brand-700 rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Walk</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 bg-gray-300 rounded"></div>
-                  <span className="font-['Geist',sans-serif] text-[10px] text-[#6a7282]">Remote</span>
+                  <div className="w-3 h-3 bg-border rounded"></div>
+                  <span className="font-['Geist',sans-serif] text-[10px] text-muted-foreground">Remote</span>
                 </div>
               </div>
             </div>
@@ -574,49 +574,47 @@ export default function EmployeeDashboard() {
         {/* Right Column - 1/3 width */}
         <div className="space-y-4">
           {/* Carbon Impact */}
-          <div className="bg-[#f0fdf4] rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
+          <div className="bg-success-subtle rounded-[14px] border border-[rgba(0,0,0,0.1)] p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingDown className="w-5 h-5 text-[#00A63E]" />
-              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] tracking-[-0.4395px]">
+              <TrendingDown className="w-5 h-5 text-success" />
+              <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-foreground tracking-[-0.4395px]">
                 Your Carbon Impact
               </h2>
             </div>
             
             <div className="mb-4">
-              <p className="font-['Geist',sans-serif] font-bold text-[36px] leading-10 text-[#00A63E] mb-1">
-                142.5 kg
+              <p className="font-['Geist',sans-serif] font-bold text-[36px] leading-10 text-success mb-1">
+                {(commuteStats as any)?.co2_saved_vs_car != null ? `${(commuteStats as any).co2_saved_vs_car} kg` : '—'}
               </p>
-              <p className="font-['Geist',sans-serif] font-normal text-[14px] text-[#4a5565]">
-                CO₂ saved this month
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] text-muted-foreground">
+                CO₂ saved (vs solo car)
               </p>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between mb-2">
-                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Monthly goal</span>
-                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#00A63E]">160 kg</span>
-              </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-[#00A63E] rounded-full" style={{ width: '89%' }}></div>
-              </div>
             </div>
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
-                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Trees equivalent</span>
-                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#101828]">7 trees</span>
+                <span className="font-['Geist',sans-serif] text-[12px] text-muted-foreground">Trees equivalent</span>
+                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-foreground">
+                  {(commuteStats as any)?.co2_saved_vs_car != null
+                    ? `${((commuteStats as any).co2_saved_vs_car / 21).toFixed(1)} trees`
+                    : '—'}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="font-['Geist',sans-serif] text-[12px] text-[#6a7282]">Distance saved</span>
-                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-[#101828]">385 km</span>
+                <span className="font-['Geist',sans-serif] text-[12px] text-muted-foreground">Total distance</span>
+                <span className="font-['Geist',sans-serif] font-semibold text-[12px] text-foreground">
+                  {(commuteStats as any)?.total_distance_km != null
+                    ? `${(commuteStats as any).total_distance_km} km`
+                    : '—'}
+                </span>
               </div>
             </div>
 
             <button 
               onClick={() => navigate('/employee/impact')}
-              className="w-full bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 transition-colors rounded-lg py-2"
+              className="w-full bg-card border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle transition-colors rounded-lg py-2"
             >
-              <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] text-foreground">
                 View Full Report
               </span>
             </button>
@@ -624,10 +622,10 @@ export default function EmployeeDashboard() {
 
           {/* Green Champion Badge */}
           <div 
-            className="rounded-[14px] border border-[#fff085] p-6 text-center relative"
+            className="rounded-[14px] border border-warning/40 p-6 text-center relative"
             style={{ backgroundImage: "linear-gradient(152.288deg, rgb(10, 10, 10) 0%, rgb(0, 153, 102) 100%)" }}
           >
-            <div className="inline-flex items-center justify-center bg-gradient-to-r from-[#096] to-[#00bc7d] rounded-full px-6 py-3 mb-4">
+            <div className="inline-flex items-center justify-center bg-gradient-to-r from-brand-600 to-brand-500 rounded-full px-6 py-3 mb-4">
               <Award className="w-6 h-6 text-white mr-2" />
               <span className="font-['Geist',sans-serif] font-semibold text-[20px] text-white">
                 Green Champion!
@@ -641,7 +639,7 @@ export default function EmployeeDashboard() {
 
           {/* Monthly Impact Chart */}
           <Card className="p-6">
-            <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-[#0a0a0a] mb-4">
+            <h2 className="font-['Geist',sans-serif] font-semibold text-[18px] leading-7 text-foreground mb-4">
               Your Monthly Impact
             </h2>
             <div style={{ height: '200px', width: '100%' }}>
@@ -661,29 +659,29 @@ export default function EmployeeDashboard() {
                 options={lineChartOptions}
               />
             </div>
-            <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="font-['Geist',sans-serif] text-[12px] text-green-800">
+            <div className="mt-4 bg-success-subtle border border-success/25 rounded-lg p-3">
+              <p className="font-['Geist',sans-serif] text-[12px] text-success">
                 <strong>Great job!</strong> You've saved 21.3 kg CO₂ this month, equivalent to planting 1.2 trees.
               </p>
             </div>
           </Card>
 
           {/* Alert */}
-          <div className="bg-white  rounded-[14px] border border-gray-300/50 p-4">
+          <div className="bg-card  rounded-[14px] border border-border/50 p-4">
             <div className="flex items-start gap-3">
-              <div className="bg-orange-500 rounded-lg w-9 h-9 flex items-center justify-center flex-shrink-0">
+              <div className="bg-warning rounded-lg w-9 h-9 flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="font-['Geist',sans-serif] font-semibold text-[14px] text-[#101828] mb-1">
+                <h3 className="font-['Geist',sans-serif] font-semibold text-[14px] text-foreground mb-1">
                   Haven't logged today's commute yet
                 </h3>
-                <p className="font-['Geist',sans-serif] font-normal text-[12px] text-[#4a5565] mb-3">
+                <p className="font-['Geist',sans-serif] font-normal text-[12px] text-muted-foreground mb-3">
                   Click to view all transport modes
                 </p>
                 <button 
                   onClick={() => setIsLogCommuteOpen(true)}
-                  className="bg-orange-500 hover:bg-orange-600 transition-colors rounded-lg px-4 py-2"
+                  className="bg-warning hover:bg-warning transition-colors rounded-lg px-4 py-2"
                 >
                   <div className="flex items-center gap-2">
                     <Plus className="h-4 w-4 text-white" />

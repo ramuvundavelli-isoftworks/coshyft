@@ -154,7 +154,7 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Target className="h-6 w-6 text-[#00bc7d]" />
+            <Target className="h-6 w-6 text-brand-500" />
             Create Baseline Year
           </DialogTitle>
           <DialogDescription>
@@ -219,7 +219,7 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
                   <SelectItem key={method.value} value={method.value}>
                     <div className="py-1">
                       <p className="font-medium">{method.label}</p>
-                      <p className="text-xs text-gray-500">{method.description}</p>
+                      <p className="text-xs text-muted-foreground">{method.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -242,7 +242,7 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
                   <SelectItem key={option.value} value={option.value}>
                     <div className="py-1">
                       <p className="font-medium">{option.label}</p>
-                      <p className="text-xs text-gray-500">{option.description}</p>
+                      <p className="text-xs text-muted-foreground">{option.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -265,7 +265,7 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
               onChange={(e) => setFormData({ ...formData, dataQuality: parseInt(e.target.value) })}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
               <span>Poor (0%)</span>
               <span>Fair (50%)</span>
               <span>Good (75%)</span>
@@ -273,17 +273,17 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
             </div>
             <div className="mt-2">
               {formData.dataQuality >= 75 && (
-                <Badge className="bg-green-100 text-green-700 border-green-200">
+                <Badge className="bg-success-subtle text-success border-success/25">
                   Meets CSRD standards
                 </Badge>
               )}
               {formData.dataQuality >= 50 && formData.dataQuality < 75 && (
-                <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
+                <Badge className="bg-warning-subtle text-warning border-warning/25">
                   Acceptable quality
                 </Badge>
               )}
               {formData.dataQuality < 50 && (
-                <Badge className="bg-red-100 text-red-700 border-red-200">
+                <Badge className="bg-destructive-subtle text-destructive border-destructive/25">
                   Below standards
                 </Badge>
               )}
@@ -334,21 +334,21 @@ export function CreateBaselineModal({ isOpen, onClose, onSubmit }: CreateBaselin
           {warnings.length > 0 && (
             <div className="space-y-2">
               {warnings.map((warning, idx) => (
-                <div key={idx} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">{warning}</p>
+                <div key={idx} className="p-3 bg-warning-subtle border border-warning/25 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-warning">{warning}</p>
                 </div>
               ))}
             </div>
           )}
 
           {/* CSRD Info */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <FileText className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <FileText className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900">CSRD/ESRS E1 Requirements</p>
-                <ul className="text-xs text-blue-700 mt-2 space-y-1 ml-4 list-disc">
+                <p className="text-sm font-medium text-info">CSRD/ESRS E1 Requirements</p>
+                <ul className="text-xs text-info mt-2 space-y-1 ml-4 list-disc">
                   <li>Baseline must be established for target setting (ESRS E1-4)</li>
                   <li>Document methodology and assumptions (ESRS E1-6)</li>
                   <li>Data quality score ≥ 75% recommended for compliance</li>

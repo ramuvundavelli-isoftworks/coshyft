@@ -204,8 +204,8 @@ export default function TargetsTrajectory() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Targets & Trajectory</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Targets & Trajectory</h1>
+          <p className="text-muted-foreground mt-1">
             Set emission reduction targets and track progress
           </p>
         </div>
@@ -225,73 +225,73 @@ export default function TargetsTrajectory() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Target className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Target className="h-5 w-5 text-info" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Target Year</p>
-          <p className="text-3xl font-bold text-gray-900">{activeScenario.targetYear}</p>
+          <p className="text-sm text-muted-foreground mb-1">Target Year</p>
+          <p className="text-3xl font-bold text-foreground">{activeScenario.targetYear}</p>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-success" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Reduction Target</p>
-          <p className="text-3xl font-bold text-green-600">{activeScenario.reductionPercent}%</p>
+          <p className="text-sm text-muted-foreground mb-1">Reduction Target</p>
+          <p className="text-3xl font-bold text-success">{activeScenario.reductionPercent}%</p>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-info" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Target Emissions</p>
-          <p className="text-3xl font-bold text-purple-600">{activeScenario.targetEmissions.toFixed(0)}</p>
-          <p className="text-xs text-gray-500 mt-2">tCO₂e by {activeScenario.targetYear}</p>
+          <p className="text-sm text-muted-foreground mb-1">Target Emissions</p>
+          <p className="text-3xl font-bold text-info">{activeScenario.targetEmissions.toFixed(0)}</p>
+          <p className="text-xs text-muted-foreground mt-2">tCO₂e by {activeScenario.targetYear}</p>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-warning" />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Years Remaining</p>
-          <p className="text-3xl font-bold text-orange-600">{yearsToTarget}</p>
+          <p className="text-sm text-muted-foreground mb-1">Years Remaining</p>
+          <p className="text-3xl font-bold text-warning">{yearsToTarget}</p>
         </Card>
       </div>
 
       {/* Progress Tracker */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Progress to Target</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Progress to Target</h2>
         <div className="mb-6">
-          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
             <span>Current: {currentEmissions} tCO₂e</span>
             <span>Target: {activeScenario.targetEmissions.toFixed(0)} tCO₂e</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4">
+          <div className="w-full bg-muted rounded-full h-4">
             <div
               className={`h-4 rounded-full ${
-                progressPercent >= 100 ? 'bg-green-600' : progressPercent >= 50 ? 'bg-blue-600' : 'bg-orange-600'
+                progressPercent >= 100 ? 'bg-success' : progressPercent >= 50 ? 'bg-info' : 'bg-warning'
               }`}
               style={{ width: `${Math.min(progressPercent, 100)}%` }}
             />
           </div>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             {progressPercent.toFixed(1)}% progress • {(activeScenario.baselineEmissions - currentEmissions).toFixed(0)} tCO₂e reduced
           </p>
         </div>
         {progressPercent < 25 && (
-          <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
               <div>
-                <p className="font-medium text-orange-900">Behind Schedule</p>
-                <p className="text-sm text-orange-700">
+                <p className="font-medium text-warning">Behind Schedule</p>
+                <p className="text-sm text-warning">
                   Current trajectory will not meet {activeScenario.targetYear} target. Additional initiatives required.
                 </p>
               </div>
@@ -302,7 +302,7 @@ export default function TargetsTrajectory() {
 
       {/* Trajectory Chart */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Emission Trajectory</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">Emission Trajectory</h2>
         <div style={{ height: '350px', width: '100%' }}>
           <Line
             data={{
@@ -340,49 +340,49 @@ export default function TargetsTrajectory() {
 
       {/* Scenario Management */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Target Scenarios</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">Target Scenarios</h2>
         <div className="space-y-4">
           {scenarios.map((scenario) => (
             <div
               key={scenario.id}
-              className={`p-5 border rounded-lg ${scenario.isDefault ? 'bg-blue-50 border-blue-300' : 'hover:bg-gray-50'}`}
+              className={`p-5 border rounded-lg ${scenario.isDefault ? 'bg-info-subtle border-info/40' : 'hover:bg-background-subtle'}`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{scenario.name}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{scenario.name}</h3>
                     {scenario.isDefault && (
-                      <Badge className="bg-blue-600 text-white">Default</Badge>
+                      <Badge className="bg-info text-white">Default</Badge>
                     )}
                     <Badge className={
-                      scenario.status === 'active' ? 'bg-green-100 text-green-700' :
-                      scenario.status === 'draft' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-gray-100 text-gray-700'
+                      scenario.status === 'active' ? 'bg-success-subtle text-success' :
+                      scenario.status === 'draft' ? 'bg-warning-subtle text-warning' :
+                      'bg-muted text-foreground'
                     }>
                       {scenario.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-700 mb-3">{scenario.description}</p>
+                  <p className="text-sm text-foreground mb-3">{scenario.description}</p>
                   <div className="grid grid-cols-5 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-600">Baseline</p>
-                      <p className="font-semibold text-gray-900">{scenario.baselineYear}: {scenario.baselineEmissions} tCO₂e</p>
+                      <p className="text-muted-foreground">Baseline</p>
+                      <p className="font-semibold text-foreground">{scenario.baselineYear}: {scenario.baselineEmissions} tCO₂e</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Target Year</p>
-                      <p className="font-semibold text-gray-900">{scenario.targetYear}</p>
+                      <p className="text-muted-foreground">Target Year</p>
+                      <p className="font-semibold text-foreground">{scenario.targetYear}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Reduction</p>
-                      <p className="font-semibold text-green-600">{scenario.reductionPercent}%</p>
+                      <p className="text-muted-foreground">Reduction</p>
+                      <p className="font-semibold text-success">{scenario.reductionPercent}%</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Target</p>
-                      <p className="font-semibold text-gray-900">{scenario.targetEmissions.toFixed(0)} tCO₂e</p>
+                      <p className="text-muted-foreground">Target</p>
+                      <p className="font-semibold text-foreground">{scenario.targetEmissions.toFixed(0)} tCO₂e</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Created</p>
-                      <p className="font-semibold text-gray-900">{new Date(scenario.createdDate).toLocaleDateString()}</p>
+                      <p className="text-muted-foreground">Created</p>
+                      <p className="font-semibold text-foreground">{new Date(scenario.createdDate).toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export default function TargetsTrajectory() {
                       size="sm"
                       onClick={() => openDeleteDialog(scenario)}
                     >
-                      <Trash2 className="h-3 w-3 text-red-600" />
+                      <Trash2 className="h-3 w-3 text-destructive" />
                     </Button>
                   )}
                 </div>
@@ -503,11 +503,11 @@ export default function TargetsTrajectory() {
               </div>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 <strong>Calculated Target:</strong> {(newScenario.baselineEmissions * (1 - newScenario.reductionPercent / 100)).toFixed(0)} tCO₂e by {newScenario.targetYear}
               </p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-info mt-1">
                 Annual reduction required: {((newScenario.baselineEmissions * newScenario.reductionPercent / 100) / (newScenario.targetYear - newScenario.baselineYear)).toFixed(0)} tCO₂e/year
               </p>
             </div>

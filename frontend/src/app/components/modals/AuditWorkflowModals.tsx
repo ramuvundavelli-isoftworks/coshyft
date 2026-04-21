@@ -61,17 +61,17 @@ export interface ReviewCommentData {
 }
 
 const commentTypes = [
-  { value: 'question', label: 'Question', icon: MessageSquare, color: 'bg-blue-100 text-blue-700' },
-  { value: 'observation', label: 'Observation', icon: Info, color: 'bg-gray-100 text-gray-700' },
-  { value: 'concern', label: 'Concern', icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'recommendation', label: 'Recommendation', icon: Star, color: 'bg-purple-100 text-purple-700' },
+  { value: 'question', label: 'Question', icon: MessageSquare, color: 'bg-info-subtle text-info' },
+  { value: 'observation', label: 'Observation', icon: Info, color: 'bg-muted text-foreground' },
+  { value: 'concern', label: 'Concern', icon: AlertTriangle, color: 'bg-warning-subtle text-warning' },
+  { value: 'recommendation', label: 'Recommendation', icon: Star, color: 'bg-info-subtle text-info' },
 ];
 
 const severityLevels = [
-  { value: 'low', label: 'Low Priority', color: 'bg-gray-100 text-gray-700' },
-  { value: 'medium', label: 'Medium Priority', color: 'bg-blue-100 text-blue-700' },
-  { value: 'high', label: 'High Priority', color: 'bg-orange-100 text-orange-700' },
-  { value: 'critical', label: 'Critical', color: 'bg-red-100 text-red-700' },
+  { value: 'low', label: 'Low Priority', color: 'bg-muted text-foreground' },
+  { value: 'medium', label: 'Medium Priority', color: 'bg-info-subtle text-info' },
+  { value: 'high', label: 'High Priority', color: 'bg-warning-subtle text-warning' },
+  { value: 'critical', label: 'Critical', color: 'bg-destructive-subtle text-destructive' },
 ];
 
 const categoryOptions = {
@@ -124,7 +124,7 @@ export function ReviewCommentModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-[#00bc7d]" />
+            <MessageSquare className="h-5 w-5 text-brand-500" />
             Add Review Comment
           </DialogTitle>
           <DialogDescription>
@@ -145,8 +145,8 @@ export function ReviewCommentModal({
                     onClick={() => setFormData({ ...formData, commentType: type.value as any })}
                     className={`p-3 border-2 rounded-lg transition-all ${
                       formData.commentType === type.value
-                        ? 'border-[#00bc7d] bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-brand-500 bg-success-subtle'
+                        : 'border-border hover:border-border'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export function ReviewCommentModal({
           </div>
 
           {/* Requires Response */}
-          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2 p-3 bg-background-subtle rounded-lg">
             <input
               type="checkbox"
               id="requiresResponse"
@@ -237,7 +237,7 @@ export function ReviewCommentModal({
               onChange={(e) => setFormData({ ...formData, requiresResponse: e.target.checked })}
               className="rounded"
             />
-            <label htmlFor="requiresResponse" className="text-sm text-gray-700 cursor-pointer">
+            <label htmlFor="requiresResponse" className="text-sm text-foreground cursor-pointer">
               Requires formal response from data owner
             </label>
           </div>
@@ -322,9 +322,9 @@ export function ApprovalDecisionModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isApproval ? (
-              <CheckCircle className="h-6 w-6 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-success" />
             ) : (
-              <XCircle className="h-6 w-6 text-red-600" />
+              <XCircle className="h-6 w-6 text-destructive" />
             )}
             {isApproval ? 'Approve' : 'Reject'} {itemType}
           </DialogTitle>
@@ -337,11 +337,11 @@ export function ApprovalDecisionModal({
           {/* Decision Banner */}
           <div className={`p-4 rounded-lg border-2 ${
             isApproval 
-              ? 'bg-green-50 border-green-200' 
-              : 'bg-red-50 border-red-200'
+              ? 'bg-success-subtle border-success/25' 
+              : 'bg-destructive-subtle border-destructive/25'
           }`}>
             <p className={`text-sm font-medium ${
-              isApproval ? 'text-green-900' : 'text-red-900'
+              isApproval ? 'text-success' : 'text-destructive'
             }`}>
               {isApproval 
                 ? 'You are approving this item for publication/implementation'
@@ -411,14 +411,14 @@ export function ApprovalDecisionModal({
           {/* Warning */}
           <div className={`p-3 rounded-lg border flex items-start gap-2 ${
             isApproval 
-              ? 'bg-blue-50 border-blue-200' 
-              : 'bg-amber-50 border-amber-200'
+              ? 'bg-info-subtle border-info/25' 
+              : 'bg-warning-subtle border-warning/25'
           }`}>
             <Info className={`h-4 w-4 flex-shrink-0 mt-0.5 ${
-              isApproval ? 'text-blue-600' : 'text-amber-600'
+              isApproval ? 'text-info' : 'text-warning'
             }`} />
             <p className={`text-xs ${
-              isApproval ? 'text-blue-800' : 'text-amber-800'
+              isApproval ? 'text-info' : 'text-warning'
             }`}>
               {isApproval
                 ? 'This action will mark the item as approved and notify relevant stakeholders.'
@@ -480,11 +480,11 @@ export interface IssueData {
 }
 
 const issueTypes = [
-  { value: 'data-quality', label: 'Data Quality', color: 'bg-blue-100 text-blue-700' },
-  { value: 'compliance', label: 'Compliance Violation', color: 'bg-red-100 text-red-700' },
-  { value: 'methodology', label: 'Methodology Error', color: 'bg-orange-100 text-orange-700' },
-  { value: 'fraud', label: 'Potential Fraud', color: 'bg-purple-100 text-purple-700' },
-  { value: 'other', label: 'Other Issue', color: 'bg-gray-100 text-gray-700' },
+  { value: 'data-quality', label: 'Data Quality', color: 'bg-info-subtle text-info' },
+  { value: 'compliance', label: 'Compliance Violation', color: 'bg-destructive-subtle text-destructive' },
+  { value: 'methodology', label: 'Methodology Error', color: 'bg-warning-subtle text-warning' },
+  { value: 'fraud', label: 'Potential Fraud', color: 'bg-info-subtle text-info' },
+  { value: 'other', label: 'Other Issue', color: 'bg-muted text-foreground' },
 ];
 
 export function FlagIssueModal({ isOpen, onClose, onSubmit, itemType, itemName }: FlagIssueModalProps) {
@@ -522,7 +522,7 @@ export function FlagIssueModal({ isOpen, onClose, onSubmit, itemType, itemName }
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-red-600" />
+            <AlertTriangle className="h-6 w-6 text-destructive" />
             Flag Issue
           </DialogTitle>
           <DialogDescription>
@@ -541,8 +541,8 @@ export function FlagIssueModal({ isOpen, onClose, onSubmit, itemType, itemName }
                   onClick={() => setFormData({ ...formData, issueType: type.value as any })}
                   className={`p-3 border-2 rounded-lg transition-all text-left ${
                     formData.issueType === type.value
-                      ? 'border-[#00bc7d] bg-green-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-brand-500 bg-success-subtle'
+                      : 'border-border hover:border-border'
                   }`}
                 >
                   <Badge variant="outline" className={type.color}>
@@ -623,7 +623,7 @@ export function FlagIssueModal({ isOpen, onClose, onSubmit, itemType, itemName }
           </div>
 
           {/* Escalate */}
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center gap-2 p-3 bg-destructive-subtle border border-destructive/25 rounded-lg">
             <input
               type="checkbox"
               id="escalate"
@@ -631,15 +631,15 @@ export function FlagIssueModal({ isOpen, onClose, onSubmit, itemType, itemName }
               onChange={(e) => setFormData({ ...formData, escalate: e.target.checked })}
               className="rounded"
             />
-            <label htmlFor="escalate" className="text-sm text-red-700 cursor-pointer font-medium">
+            <label htmlFor="escalate" className="text-sm text-destructive cursor-pointer font-medium">
               Escalate to senior management immediately
             </label>
           </div>
 
           {/* Warning */}
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-800">
+          <div className="p-3 bg-warning-subtle border border-warning/25 rounded-lg flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-warning">
               Flagging an issue will immediately notify relevant stakeholders and may pause related processes pending resolution.
             </p>
           </div>

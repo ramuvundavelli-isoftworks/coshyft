@@ -146,11 +146,11 @@ export default function SOSEmergencyModal({
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
-              <div className="h-20 w-20 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
-                <Shield className="h-12 w-12 text-red-600" />
+              <div className="h-20 w-20 bg-destructive-subtle rounded-full flex items-center justify-center animate-pulse">
+                <Shield className="h-12 w-12 text-destructive" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl text-red-600">
+            <DialogTitle className="text-center text-2xl text-destructive">
               Emergency Alert Active
             </DialogTitle>
             <DialogDescription className="text-center text-lg">
@@ -160,38 +160,38 @@ export default function SOSEmergencyModal({
 
           <div className="space-y-4 py-4">
             {/* Status Updates */}
-            <Card className="p-4 bg-red-50 border-red-200">
+            <Card className="p-4 bg-destructive-subtle border-destructive/25">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Emergency contacts notified</p>
-                    <p className="text-xs text-gray-600">Sent at {new Date().toLocaleTimeString()}</p>
+                    <p className="text-sm font-medium text-foreground">Emergency contacts notified</p>
+                    <p className="text-xs text-muted-foreground">Sent at {new Date().toLocaleTimeString()}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Platform support alerted</p>
-                    <p className="text-xs text-gray-600">Response team activated</p>
+                    <p className="text-sm font-medium text-foreground">Platform support alerted</p>
+                    <p className="text-xs text-muted-foreground">Response team activated</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Location shared</p>
-                    <p className="text-xs text-gray-600">Live tracking active</p>
+                    <p className="text-sm font-medium text-foreground">Location shared</p>
+                    <p className="text-xs text-muted-foreground">Live tracking active</p>
                   </div>
                 </div>
 
                 {notifyEmergencyServices && (
                   <div className="flex items-center gap-3">
-                    <div className="h-5 w-5 border-2 border-yellow-500 rounded-full border-t-transparent animate-spin" />
+                    <div className="h-5 w-5 border-2 border-warning rounded-full border-t-transparent animate-spin" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Contacting emergency services</p>
-                      <p className="text-xs text-gray-600">Please stay on the line</p>
+                      <p className="text-sm font-medium text-foreground">Contacting emergency services</p>
+                      <p className="text-xs text-muted-foreground">Please stay on the line</p>
                     </div>
                   </div>
                 )}
@@ -201,13 +201,13 @@ export default function SOSEmergencyModal({
             {/* Current Location */}
             <Card className="p-4">
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
+                <MapPin className="h-5 w-5 text-info mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 mb-1">Current Location</p>
-                  <p className="text-xs text-gray-600 font-mono">
+                  <p className="text-sm font-medium text-foreground mb-1">Current Location</p>
+                  <p className="text-xs text-muted-foreground font-mono">
                     {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Location is being shared with emergency contacts
                   </p>
                 </div>
@@ -218,17 +218,17 @@ export default function SOSEmergencyModal({
             {emergencyContacts.length > 0 && (
               <Card className="p-4">
                 <div className="flex items-start gap-3">
-                  <Users className="h-5 w-5 text-purple-600 mt-0.5" />
+                  <Users className="h-5 w-5 text-info mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900 mb-2">Notified Contacts</p>
+                    <p className="text-sm font-medium text-foreground mb-2">Notified Contacts</p>
                     <div className="space-y-2">
                       {emergencyContacts.map((contact, index) => (
                         <div key={index} className="flex items-center justify-between text-xs">
                           <div>
-                            <p className="font-medium text-gray-900">{contact.name}</p>
-                            <p className="text-gray-600">{contact.relationship}</p>
+                            <p className="font-medium text-foreground">{contact.name}</p>
+                            <p className="text-muted-foreground">{contact.relationship}</p>
                           </div>
-                          <Badge variant="outline" className="bg-green-50 text-green-700">
+                          <Badge variant="outline" className="bg-success-subtle text-success">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Sent
                           </Badge>
@@ -241,12 +241,12 @@ export default function SOSEmergencyModal({
             )}
 
             {/* Safety Tips */}
-            <Card className="p-4 bg-blue-50 border-blue-200">
+            <Card className="p-4 bg-info-subtle border-info/25">
               <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                <Shield className="h-5 w-5 text-info mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-blue-900 mb-2">Safety Tips</p>
-                  <ul className="text-xs text-blue-800 space-y-1">
+                  <p className="text-sm font-medium text-info mb-2">Safety Tips</p>
+                  <ul className="text-xs text-info space-y-1">
                     <li>• Stay calm and in a safe location if possible</li>
                     <li>• Keep your phone charged and accessible</li>
                     <li>• Do not end this alert until help arrives</li>
@@ -277,8 +277,8 @@ export default function SOSEmergencyModal({
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
-              <div className="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-10 w-10 text-red-600" />
+              <div className="h-16 w-16 bg-destructive-subtle rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-10 w-10 text-destructive" />
               </div>
             </div>
             <DialogTitle className="text-center text-xl">Confirm Emergency Alert</DialogTitle>
@@ -288,16 +288,16 @@ export default function SOSEmergencyModal({
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <Card className="p-4 bg-yellow-50 border-yellow-200">
-              <p className="text-sm text-yellow-900 font-medium mb-2">
+            <Card className="p-4 bg-warning-subtle border-warning/25">
+              <p className="text-sm text-warning font-medium mb-2">
                 You are about to activate an emergency alert for:
               </p>
-              <p className="text-lg font-semibold text-yellow-900">
+              <p className="text-lg font-semibold text-warning">
                 {emergencyTypes.find(t => t.id === emergencyType)?.label}
               </p>
             </Card>
 
-            <div className="text-sm text-gray-600 space-y-2">
+            <div className="text-sm text-muted-foreground space-y-2">
               <p className="font-medium">The following actions will be taken:</p>
               <ul className="list-disc list-inside space-y-1 text-xs">
                 {notifyEmergencyContacts && (
@@ -331,8 +331,8 @@ export default function SOSEmergencyModal({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="h-12 w-12 bg-destructive-subtle rounded-full flex items-center justify-center">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
             </div>
             <div>
               <DialogTitle className="text-xl">Emergency SOS</DialogTitle>
@@ -353,8 +353,8 @@ export default function SOSEmergencyModal({
                   key={type.id}
                   className={`p-4 cursor-pointer transition-all border-2 ${
                     emergencyType === type.id
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-destructive bg-destructive-subtle'
+                      : 'border-border hover:border-border'
                   }`}
                   onClick={() => setEmergencyType(type.id)}
                 >
@@ -362,12 +362,12 @@ export default function SOSEmergencyModal({
                     <span className="text-2xl">{type.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium text-gray-900">{type.label}</p>
+                        <p className="font-medium text-foreground">{type.label}</p>
                         {emergencyType === type.id && (
-                          <CheckCircle className="h-4 w-4 text-red-600" />
+                          <CheckCircle className="h-4 w-4 text-destructive" />
                         )}
                       </div>
-                      <p className="text-xs text-gray-600">{type.description}</p>
+                      <p className="text-xs text-muted-foreground">{type.description}</p>
                     </div>
                   </div>
                 </Card>
@@ -405,7 +405,7 @@ export default function SOSEmergencyModal({
                       <Label htmlFor="emergency-contacts" className="cursor-pointer font-medium">
                         Emergency Contacts
                       </Label>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {emergencyContacts.length > 0
                           ? `Notify ${emergencyContacts.length} saved contact(s)`
                           : 'No emergency contacts on file'}
@@ -425,7 +425,7 @@ export default function SOSEmergencyModal({
                       <Label htmlFor="emergency-services" className="cursor-pointer font-medium">
                         Emergency Services (911)
                       </Label>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         For immediate life-threatening emergencies
                       </p>
                     </div>
@@ -434,14 +434,14 @@ export default function SOSEmergencyModal({
               </div>
 
               {/* Warning */}
-              <Card className="p-4 bg-red-50 border-red-200">
+              <Card className="p-4 bg-destructive-subtle border-destructive/25">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-red-900 mb-1">
+                    <p className="text-sm font-medium text-destructive mb-1">
                       Important: False alarms have consequences
                     </p>
-                    <p className="text-xs text-red-800">
+                    <p className="text-xs text-destructive">
                       Misuse of emergency services may result in account suspension and legal action.
                       Only use this feature in genuine emergency situations.
                     </p>
@@ -452,26 +452,26 @@ export default function SOSEmergencyModal({
           )}
 
           {/* Current Trip Info */}
-          <Card className="p-4 bg-gray-50">
-            <p className="text-sm font-medium text-gray-900 mb-3">Current Trip Information</p>
+          <Card className="p-4 bg-background-subtle">
+            <p className="text-sm font-medium text-foreground mb-3">Current Trip Information</p>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <p className="text-gray-600">Driver</p>
-                <p className="font-medium text-gray-900">{driverName}</p>
+                <p className="text-muted-foreground">Driver</p>
+                <p className="font-medium text-foreground">{driverName}</p>
               </div>
               {driverPhone && (
                 <div>
-                  <p className="text-gray-600">Driver Phone</p>
-                  <p className="font-medium text-gray-900">{driverPhone}</p>
+                  <p className="text-muted-foreground">Driver Phone</p>
+                  <p className="font-medium text-foreground">{driverPhone}</p>
                 </div>
               )}
               <div>
-                <p className="text-gray-600">Trip ID</p>
-                <p className="font-medium text-gray-900 font-mono">{tripId}</p>
+                <p className="text-muted-foreground">Trip ID</p>
+                <p className="font-medium text-foreground font-mono">{tripId}</p>
               </div>
               <div>
-                <p className="text-gray-600">Time</p>
-                <p className="font-medium text-gray-900">{new Date().toLocaleTimeString()}</p>
+                <p className="text-muted-foreground">Time</p>
+                <p className="font-medium text-foreground">{new Date().toLocaleTimeString()}</p>
               </div>
             </div>
           </Card>
@@ -485,7 +485,7 @@ export default function SOSEmergencyModal({
             variant="destructive"
             onClick={handleActivateSOS}
             disabled={!emergencyType}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-destructive hover:bg-destructive"
           >
             <AlertTriangle className="h-4 w-4 mr-2" />
             Activate SOS Emergency Alert

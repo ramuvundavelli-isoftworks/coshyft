@@ -24,8 +24,8 @@ export default function RewardsAchievements() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Rewards & Achievements</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Rewards & Achievements</h1>
+          <p className="text-muted-foreground mt-1">
             Track your progress, earn rewards, and compete with others
           </p>
         </div>
@@ -50,38 +50,38 @@ export default function RewardsAchievements() {
 
       {/* Quick Stats Banner */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <Card className="p-4 bg-gradient-to-br from-info-subtle to-info-subtle">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Total Points</span>
-            <Zap className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Total Points</span>
+            <Zap className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-blue-700">{mockUserProfile.points.toLocaleString()}</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-2xl font-bold text-info">{mockUserProfile.points.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground mt-1">
             +{Math.floor(Math.random() * 100 + 50)} this week
           </p>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50">
+        <Card className="p-4 bg-gradient-to-br from-info-subtle to-primary-subtle">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Level</span>
-            <Trophy className="h-4 w-4 text-purple-600" />
+            <span className="text-sm text-muted-foreground">Level</span>
+            <Trophy className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-purple-700">{mockUserProfile.level}</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-2xl font-bold text-info">{mockUserProfile.level}</p>
+          <p className="text-xs text-muted-foreground mt-1">
             {mockUserProfile.pointsToNextLevel} to Level {mockUserProfile.level + 1}
           </p>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50">
+        <Card className="p-4 bg-gradient-to-br from-success-subtle to-success-subtle">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Achievements</span>
-            <Gift className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">Achievements</span>
+            <Gift className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-green-700">
+          <p className="text-2xl font-bold text-success">
             {mockUserProfile.achievements.filter((a) => a.isUnlocked).length}/
             {mockUserProfile.achievements.length}
           </p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {Math.round(
               (mockUserProfile.achievements.filter((a) => a.isUnlocked).length /
                 mockUserProfile.achievements.length) *
@@ -91,34 +91,34 @@ export default function RewardsAchievements() {
           </p>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-orange-50 to-yellow-50">
+        <Card className="p-4 bg-gradient-to-br from-warning-subtle to-warning-subtle">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Global Rank</span>
-            <TrendingUp className="h-4 w-4 text-orange-600" />
+            <span className="text-sm text-muted-foreground">Global Rank</span>
+            <TrendingUp className="h-4 w-4 text-warning" />
           </div>
-          <p className="text-2xl font-bold text-orange-700">#{mockUserProfile.rank}</p>
-          <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
-            <TrendingUp className="h-3 w-3 text-green-600" />
+          <p className="text-2xl font-bold text-warning">#{mockUserProfile.rank}</p>
+          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+            <TrendingUp className="h-3 w-3 text-success" />
             Up 2 places
           </p>
         </Card>
       </div>
 
       {/* Promotional Banner */}
-      <Card className="p-6 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white overflow-hidden relative">
+      <Card className="p-6 bg-gradient-to-r from-info via-primary to-destructive text-white overflow-hidden relative">
         <div className="relative z-10">
           <div className="flex items-center justify-between">
             <div>
-              <Badge className="bg-white text-purple-600 mb-3">
+              <Badge className="bg-card text-info mb-3">
                 🎉 Limited Time Event
               </Badge>
               <h2 className="text-2xl font-bold mb-2">
                 Double Points Weekend!
               </h2>
-              <p className="text-purple-100 mb-4">
+              <p className="text-info-foreground mb-4">
                 Earn 2x points on all carpools this weekend. Ends Monday at midnight.
               </p>
-              <Button className="bg-white text-purple-600 hover:bg-purple-50">
+              <Button className="bg-card text-info hover:bg-info-subtle">
                 View Details
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
@@ -130,8 +130,8 @@ export default function RewardsAchievements() {
         </div>
         {/* Decorative background */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
+          <div className="absolute top-0 left-0 w-64 h-64 bg-card rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-card rounded-full translate-x-1/3 translate-y-1/3"></div>
         </div>
       </Card>
 
@@ -143,13 +143,13 @@ export default function RewardsAchievements() {
       )}
 
       {/* Bottom CTA */}
-      <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+      <Card className="p-6 bg-gradient-to-r from-info-subtle to-info-subtle border-info/25">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-gray-900 mb-1">
+            <h3 className="font-semibold text-foreground mb-1">
               Want to level up faster?
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Join recurring carpools and challenges to earn bonus points and exclusive rewards
             </p>
           </div>

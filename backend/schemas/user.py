@@ -17,6 +17,7 @@ class UserRead(BaseModel):
     locale: str
     region: str
     tenant_id: Optional[str] = None
+    tenant_name: Optional[str] = None
     is_active: bool
     created_at: datetime
     updated_at: datetime

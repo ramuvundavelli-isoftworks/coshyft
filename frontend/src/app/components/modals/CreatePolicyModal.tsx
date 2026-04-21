@@ -204,7 +204,7 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileCheck className="h-6 w-6 text-[#00bc7d]" />
+            <FileCheck className="h-6 w-6 text-brand-500" />
             Create Commuting Policy
           </DialogTitle>
           <DialogDescription>
@@ -238,7 +238,7 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
                   <SelectItem key={type.value} value={type.value}>
                     <div className="py-1">
                       <p className="font-medium">{type.label}</p>
-                      <p className="text-xs text-gray-500">{type.description}</p>
+                      <p className="text-xs text-muted-foreground">{type.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -304,7 +304,7 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
                     onChange={() => toggleApplicableTo(group)}
                     className="rounded"
                   />
-                  <label htmlFor={`group-${group}`} className="text-sm text-gray-700 cursor-pointer">
+                  <label htmlFor={`group-${group}`} className="text-sm text-foreground cursor-pointer">
                     {group}
                   </label>
                 </div>
@@ -325,7 +325,7 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
                     onChange={() => toggleLocation(location)}
                     className="rounded"
                   />
-                  <label htmlFor={`location-${location}`} className="text-sm text-gray-700 cursor-pointer">
+                  <label htmlFor={`location-${location}`} className="text-sm text-foreground cursor-pointer">
                     {location}
                   </label>
                 </div>
@@ -334,11 +334,11 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
           </div>
 
           {/* Compliance Settings */}
-          <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="space-y-3 p-4 bg-background-subtle rounded-lg border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Mandatory Compliance</p>
-                <p className="text-xs text-gray-500">Employees must comply with this policy</p>
+                <p className="text-sm font-medium text-foreground">Mandatory Compliance</p>
+                <p className="text-xs text-muted-foreground">Employees must comply with this policy</p>
               </div>
               <Switch
                 checked={formData.mandatoryCompliance}
@@ -346,10 +346,10 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
               />
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+            <div className="flex items-center justify-between pt-3 border-t border-border">
               <div>
-                <p className="text-sm font-medium text-gray-900">Allow Exceptions</p>
-                <p className="text-xs text-gray-500">Permit case-by-case exceptions</p>
+                <p className="text-sm font-medium text-foreground">Allow Exceptions</p>
+                <p className="text-xs text-muted-foreground">Permit case-by-case exceptions</p>
               </div>
               <Switch
                 checked={formData.allowExceptions}
@@ -362,21 +362,21 @@ export function CreatePolicyModal({ isOpen, onClose, onSubmit }: CreatePolicyMod
           {warnings.length > 0 && (
             <div className="space-y-2">
               {warnings.map((warning, idx) => (
-                <div key={idx} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">{warning}</p>
+                <div key={idx} className="p-3 bg-warning-subtle border border-warning/25 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-warning">{warning}</p>
                 </div>
               ))}
             </div>
           )}
 
           {/* Policy Summary */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-blue-900">Policy Summary</p>
-                <div className="mt-2 space-y-1 text-xs text-blue-700">
+                <p className="text-sm font-medium text-info">Policy Summary</p>
+                <div className="mt-2 space-y-1 text-xs text-info">
                   <p>• Applies to: {formData.applicableTo.length} employee group(s)</p>
                   <p>• Locations: {formData.locations.length} location(s)</p>
                   <p>• Compliance: {formData.mandatoryCompliance ? 'Mandatory' : 'Optional'}</p>

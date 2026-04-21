@@ -172,7 +172,7 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-6 w-6 text-[#00bc7d]" />
+            <Upload className="h-6 w-6 text-brand-500" />
             Bulk Upload - {template.name}
           </DialogTitle>
           <DialogDescription>
@@ -182,14 +182,14 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
 
         <div className="space-y-5 py-4">
           {/* Template Info */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-3">
-              <FileText className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <FileText className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-blue-900 mb-2">Required Columns</p>
+                <p className="text-sm font-medium text-info mb-2">Required Columns</p>
                 <div className="flex flex-wrap gap-2">
                   {template.columns.map((col, idx) => (
-                    <Badge key={idx} variant="outline" className="bg-white text-blue-700 border-blue-300">
+                    <Badge key={idx} variant="outline" className="bg-card text-info border-info/40">
                       {col}
                     </Badge>
                   ))}
@@ -197,7 +197,7 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
                 <Button
                   variant="link"
                   onClick={downloadTemplate}
-                  className="mt-3 p-0 h-auto text-blue-600"
+                  className="mt-3 p-0 h-auto text-info"
                 >
                   <Download className="h-4 w-4 mr-1" />
                   Download Template File
@@ -209,14 +209,14 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
           {/* File Upload Area */}
           {!file && !validationResults && (
             <div
-              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-[#00bc7d] transition-colors cursor-pointer"
+              className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-brand-500 transition-colors cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
-              <FileSpreadsheet className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <p className="text-lg font-medium text-gray-900 mb-2">
+              <FileSpreadsheet className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <p className="text-lg font-medium text-foreground mb-2">
                 Click to upload or drag and drop
               </p>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 CSV, XLSX, or XLS (max 10MB)
               </p>
               <Button variant="outline">
@@ -234,13 +234,13 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
 
           {/* Selected File */}
           {file && !validationResults && (
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="p-4 bg-background-subtle border border-border rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <FileSpreadsheet className="h-8 w-8 text-green-600" />
+                  <FileSpreadsheet className="h-8 w-8 text-success" />
                   <div>
-                    <p className="font-medium text-gray-900">{file.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-foreground">{file.name}</p>
+                    <p className="text-sm text-muted-foreground">
                       {(file.size / 1024).toFixed(2)} KB
                     </p>
                   </div>
@@ -258,8 +258,8 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
               {uploading && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm text-gray-600">Processing...</p>
-                    <p className="text-sm font-medium text-gray-900">{progress}%</p>
+                    <p className="text-sm text-muted-foreground">Processing...</p>
+                    <p className="text-sm font-medium text-foreground">{progress}%</p>
                   </div>
                   <Progress value={progress} className="h-2" />
                 </div>
@@ -272,21 +272,21 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
             <div className="space-y-4">
               {/* Summary */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700 mb-1">Total Rows</p>
-                  <p className="text-2xl font-bold text-blue-900">
+                <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+                  <p className="text-sm text-info mb-1">Total Rows</p>
+                  <p className="text-2xl font-bold text-info">
                     {validationResults.rowsProcessed}
                   </p>
                 </div>
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-700 mb-1">Successful</p>
-                  <p className="text-2xl font-bold text-green-900">
+                <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+                  <p className="text-sm text-success mb-1">Successful</p>
+                  <p className="text-2xl font-bold text-success">
                     {validationResults.rowsSuccess}
                   </p>
                 </div>
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-700 mb-1">Failed</p>
-                  <p className="text-2xl font-bold text-red-900">
+                <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg">
+                  <p className="text-sm text-destructive mb-1">Failed</p>
+                  <p className="text-2xl font-bold text-destructive">
                     {validationResults.rowsFailed}
                   </p>
                 </div>
@@ -294,13 +294,13 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
 
               {/* Success Message */}
               {validationResults.rowsSuccess > 0 && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="p-4 bg-success-subtle border border-success/25 rounded-lg flex items-start gap-2">
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-green-900">
+                    <p className="text-sm font-medium text-success">
                       {validationResults.rowsSuccess} records validated successfully
                     </p>
-                    <p className="text-xs text-green-700 mt-1">
+                    <p className="text-xs text-success mt-1">
                       These records are ready to be imported into the system.
                     </p>
                   </div>
@@ -311,10 +311,10 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
               {validationResults.rowsFailed > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       Validation Errors ({validationResults.errors.length})
                     </p>
-                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                    <Badge variant="outline" className="bg-destructive-subtle text-destructive border-destructive/25">
                       Requires Attention
                     </Badge>
                   </div>
@@ -322,19 +322,19 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
                     {validationResults.errors.map((error, idx) => (
                       <div
                         key={idx}
-                        className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2"
+                        className="p-3 bg-destructive-subtle border border-destructive/25 rounded-lg flex items-start gap-2"
                       >
-                        <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                        <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-red-900">
+                          <p className="text-sm font-medium text-destructive">
                             Row {error.row}: {error.field}
                           </p>
-                          <p className="text-xs text-red-700 mt-1">{error.message}</p>
+                          <p className="text-xs text-destructive mt-1">{error.message}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-muted-foreground">
                     Fix these errors in your file and re-upload, or proceed to import only the valid records.
                   </p>
                 </div>
@@ -343,12 +343,12 @@ export function BulkUploadModal({ isOpen, onClose, onSubmit, uploadType }: BulkU
           )}
 
           {/* Instructions */}
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-amber-900">Important Notes</p>
-                <ul className="text-xs text-amber-700 mt-2 space-y-1 ml-4 list-disc">
+                <p className="text-sm font-medium text-warning">Important Notes</p>
+                <ul className="text-xs text-warning mt-2 space-y-1 ml-4 list-disc">
                   <li>Ensure your file matches the template format exactly</li>
                   <li>Date format: DD/MM/YYYY</li>
                   <li>All required columns must be present</li>

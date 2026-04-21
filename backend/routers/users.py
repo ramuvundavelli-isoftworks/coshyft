@@ -5,6 +5,9 @@ GET  /users/{id}    (admin)
 PUT  /users/{id}    (admin)
 PUT  /users/{id}/role (admin)
 POST /users/{id}/deactivate (admin)
+
+Tenant isolation: admins only see users within their own tenant.
+SuperAdmins see all users across tenants.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -21,6 +24,11 @@ from schemas.common import ApiResponse, PaginatedResponse
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
+def _is_superadmin(user) -> bool:
+    role = user.role.value if hasattr(user.role, "value") else user.role
+    return role == "superadmin"
+
+
 @router.get("/", response_model=ApiResponse[PaginatedResponse[UserRead]])
 async def list_users(
     page: int = Query(1, ge=1),
@@ -32,8 +40,12 @@ async def list_users(
     user=Depends(require_role("admin", "superadmin")),
     session: AsyncSession = Depends(get_session),
 ):
-    """List all users with pagination and filters (Admin/SuperAdmin only)."""
+    """List users. Admins see their tenant only; SuperAdmins see all."""
     statement = select(User)
+
+    # Tenant isolation — admins scoped to their own tenant
+    if not _is_superadmin(user) and user.tenant_id:
+        statement = statement.where(User.tenant_id == user.tenant_id)
 
     if role:
         statement = statement.where(User.role == role)
@@ -46,15 +58,11 @@ async def list_users(
             (User.name.ilike(f"%{search}%")) | (User.email.ilike(f"%{search}%"))
         )
 
-    # Count total
     count_stmt = select(func.count()).select_from(statement.subquery())
-    total_result = await session.execute(count_stmt)
-    total = total_result.scalar_one()
+    total = (await session.execute(count_stmt)).scalar_one()
 
-    # Paginate
     statement = statement.offset((page - 1) * page_size).limit(page_size)
-    result = await session.execute(statement)
-    users = result.scalars().all()
+    users = (await session.execute(statement)).scalars().all()
 
     return ApiResponse(
         success=True,
@@ -75,13 +83,11 @@ async def get_user(
     session: AsyncSession = Depends(get_session),
 ):
     """Get user by ID."""
-    statement = select(User).where(User.id == user_id)
-    result = await session.execute(statement)
-    target = result.scalar_one_or_none()
-
+    target = (await session.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
     if target is None:
         raise HTTPException(status_code=404, detail="User not found")
-
+    if not _is_superadmin(user) and target.tenant_id != user.tenant_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     return ApiResponse(success=True, data=UserRead.model_validate(target))
 
 
@@ -92,23 +98,19 @@ async def update_user(
     user=Depends(require_role("admin", "superadmin")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Update user details (Admin only)."""
-    statement = select(User).where(User.id == user_id)
-    result = await session.execute(statement)
-    target = result.scalar_one_or_none()
-
+    """Update user details."""
+    target = (await session.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
     if target is None:
         raise HTTPException(status_code=404, detail="User not found")
+    if not _is_superadmin(user) and target.tenant_id != user.tenant_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
-    update_data = update.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
+    for key, value in update.model_dump(exclude_unset=True).items():
         setattr(target, key, value)
     target.updated_at = datetime.utcnow()
-
     session.add(target)
     await session.flush()
     await session.refresh(target)
-
     return ApiResponse(success=True, data=UserRead.model_validate(target))
 
 
@@ -120,19 +122,17 @@ async def update_user_role(
     session: AsyncSession = Depends(get_session),
 ):
     """Change a user's role."""
-    statement = select(User).where(User.id == user_id)
-    result = await session.execute(statement)
-    target = result.scalar_one_or_none()
-
+    target = (await session.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
     if target is None:
         raise HTTPException(status_code=404, detail="User not found")
+    if not _is_superadmin(user) and target.tenant_id != user.tenant_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
     target.role = role_update.role
     target.updated_at = datetime.utcnow()
     session.add(target)
     await session.flush()
     await session.refresh(target)
-
     return ApiResponse(success=True, data=UserRead.model_validate(target))
 
 
@@ -143,15 +143,13 @@ async def deactivate_user(
     session: AsyncSession = Depends(get_session),
 ):
     """Deactivate a user account."""
-    statement = select(User).where(User.id == user_id)
-    result = await session.execute(statement)
-    target = result.scalar_one_or_none()
-
+    target = (await session.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
     if target is None:
         raise HTTPException(status_code=404, detail="User not found")
+    if not _is_superadmin(user) and target.tenant_id != user.tenant_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
     target.is_active = False
     target.updated_at = datetime.utcnow()
     session.add(target)
-
     return ApiResponse(success=True, meta={"message": f"User {user_id} deactivated"})

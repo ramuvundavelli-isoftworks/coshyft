@@ -179,9 +179,9 @@ export default function CSRDComplianceDashboard() {
   const overallCompleteness = Math.round((completedRequirements / totalRequirements) * 100);
 
   const statusColors = {
-    'complete': 'bg-green-100 text-green-700 border-green-200',
-    'in-progress': 'bg-blue-100 text-blue-700 border-blue-200',
-    'not-started': 'bg-gray-100 text-gray-700 border-gray-200',
+    'complete': 'bg-success-subtle text-success border-success/25',
+    'in-progress': 'bg-info-subtle text-info border-info/25',
+    'not-started': 'bg-muted text-foreground border-border',
   };
 
   const statusIcons = {
@@ -195,66 +195,66 @@ export default function CSRDComplianceDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-[#101828] mb-1" style={{ fontFamily: 'Kaisei Decol, serif' }}>
+          <h2 className="text-2xl font-semibold text-foreground mb-1" style={{ fontFamily: 'Kaisei Decol, serif' }}>
             CSRD/ESRS E1 Compliance
           </h2>
-          <p className="text-sm text-[#6a7282]">
+          <p className="text-sm text-muted-foreground">
             Corporate Sustainability Reporting Directive - Scope 3 Category 7
           </p>
         </div>
-        <Badge className="bg-gradient-to-r from-[#00bc7d] to-[#009689] text-white border-none px-4 py-2 text-sm">
+        <Badge className="bg-gradient-to-r from-brand-500 to-brand-600 text-white border-none px-4 py-2 text-sm">
           🇪🇺 EU Regulation 2022/2464
         </Badge>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{overallCompleteness}%</span>
+            <span className="text-2xl font-semibold text-foreground">{overallCompleteness}%</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Overall Compliance</p>
-          <p className="text-xs text-[#4a5565] mt-1">
+          <p className="text-sm text-muted-foreground">Overall Compliance</p>
+          <p className="text-xs text-muted-foreground mt-1">
             {completedRequirements} of {totalRequirements} requirements
           </p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{completedRequirements}</span>
+            <span className="text-2xl font-semibold text-foreground">{completedRequirements}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Requirements Complete</p>
-          <p className="text-xs text-green-600 mt-1">+2 this month</p>
+          <p className="text-sm text-muted-foreground">Requirements Complete</p>
+          <p className="text-xs text-success mt-1">+2 this month</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-warning" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">
+            <span className="text-2xl font-semibold text-foreground">
               {csrdRequirements.filter(r => r.status === 'in-progress').length}
             </span>
           </div>
-          <p className="text-sm text-[#6a7282]">In Progress</p>
-          <p className="text-xs text-[#4a5565] mt-1">Target: Jun 2026</p>
+          <p className="text-sm text-muted-foreground">In Progress</p>
+          <p className="text-xs text-muted-foreground mt-1">Target: Jun 2026</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Shield className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">92%</span>
+            <span className="text-2xl font-semibold text-foreground">92%</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Data Quality Score</p>
-          <p className="text-xs text-green-600 mt-1">+5% vs last quarter</p>
+          <p className="text-sm text-muted-foreground">Data Quality Score</p>
+          <p className="text-xs text-success mt-1">+5% vs last quarter</p>
         </Card>
       </div>
 
@@ -269,9 +269,9 @@ export default function CSRDComplianceDashboard() {
 
         {/* Requirements Tab */}
         <TabsContent value="requirements" className="space-y-4">
-          <Card className="p-6 border border-gray-200">
+          <Card className="p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#101828]">ESRS E1 Requirements Tracker</h3>
+              <h3 className="text-lg font-semibold text-foreground">ESRS E1 Requirements Tracker</h3>
               <Button variant="outline" size="sm">
                 <FileText className="h-4 w-4 mr-2" />
                 Export Report
@@ -284,26 +284,26 @@ export default function CSRDComplianceDashboard() {
                 return (
                   <div
                     key={requirement.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#00bc7d] transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:border-brand-500 transition-colors cursor-pointer"
                     onClick={() => handleViewDetails(requirement)}
                   >
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="p-2 bg-gray-100 rounded-lg">
-                        <StatusIcon className="h-5 w-5 text-[#4a5565]" />
+                      <div className="p-2 bg-muted rounded-lg">
+                        <StatusIcon className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-[#101828]">{requirement.category}</span>
+                          <span className="font-medium text-foreground">{requirement.category}</span>
                           <Badge variant="outline" className="text-xs">
                             {requirement.esrsReference}
                           </Badge>
                         </div>
-                        <p className="text-sm text-[#6a7282]">{requirement.requirement}</p>
+                        <p className="text-sm text-muted-foreground">{requirement.requirement}</p>
                         <div className="flex items-center gap-4 mt-2">
-                          <span className="text-xs text-[#4a5565]">
+                          <span className="text-xs text-muted-foreground">
                             Assigned to: {requirement.assignedTo}
                           </span>
-                          <span className="text-xs text-[#4a5565]">
+                          <span className="text-xs text-muted-foreground">
                             Due: {formatDate(new Date(requirement.dueDate))}
                           </span>
                         </div>
@@ -312,12 +312,12 @@ export default function CSRDComplianceDashboard() {
                     <div className="flex items-center gap-4">
                       <div className="w-32">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-[#6a7282]">Progress</span>
-                          <span className="font-medium text-[#101828]">{requirement.completeness}%</span>
+                          <span className="text-muted-foreground">Progress</span>
+                          <span className="font-medium text-foreground">{requirement.completeness}%</span>
                         </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#00bc7d] to-[#009689] transition-all"
+                            className="h-full bg-gradient-to-r from-brand-500 to-brand-600 transition-all"
                             style={{ width: `${requirement.completeness}%` }}
                           />
                         </div>
@@ -338,8 +338,8 @@ export default function CSRDComplianceDashboard() {
         {/* Materiality Assessment Tab */}
         <TabsContent value="materiality" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Double Materiality Matrix</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Double Materiality Matrix</h3>
               <div style={{ height: '300px', width: '100%' }}>
                 <Radar
                   data={{
@@ -366,51 +366,51 @@ export default function CSRDComplianceDashboard() {
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Material Topics Assessment</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Material Topics Assessment</h3>
               <div className="space-y-4">
                 {materialityTopics.map((topic, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                  <div key={index} className="p-4 border border-border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-[#101828]">{topic.topic}</span>
+                      <span className="font-medium text-foreground">{topic.topic}</span>
                       <Badge
                         className={
                           topic.overallMateriality === 'high'
-                            ? 'bg-red-100 text-red-700 border-red-200'
+                            ? 'bg-destructive-subtle text-destructive border-destructive/25'
                             : topic.overallMateriality === 'medium'
-                            ? 'bg-orange-100 text-orange-700 border-orange-200'
-                            : 'bg-gray-100 text-gray-700 border-gray-200'
+                            ? 'bg-warning-subtle text-warning border-warning/25'
+                            : 'bg-muted text-foreground border-border'
                         }
                       >
                         {topic.overallMateriality.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-xs text-[#6a7282] mb-3">{topic.esrsRequirement}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{topic.esrsRequirement}</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="text-xs text-[#6a7282] mb-1">Impact Materiality</div>
+                        <div className="text-xs text-muted-foreground mb-1">Impact Materiality</div>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#00bc7d]"
+                              className="h-full bg-brand-500"
                               style={{ width: `${topic.impactMateriality}%` }}
                             />
                           </div>
-                          <span className="text-xs font-medium text-[#101828]">
+                          <span className="text-xs font-medium text-foreground">
                             {topic.impactMateriality}
                           </span>
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-[#6a7282] mb-1">Financial Materiality</div>
+                        <div className="text-xs text-muted-foreground mb-1">Financial Materiality</div>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#009689]"
+                              className="h-full bg-brand-600"
                               style={{ width: `${topic.financialMateriality}%` }}
                             />
                           </div>
-                          <span className="text-xs font-medium text-[#101828]">
+                          <span className="text-xs font-medium text-foreground">
                             {topic.financialMateriality}
                           </span>
                         </div>
@@ -425,12 +425,12 @@ export default function CSRDComplianceDashboard() {
 
         {/* Targets & Progress Tab */}
         <TabsContent value="targets" className="space-y-4">
-          <Card className="p-6 border border-gray-200">
+          <Card className="p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#101828]">
+              <h3 className="text-lg font-semibold text-foreground">
                 Scope 3 Category 7 - Emissions vs CSRD Targets
               </h3>
-              <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+              <Badge className="bg-info-subtle text-info border-info/25">
                 <Target className="h-3 w-3 mr-1" />
                 56% reduction by 2030
               </Badge>
@@ -470,37 +470,37 @@ export default function CSRDComplianceDashboard() {
             </div>
 
             <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-background-subtle rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <TrendingDown className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-[#101828]">2026 Performance</span>
+                  <TrendingDown className="h-4 w-4 text-success" />
+                  <span className="text-sm font-medium text-foreground">2026 Performance</span>
                 </div>
-                <p className="text-2xl font-semibold text-[#101828]">
+                <p className="text-2xl font-semibold text-foreground">
                   {formatEmissions(2180)}
                 </p>
-                <p className="text-xs text-green-600 mt-1">7% below CSRD target</p>
+                <p className="text-xs text-success mt-1">7% below CSRD target</p>
               </div>
 
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-background-subtle rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Target className="h-4 w-4 text-[#00bc7d]" />
-                  <span className="text-sm font-medium text-[#101828]">2030 Target</span>
+                  <Target className="h-4 w-4 text-brand-500" />
+                  <span className="text-sm font-medium text-foreground">2030 Target</span>
                 </div>
-                <p className="text-2xl font-semibold text-[#101828]">
+                <p className="text-2xl font-semibold text-foreground">
                   {formatEmissions(1254)}
                 </p>
-                <p className="text-xs text-[#6a7282] mt-1">56% reduction vs 2023</p>
+                <p className="text-xs text-muted-foreground mt-1">56% reduction vs 2023</p>
               </div>
 
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-background-subtle rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Euro className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-[#101828]">Carbon Budget</span>
+                  <Euro className="h-4 w-4 text-info" />
+                  <span className="text-sm font-medium text-foreground">Carbon Budget</span>
                 </div>
-                <p className="text-2xl font-semibold text-[#101828]">
+                <p className="text-2xl font-semibold text-foreground">
                   {formatCurrency(2450000, 'EUR')}
                 </p>
-                <p className="text-xs text-[#6a7282] mt-1">Investment required</p>
+                <p className="text-xs text-muted-foreground mt-1">Investment required</p>
               </div>
             </div>
           </Card>
@@ -508,8 +508,8 @@ export default function CSRDComplianceDashboard() {
 
         {/* Timeline Tab */}
         <TabsContent value="timeline" className="space-y-4">
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">Compliance Progress Timeline</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Compliance Progress Timeline</h3>
             <div style={{ height: '300px', width: '100%' }}>
               <Bar
                 data={{
@@ -534,8 +534,8 @@ export default function CSRDComplianceDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">Key Milestones</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Key Milestones</h3>
             <div className="space-y-4">
               {[
                 { date: '2026-03-31', milestone: 'Q1 2026 CSRD Data Collection Complete', status: 'complete' },
@@ -547,36 +547,36 @@ export default function CSRDComplianceDashboard() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg"
+                  className="flex items-center gap-4 p-4 border border-border rounded-lg"
                 >
                   <div className="flex-shrink-0">
                     {item.status === 'complete' && (
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      <div className="w-10 h-10 bg-success-subtle rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-5 w-5 text-success" />
                       </div>
                     )}
                     {item.status === 'in-progress' && (
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <BarChart3 className="h-5 w-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-info-subtle rounded-full flex items-center justify-center">
+                        <BarChart3 className="h-5 w-5 text-info" />
                       </div>
                     )}
                     {item.status === 'not-started' && (
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Calendar className="h-5 w-5 text-gray-600" />
+                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-[#101828]">{item.milestone}</p>
-                    <p className="text-sm text-[#6a7282]">Target: {formatDate(new Date(item.date))}</p>
+                    <p className="font-medium text-foreground">{item.milestone}</p>
+                    <p className="text-sm text-muted-foreground">Target: {formatDate(new Date(item.date))}</p>
                   </div>
                   <Badge
                     className={
                       item.status === 'complete'
-                        ? 'bg-green-100 text-green-700 border-green-200'
+                        ? 'bg-success-subtle text-success border-success/25'
                         : item.status === 'in-progress'
-                        ? 'bg-blue-100 text-blue-700 border-blue-200'
-                        : 'bg-gray-100 text-gray-700 border-gray-200'
+                        ? 'bg-info-subtle text-info border-info/25'
+                        : 'bg-muted text-foreground border-border'
                     }
                   >
                     {item.status === 'complete' && 'Complete'}
@@ -604,42 +604,42 @@ export default function CSRDComplianceDashboard() {
           {selectedRequirement && (
             <div className="space-y-4 py-4">
               <div>
-                <Label className="text-sm font-medium text-[#101828]">Requirement</Label>
-                <p className="text-sm text-[#6a7282] mt-1">{selectedRequirement.requirement}</p>
+                <Label className="text-sm font-medium text-foreground">Requirement</Label>
+                <p className="text-sm text-muted-foreground mt-1">{selectedRequirement.requirement}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-[#101828]">Status</Label>
+                  <Label className="text-sm font-medium text-foreground">Status</Label>
                   <Badge className={`${statusColors[selectedRequirement.status]} mt-1`}>
                     {selectedRequirement.status}
                   </Badge>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-[#101828]">Completeness</Label>
-                  <p className="text-sm text-[#6a7282] mt-1">{selectedRequirement.completeness}%</p>
+                  <Label className="text-sm font-medium text-foreground">Completeness</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedRequirement.completeness}%</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-[#101828]">Assigned To</Label>
-                  <p className="text-sm text-[#6a7282] mt-1">{selectedRequirement.assignedTo}</p>
+                  <Label className="text-sm font-medium text-foreground">Assigned To</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedRequirement.assignedTo}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-[#101828]">Due Date</Label>
-                  <p className="text-sm text-[#6a7282] mt-1">
+                  <Label className="text-sm font-medium text-foreground">Due Date</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
                     {formatDate(new Date(selectedRequirement.dueDate))}
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Info className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-blue-900">ESRS Reference</p>
-                    <p className="text-sm text-blue-700 mt-1">
+                    <p className="text-sm font-medium text-info">ESRS Reference</p>
+                    <p className="text-sm text-info mt-1">
                       This requirement aligns with {selectedRequirement.esrsReference} of the European Sustainability
                       Reporting Standards (ESRS) under the Corporate Sustainability Reporting Directive (CSRD).
                     </p>

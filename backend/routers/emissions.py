@@ -32,7 +32,7 @@ async def get_emissions_summary(
         func.count(CommuteEntry.id),
         func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0),
         func.coalesce(func.sum(CommuteEntry.distance_km), 0),
-    ).where(func.extract("year", CommuteEntry.date) == year)
+    ).where(func.extract("year", CommuteEntry.commute_date) == year)
 
     result = await session.execute(entries_stmt)
     row = result.one()
@@ -43,7 +43,7 @@ async def get_emissions_summary(
     # Previous year for comparison
     prev_stmt = select(
         func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0),
-    ).where(func.extract("year", CommuteEntry.date) == year - 1)
+    ).where(func.extract("year", CommuteEntry.commute_date) == year - 1)
     prev_result = await session.execute(prev_stmt)
     prev_emissions = float(prev_result.scalar_one())
 
@@ -54,7 +54,7 @@ async def get_emissions_summary(
 
     # Employee count
     user_count_stmt = select(func.count(func.distinct(CommuteEntry.user_id))).where(
-        func.extract("year", CommuteEntry.date) == year
+        func.extract("year", CommuteEntry.commute_date) == year
     )
     active_users = (await session.execute(user_count_stmt)).scalar_one()
 
@@ -94,8 +94,8 @@ async def get_emissions_trends(
         stmt = select(
             func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0),
         ).where(
-            func.extract("year", CommuteEntry.date) == year,
-            func.extract("month", CommuteEntry.date) == i,
+            func.extract("year", CommuteEntry.commute_date) == year,
+            func.extract("month", CommuteEntry.commute_date) == i,
         )
         result = await session.execute(stmt)
         actual = float(result.scalar_one())
@@ -122,7 +122,7 @@ async def get_mode_split(
         func.count(CommuteEntry.id),
         func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0),
     ).where(
-        func.extract("year", CommuteEntry.date) == year
+        func.extract("year", CommuteEntry.commute_date) == year
     ).group_by(CommuteEntry.transport_mode_label)
 
     result = await session.execute(stmt)
@@ -156,6 +156,42 @@ async def get_location_performance(
     offices = result.scalars().all()
 
     data = [LocationEmissionPerformance.model_validate(o).model_dump() for o in offices]
+    return ApiResponse(success=True, data=data)
+
+
+@router.get("/by-department", response_model=ApiResponse)
+async def get_emissions_by_department(
+    year: int = Query(2026),
+    user=Depends(require_role("sustainability", "admin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get emission totals grouped by department."""
+    dept_stmt = select(
+        User.department,
+        func.count(func.distinct(User.id)),
+    ).where(User.is_active == True).group_by(User.department)
+    depts = (await session.execute(dept_stmt)).all()
+
+    data = []
+    for dept_name, employee_count in depts:
+        stmt = select(
+            func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0),
+            func.count(func.distinct(CommuteEntry.user_id)),
+        ).join(User, CommuteEntry.user_id == User.id).where(
+            User.department == dept_name,
+            func.extract("year", CommuteEntry.commute_date) == year,
+        )
+        row = (await session.execute(stmt)).one()
+        total_emissions = round(float(row[0]), 2)
+        active_users = row[1]
+        data.append({
+            "department": dept_name or "Unknown",
+            "total_emissions": total_emissions,
+            "employee_count": employee_count,
+            "active_employees": active_users,
+            "per_employee": round(total_emissions / max(active_users, 1), 3),
+        })
+
     return ApiResponse(success=True, data=data)
 
 

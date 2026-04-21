@@ -40,7 +40,7 @@ export function Sidebar() {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-16 h-[calc(100vh-4rem)] border-r bg-white overflow-y-auto transition-all duration-300",
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] border-r bg-card overflow-y-auto transition-all duration-300",
         isCollapsed ? "w-16" : "w-72"
       )}
     >
@@ -68,7 +68,7 @@ export function Sidebar() {
           <div key={idx} className="mb-6">
             {section.title && !isCollapsed && (
               <div className="px-6 mb-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {section.title}
                 </h3>
               </div>
@@ -91,11 +91,11 @@ export function Sidebar() {
                             className={cn(
                               'flex items-center justify-center h-10 rounded-lg text-sm font-medium transition-colors',
                               isActive
-                                ? 'bg-blue-50 text-blue-700'
-                                : 'text-gray-700 hover:bg-gray-100'
+                                ? 'bg-info-subtle text-info'
+                                : 'text-foreground hover:bg-muted'
                             )}
                           >
-                            <Icon className={cn('h-5 w-5', isActive ? 'text-blue-700' : 'text-gray-500')} />
+                            <Icon className={cn('h-5 w-5', isActive ? 'text-info' : 'text-muted-foreground')} />
                           </Link>
                         </TooltipTrigger>
                         <TooltipContent side="right" className="flex items-center gap-2">
@@ -119,11 +119,11 @@ export function Sidebar() {
                         onClick={() => toggleSection(item.label)}
                         className={cn(
                           'w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                          'text-gray-700 hover:bg-gray-100'
+                          'text-foreground hover:bg-muted'
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className="h-5 w-5 text-gray-500" />
+                          <Icon className="h-5 w-5 text-muted-foreground" />
                           <span>{item.label}</span>
                         </div>
                         {isExpanded ? (
@@ -138,12 +138,12 @@ export function Sidebar() {
                         className={cn(
                           'flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                           isActive
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            ? 'bg-info-subtle text-info'
+                            : 'text-foreground hover:bg-muted'
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className={cn('h-5 w-5', isActive ? 'text-blue-700' : 'text-gray-500')} />
+                          <Icon className={cn('h-5 w-5', isActive ? 'text-info' : 'text-muted-foreground')} />
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
@@ -165,8 +165,8 @@ export function Sidebar() {
                               className={cn(
                                 'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
                                 childIsActive
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'text-gray-600 hover:bg-gray-50'
+                                  ? 'bg-info-subtle text-info'
+                                  : 'text-muted-foreground hover:bg-background-subtle'
                               )}
                             >
                               <ChildIcon className="h-4 w-4" />

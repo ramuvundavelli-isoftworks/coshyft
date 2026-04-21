@@ -132,10 +132,10 @@ const mockTemplates: ReportTemplate[] = [
 ];
 
 const categoryColors = {
-  csrd: 'bg-purple-100 text-purple-700 border-purple-200',
-  regulatory: 'bg-blue-100 text-blue-700 border-blue-200',
-  internal: 'bg-green-100 text-green-700 border-green-200',
-  custom: 'bg-orange-100 text-orange-700 border-orange-200',
+  csrd: 'bg-info-subtle text-info border-info/25',
+  regulatory: 'bg-info-subtle text-info border-info/25',
+  internal: 'bg-success-subtle text-success border-success/25',
+  custom: 'bg-warning-subtle text-warning border-warning/25',
 };
 
 export function TemplateSelectionModal({ 
@@ -192,7 +192,7 @@ export function TemplateSelectionModal({
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-[#00bc7d]" />
+            <FileText className="h-6 w-6 text-brand-500" />
             Select Report Template
           </DialogTitle>
           <DialogDescription>
@@ -204,7 +204,7 @@ export function TemplateSelectionModal({
           {/* Search and Filters */}
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -256,16 +256,16 @@ export function TemplateSelectionModal({
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
-                className="p-4 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] transition-all cursor-pointer"
+                className="p-4 border-2 border-border rounded-lg hover:border-brand-500 transition-all cursor-pointer"
                 onClick={() => handleSelect(template)}
               >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900">{template.name}</h3>
+                      <h3 className="font-semibold text-foreground">{template.name}</h3>
                       {template.isDefault && (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                        <Badge variant="outline" className="bg-info-subtle text-info border-info/25 text-xs">
                           Default
                         </Badge>
                       )}
@@ -279,28 +279,28 @@ export function TemplateSelectionModal({
                       e.stopPropagation();
                       toggleFavorite(template.id);
                     }}
-                    className="text-gray-400 hover:text-yellow-500 transition-colors"
+                    className="text-muted-foreground hover:text-warning transition-colors"
                   >
                     <Star
-                      className={`h-5 w-5 ${template.isFavorite ? 'fill-yellow-500 text-yellow-500' : ''}`}
+                      className={`h-5 w-5 ${template.isFavorite ? 'fill-warning text-warning' : ''}`}
                     />
                   </button>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
 
                 {/* Sections */}
                 <div className="mb-3">
-                  <p className="text-xs text-gray-500 mb-2">Sections included:</p>
+                  <p className="text-xs text-muted-foreground mb-2">Sections included:</p>
                   <div className="flex flex-wrap gap-1">
                     {template.sections.slice(0, 3).map((section, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs bg-gray-50">
+                      <Badge key={idx} variant="outline" className="text-xs bg-background-subtle">
                         {section}
                       </Badge>
                     ))}
                     {template.sections.length > 3 && (
-                      <Badge variant="outline" className="text-xs bg-gray-50">
+                      <Badge variant="outline" className="text-xs bg-background-subtle">
                         +{template.sections.length - 3} more
                       </Badge>
                     )}
@@ -313,7 +313,7 @@ export function TemplateSelectionModal({
                     {template.tags.map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded"
+                        className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded"
                       >
                         {tag}
                       </span>
@@ -322,8 +322,8 @@ export function TemplateSelectionModal({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                <div className="flex items-center justify-between pt-3 border-t border-border">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       <span>{template.lastUsed ? new Date(template.lastUsed).toLocaleDateString('en-IE') : 'Never used'}</span>
@@ -349,7 +349,7 @@ export function TemplateSelectionModal({
                 </div>
 
                 {/* Created By */}
-                <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                   <Building2 className="h-3 w-3" />
                   <span>by {template.createdBy}</span>
                 </div>
@@ -360,35 +360,35 @@ export function TemplateSelectionModal({
           {/* Empty State */}
           {filteredTemplates.length === 0 && (
             <div className="text-center py-12">
-              <FileText className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 mb-2">No templates found</p>
-              <p className="text-sm text-gray-400">Try adjusting your search or filters</p>
+              <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-2">No templates found</p>
+              <p className="text-sm text-muted-foreground">Try adjusting your search or filters</p>
             </div>
           )}
 
           {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-4 gap-4 p-4 bg-background-subtle rounded-lg">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{templates.length}</p>
-              <p className="text-xs text-gray-500">Total Templates</p>
+              <p className="text-2xl font-bold text-foreground">{templates.length}</p>
+              <p className="text-xs text-muted-foreground">Total Templates</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {templates.filter(t => t.category === 'csrd').length}
               </p>
-              <p className="text-xs text-gray-500">CSRD</p>
+              <p className="text-xs text-muted-foreground">CSRD</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {templates.filter(t => t.isFavorite).length}
               </p>
-              <p className="text-xs text-gray-500">Favorites</p>
+              <p className="text-xs text-muted-foreground">Favorites</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {templates.filter(t => t.category === 'custom').length}
               </p>
-              <p className="text-xs text-gray-500">Custom</p>
+              <p className="text-xs text-muted-foreground">Custom</p>
             </div>
           </div>
         </div>

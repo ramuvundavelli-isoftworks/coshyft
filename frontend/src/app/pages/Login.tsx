@@ -15,35 +15,35 @@ const roleOptions: { role: Role; label: string; description: string; icon: any; 
     label: 'Employee',
     description: 'Access personal commute tracking and carpooling',
     icon: Users,
-    color: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
+    color: 'bg-info-subtle border-info/25 hover:bg-info-subtle',
   },
   {
     role: 'admin',
     label: 'Corporate Admin',
     description: 'Manage operations, users, and participation',
     icon: Building2,
-    color: 'bg-purple-50 border-purple-200 hover:bg-purple-100',
+    color: 'bg-info-subtle border-info/25 hover:bg-info-subtle',
   },
   {
     role: 'sustainability',
     label: 'Sustainability Manager',
     description: 'Full compliance and emissions management',
     icon: Leaf,
-    color: 'bg-green-50 border-green-200 hover:bg-green-100',
+    color: 'bg-success-subtle border-success/25 hover:bg-success-subtle',
   },
   {
     role: 'auditor',
     label: 'Auditor',
     description: 'Read-only access to compliance data',
     icon: Shield,
-    color: 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100',
+    color: 'bg-warning-subtle border-warning/25 hover:bg-warning-subtle',
   },
   {
     role: 'superadmin',
     label: 'Super Admin',
     description: 'Platform-wide system management',
     icon: Crown,
-    color: 'bg-red-50 border-red-200 hover:bg-red-100',
+    color: 'bg-destructive-subtle border-destructive/25 hover:bg-destructive-subtle',
   },
 ];
 
@@ -53,7 +53,7 @@ export default function Login() {
   const [selectedRole, setSelectedRole] = useState<Role>('sustainability');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { switchRole } = useRole();
+  const { switchRole, refreshUser } = useRole();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,71 +61,62 @@ export default function Login() {
   // Check if user was redirected here from a protected route
   const from = (location.state as any)?.from?.pathname;
 
+  const roleRoutes: Record<Role, string> = {
+    employee: '/employee',
+    admin: '/admin',
+    sustainability: '/',
+    auditor: '/auditor',
+    superadmin: '/superadmin',
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setLoginError(null);
 
     try {
-      // Call auth API
       const result = await login(email || `${selectedRole}@company.ie`, password || 'password123');
 
       if (result.success) {
-        // Switch to selected role (demo mode role picker)
-        switchRole(selectedRole);
-
-        // Navigate to the page they tried to visit, or role default
-        const routes: Record<Role, string> = {
-          employee: '/employee',
-          admin: '/admin',
-          sustainability: '/',
-          auditor: '/auditor',
-          superadmin: '/superadmin',
-        };
-
-        navigate(from || routes[selectedRole], { replace: true });
+        // Get real role from backend — this is the source of truth
+        const realRole = await refreshUser();
+        if (realRole) {
+          // Real backend login: navigate based on actual role
+          navigate(from || roleRoutes[realRole], { replace: true });
+        } else {
+          // Demo / mock mode: use the role picker selection
+          switchRole(selectedRole);
+          navigate(from || roleRoutes[selectedRole], { replace: true });
+        }
       } else {
-        // In mock mode, login always succeeds, so this is for live mode errors
         setLoginError(result.error || 'Login failed');
-        // Fallback: still switch role for demo
-        switchRole(selectedRole);
-        const routes: Record<Role, string> = {
-          employee: '/employee',
-          admin: '/admin',
-          sustainability: '/',
-          auditor: '/auditor',
-          superadmin: '/superadmin',
-        };
-        navigate(from || routes[selectedRole], { replace: true });
       }
     } catch {
-      // Fallback for any errors — still navigate in demo mode
-      switchRole(selectedRole);
-      navigate(from || (selectedRole === 'sustainability' ? '/' : `/${selectedRole}`), { replace: true });
+      setLoginError('Unable to connect to the server');
     } finally {
       setIsLoggingIn(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-info-subtle via-background to-success-subtle flex items-center justify-center p-6">
       <div className="w-full max-w-5xl">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-green-600 rounded-xl">
-              <Leaf className="h-8 w-8 text-white" />
+            <div className="h-12 w-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-xl">Co</span>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900">Scope 3 Platform</h1>
+            <h1 className="text-4xl font-bold text-foreground">CoShyft</h1>
           </div>
-          <p className="text-gray-600 text-lg">
-            Enterprise Category 7 – Employee Commuting Intelligence
+          <p className="text-muted-foreground text-lg">
+            Enterprise Category 7 — Employee Commuting Intelligence
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Login Form */}
           <Card className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Sign In</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Sign In</h2>
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
                 <Label htmlFor="email">Email Address</Label>
@@ -151,10 +142,10 @@ export default function Login() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-gray-600">Remember me</span>
+                  <input type="checkbox" className="rounded border-border" />
+                  <span className="text-muted-foreground">Remember me</span>
                 </label>
-                <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+                <a href="#" className="text-info hover:text-info font-medium">
                   Forgot password?
                 </a>
               </div>
@@ -169,12 +160,12 @@ export default function Login() {
                 )}
               </Button>
               {loginError && (
-                <p className="text-sm text-red-600 text-center">{loginError}</p>
+                <p className="text-sm text-destructive text-center">{loginError}</p>
               )}
             </form>
-            <div className="mt-6 pt-6 border-t text-center text-sm text-gray-600">
+            <div className="mt-6 pt-6 border-t text-center text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+              <a href="#" className="text-info hover:text-info font-medium">
                 Request Access
               </a>
             </div>
@@ -182,8 +173,8 @@ export default function Login() {
 
           {/* Role Selection */}
           <Card className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Your Role</h2>
-            <p className="text-sm text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-6">Select Your Role</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               Choose which role to sign in as for this demo session
             </p>
             <div className="space-y-3">
@@ -196,22 +187,22 @@ export default function Login() {
                     onClick={() => setSelectedRole(option.role)}
                     className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                       selectedRole === option.role
-                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                        ? 'border-info bg-info-subtle shadow-sm'
                         : option.color
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${selectedRole === option.role ? 'bg-blue-100' : 'bg-white'}`}>
-                        <Icon className={`h-5 w-5 ${selectedRole === option.role ? 'text-blue-600' : 'text-gray-600'}`} />
+                      <div className={`p-2 rounded-lg ${selectedRole === option.role ? 'bg-info-subtle' : 'bg-card'}`}>
+                        <Icon className={`h-5 w-5 ${selectedRole === option.role ? 'text-info' : 'text-muted-foreground'}`} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-gray-900">{option.label}</span>
+                          <span className="font-semibold text-foreground">{option.label}</span>
                           {selectedRole === option.role && (
-                            <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                            <div className="h-2 w-2 bg-info rounded-full" />
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">{option.description}</p>
+                        <p className="text-sm text-muted-foreground">{option.description}</p>
                       </div>
                     </div>
                   </button>
@@ -222,12 +213,12 @@ export default function Login() {
         </div>
 
         {/* Demo Notice */}
-        <Card className="mt-8 p-6 bg-blue-50 border-blue-200">
+        <Card className="mt-8 p-6 bg-info-subtle border-info/25">
           <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <Shield className="h-5 w-5 text-info mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-blue-900 mb-1">Demo Mode</h3>
-              <p className="text-sm text-blue-800">
+              <h3 className="font-semibold text-info mb-1">Demo Mode</h3>
+              <p className="text-sm text-info">
                 This is a demonstration platform. Use any email/password combination to sign in, 
                 then select your role to explore different user experiences. You can switch roles 
                 anytime from the profile menu in the top-right corner.

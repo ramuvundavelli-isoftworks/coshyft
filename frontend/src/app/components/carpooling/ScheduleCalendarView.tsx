@@ -104,19 +104,19 @@ export default function ScheduleCalendarView({
   const getRideStatusColor = (status: GeneratedRide['status']) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-success-subtle text-success border-success/25';
       case 'in-progress':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-info-subtle text-info border-info/25';
       case 'confirmed':
-        return 'bg-purple-100 text-purple-700 border-purple-200';
+        return 'bg-info-subtle text-info border-info/25';
       case 'scheduled':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
       case 'cancelled':
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-destructive-subtle text-destructive border-destructive/25';
       case 'skipped':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return 'bg-warning-subtle text-warning border-warning/25';
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -137,10 +137,10 @@ export default function ScheduleCalendarView({
   return (
     <Card className="overflow-hidden">
       {/* Calendar Header */}
-      <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+      <div className="p-4 border-b bg-gradient-to-r from-info-subtle to-info-subtle">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-bold text-foreground">
               {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h2>
             <div className="flex gap-1">
@@ -169,7 +169,7 @@ export default function ScheduleCalendarView({
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex gap-1 border rounded-lg p-1 bg-white">
+            <div className="flex gap-1 border rounded-lg p-1 bg-card">
               <Button
                 variant={viewMode === 'month' ? 'default' : 'ghost'}
                 size="sm"
@@ -191,24 +191,24 @@ export default function ScheduleCalendarView({
         {/* Legend */}
         <div className="flex flex-wrap gap-3 text-xs">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-            <span className="text-gray-600">Completed</span>
+            <div className="w-3 h-3 bg-success-subtle border border-success/25 rounded"></div>
+            <span className="text-muted-foreground">Completed</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
-            <span className="text-gray-600">In Progress</span>
+            <div className="w-3 h-3 bg-info-subtle border border-info/25 rounded"></div>
+            <span className="text-muted-foreground">In Progress</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-purple-100 border border-purple-200 rounded"></div>
-            <span className="text-gray-600">Confirmed</span>
+            <div className="w-3 h-3 bg-info-subtle border border-info/25 rounded"></div>
+            <span className="text-muted-foreground">Confirmed</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></div>
-            <span className="text-gray-600">Scheduled</span>
+            <div className="w-3 h-3 bg-muted border border-border rounded"></div>
+            <span className="text-muted-foreground">Scheduled</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
-            <span className="text-gray-600">Cancelled</span>
+            <div className="w-3 h-3 bg-destructive-subtle border border-destructive/25 rounded"></div>
+            <span className="text-muted-foreground">Cancelled</span>
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@ export default function ScheduleCalendarView({
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div
               key={day}
-              className="text-center text-sm font-semibold text-gray-700 py-2"
+              className="text-center text-sm font-semibold text-foreground py-2"
             >
               {day}
             </div>
@@ -240,12 +240,12 @@ export default function ScheduleCalendarView({
                 key={index}
                 className={`min-h-[120px] border rounded-lg p-2 transition-all ${
                   !date
-                    ? 'bg-gray-50 cursor-not-allowed'
+                    ? 'bg-background-subtle cursor-not-allowed'
                     : isToday(date)
-                    ? 'bg-blue-50 border-blue-300 shadow-md'
+                    ? 'bg-info-subtle border-info/40 shadow-md'
                     : isPast(date)
-                    ? 'bg-gray-50'
-                    : 'bg-white hover:bg-gray-50 cursor-pointer'
+                    ? 'bg-background-subtle'
+                    : 'bg-card hover:bg-background-subtle cursor-pointer'
                 }`}
                 onClick={() => date && onDateClick && onDateClick(date)}
               >
@@ -255,10 +255,10 @@ export default function ScheduleCalendarView({
                       <span
                         className={`text-sm font-semibold ${
                           isToday(date)
-                            ? 'bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center'
+                            ? 'bg-info text-white w-6 h-6 rounded-full flex items-center justify-center'
                             : isPast(date)
-                            ? 'text-gray-400'
-                            : 'text-gray-700'
+                            ? 'text-muted-foreground'
+                            : 'text-foreground'
                         }`}
                       >
                         {date.getDate()}
@@ -301,7 +301,7 @@ export default function ScheduleCalendarView({
                         </div>
                       ))}
                       {moreCount > 0 && (
-                        <div className="text-[10px] text-gray-500 text-center py-1">
+                        <div className="text-[10px] text-muted-foreground text-center py-1">
                           +{moreCount} more
                         </div>
                       )}
@@ -315,29 +315,29 @@ export default function ScheduleCalendarView({
       </div>
 
       {/* Monthly Summary */}
-      <div className="p-4 border-t bg-gray-50">
+      <div className="p-4 border-t bg-background-subtle">
         <div className="grid grid-cols-4 gap-4 text-center">
           <div>
-            <p className="text-2xl font-bold text-blue-600">{allRides.length}</p>
-            <p className="text-xs text-gray-600">Total Rides</p>
+            <p className="text-2xl font-bold text-info">{allRides.length}</p>
+            <p className="text-xs text-muted-foreground">Total Rides</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-success">
               {allRides.filter((r) => r.status === 'completed').length}
             </p>
-            <p className="text-xs text-gray-600">Completed</p>
+            <p className="text-xs text-muted-foreground">Completed</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-info">
               {allRides.filter((r) => r.status === 'confirmed').length}
             </p>
-            <p className="text-xs text-gray-600">Confirmed</p>
+            <p className="text-xs text-muted-foreground">Confirmed</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-600">
+            <p className="text-2xl font-bold text-muted-foreground">
               {allRides.filter((r) => r.status === 'scheduled').length}
             </p>
-            <p className="text-xs text-gray-600">Scheduled</p>
+            <p className="text-xs text-muted-foreground">Scheduled</p>
           </div>
         </div>
       </div>

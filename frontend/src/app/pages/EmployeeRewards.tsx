@@ -91,8 +91,8 @@ export default function EmployeeRewards() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#101828]">Rewards & Achievements</h1>
-          <p className="text-[#4a5565] mt-1">
+          <h1 className="text-2xl font-semibold text-foreground">Rewards & Achievements</h1>
+          <p className="text-muted-foreground mt-1">
             Track your progress and redeem rewards
           </p>
         </div>
@@ -104,38 +104,38 @@ export default function EmployeeRewards() {
 
       {/* Points Summary - Subtle Design */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
+        <Card className="p-6 bg-gradient-to-br from-background-subtle to-muted border-2 border-border">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#00bc7d] rounded-lg">
+            <div className="p-3 bg-brand-500 rounded-lg">
               <Star className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[#6a7282]">Total OxyPoints</p>
-              <p className="text-3xl font-bold text-[#101828]">{pointsBalance.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Total OxyPoints</p>
+              <p className="text-3xl font-bold text-foreground">{pointsBalance.toLocaleString()}</p>
             </div>
           </div>
         </Card>
         
-        <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+        <Card className="p-6 bg-gradient-to-br from-success-subtle to-success-subtle border-2 border-success/25">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-green-600 rounded-lg">
+            <div className="p-3 bg-success rounded-lg">
               <Trophy className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-green-700">Achievements</p>
-              <p className="text-3xl font-bold text-green-900">{unlockedAchievements}/{achievements.length}</p>
+              <p className="text-sm text-success">Achievements</p>
+              <p className="text-3xl font-bold text-success">{unlockedAchievements}/{achievements.length}</p>
             </div>
           </div>
         </Card>
         
-        <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
+        <Card className="p-6 bg-gradient-to-br from-info-subtle to-info-subtle border-2 border-info/25">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-600 rounded-lg">
+            <div className="p-3 bg-info rounded-lg">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-blue-700">Leaderboard Rank</p>
-              <p className="text-3xl font-bold text-blue-900">#3</p>
+              <p className="text-sm text-info">Leaderboard Rank</p>
+              <p className="text-3xl font-bold text-info">#3</p>
             </div>
           </div>
         </Card>
@@ -144,8 +144,8 @@ export default function EmployeeRewards() {
       {/* Achievements */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[#101828]">Your Achievements</h3>
-          <Badge variant="outline" className="bg-gray-50">
+          <h3 className="text-lg font-semibold text-foreground">Your Achievements</h3>
+          <Badge variant="outline" className="bg-background-subtle">
             {unlockedAchievements} of {achievements.length} unlocked
           </Badge>
         </div>
@@ -155,44 +155,44 @@ export default function EmployeeRewards() {
               key={achievement.id}
               className={`p-4 border-2 rounded-lg transition-all ${
                 achievement.unlocked 
-                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300 hover:shadow-md' 
-                  : 'bg-gray-50 border-gray-200 opacity-75'
+                  ? 'bg-gradient-to-br from-success-subtle to-success-subtle border-success/40 hover:shadow-md' 
+                  : 'bg-background-subtle border-border opacity-75'
               }`}
             >
               <div className="flex items-start gap-3">
-                <div className={`p-2 rounded-lg ${achievement.unlocked ? 'bg-green-600' : 'bg-gray-300'}`}>
+                <div className={`p-2 rounded-lg ${achievement.unlocked ? 'bg-success' : 'bg-border'}`}>
                   {achievement.unlocked ? (
                     <Award className="h-6 w-6 text-white" />
                   ) : (
-                    <Lock className="h-6 w-6 text-gray-500" />
+                    <Lock className="h-6 w-6 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className={`font-semibold text-sm ${achievement.unlocked ? 'text-[#101828]' : 'text-gray-500'}`}>
+                    <h4 className={`font-semibold text-sm ${achievement.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
                       {achievement.title}
                     </h4>
-                    <Badge variant="outline" className={achievement.unlocked ? 'bg-green-100 text-green-800 border-green-300' : 'bg-gray-100 text-gray-600'}>
+                    <Badge variant="outline" className={achievement.unlocked ? 'bg-success-subtle text-success border-success/40' : 'bg-muted text-muted-foreground'}>
                       {achievement.points}
                     </Badge>
                   </div>
-                  <p className={`text-xs ${achievement.unlocked ? 'text-[#4a5565]' : 'text-gray-500'}`}>
+                  <p className={`text-xs ${achievement.unlocked ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
                     {achievement.description}
                   </p>
                   {achievement.unlocked ? (
-                    <p className="text-xs text-green-700 mt-2 flex items-center gap-1">
+                    <p className="text-xs text-success mt-2 flex items-center gap-1">
                       <Star className="h-3 w-3" />
                       Unlocked {achievement.date}
                     </p>
                   ) : (
                     <div className="mt-3">
-                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                         <span>Progress</span>
                         <span>{achievement.progress}/{achievement.id === 'a3' ? 20 : achievement.id === 'a5' ? 500 : 50}</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className="bg-[#00bc7d] h-2 rounded-full transition-all"
+                          className="bg-brand-500 h-2 rounded-full transition-all"
                           style={{ width: `${(achievement.progress! / (achievement.id === 'a3' ? 20 : achievement.id === 'a5' ? 500 : 50)) * 100}%` }}
                         ></div>
                       </div>
@@ -208,9 +208,9 @@ export default function EmployeeRewards() {
       {/* Rewards Catalog */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[#101828]">Redeem Rewards</h3>
-          <p className="text-sm text-[#6a7282]">
-            You have <strong className="text-[#00bc7d]">{pointsBalance}</strong> OxyPoints to spend
+          <h3 className="text-lg font-semibold text-foreground">Redeem Rewards</h3>
+          <p className="text-sm text-muted-foreground">
+            You have <strong className="text-brand-500">{pointsBalance}</strong> OxyPoints to spend
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -221,19 +221,19 @@ export default function EmployeeRewards() {
                 key={reward.id} 
                 className={`p-4 border-2 rounded-lg transition-all ${
                   canAfford 
-                    ? 'border-gray-200 hover:border-[#00bc7d] hover:shadow-md bg-white' 
-                    : 'border-gray-200 bg-gray-50 opacity-60'
+                    ? 'border-border hover:border-brand-500 hover:shadow-md bg-card' 
+                    : 'border-border bg-background-subtle opacity-60'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-lg ${canAfford ? 'bg-[#00bc7d]' : 'bg-gray-300'}`}>
-                    <Gift className={`h-6 w-6 ${canAfford ? 'text-white' : 'text-gray-500'}`} />
+                  <div className={`p-2 rounded-lg ${canAfford ? 'bg-brand-500' : 'bg-border'}`}>
+                    <Gift className={`h-6 w-6 ${canAfford ? 'text-white' : 'text-muted-foreground'}`} />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-sm text-[#101828] mb-1">{reward.name}</h4>
-                    <p className="text-xs text-[#6a7282] mb-3">{reward.description}</p>
+                    <h4 className="font-semibold text-sm text-foreground mb-1">{reward.name}</h4>
+                    <p className="text-xs text-muted-foreground mb-3">{reward.description}</p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className={canAfford ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600'}>
+                      <Badge variant="outline" className={canAfford ? 'bg-success-subtle text-success border-success/25' : 'bg-muted text-muted-foreground'}>
                         {reward.points} OxyPoints
                       </Badge>
                       <Button
@@ -258,8 +258,8 @@ export default function EmployeeRewards() {
       {/* Leaderboard */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[#101828]">Company Leaderboard</h3>
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          <h3 className="text-lg font-semibold text-foreground">Company Leaderboard</h3>
+          <Badge variant="outline" className="bg-info-subtle text-info border-info/25">
             Top 5
           </Badge>
         </div>
@@ -269,29 +269,29 @@ export default function EmployeeRewards() {
               key={entry.rank}
               className={`p-4 rounded-lg flex items-center justify-between transition-all ${
                 entry.name === 'You' 
-                  ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300' 
-                  : 'bg-gray-50 border border-gray-200'
+                  ? 'bg-gradient-to-r from-info-subtle to-info-subtle border-2 border-info/40' 
+                  : 'bg-background-subtle border border-border'
               }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                  entry.rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-yellow-900' :
-                  entry.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700' :
-                  entry.rank === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-500 text-orange-900' :
-                  'bg-gray-200 text-gray-600'
+                  entry.rank === 1 ? 'bg-gradient-to-br from-warning to-warning text-warning' :
+                  entry.rank === 2 ? 'bg-gradient-to-br from-muted to-border text-foreground' :
+                  entry.rank === 3 ? 'bg-gradient-to-br from-warning to-warning text-warning' :
+                  'bg-muted text-muted-foreground'
                 }`}>
                   {entry.rank}
                 </div>
                 <div>
-                  <p className={`font-semibold ${entry.name === 'You' ? 'text-blue-900' : 'text-[#101828]'}`}>
+                  <p className={`font-semibold ${entry.name === 'You' ? 'text-info' : 'text-foreground'}`}>
                     {entry.name}
                   </p>
-                  <p className="text-sm text-[#6a7282]">{entry.department} · {entry.trips} trips</p>
+                  <p className="text-sm text-muted-foreground">{entry.department} · {entry.trips} trips</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-lg text-[#101828]">{entry.points.toLocaleString()}</p>
-                <p className="text-xs text-[#6a7282]">OxyPoints</p>
+                <p className="font-bold text-lg text-foreground">{entry.points.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">OxyPoints</p>
               </div>
             </div>
           ))}
@@ -307,22 +307,22 @@ export default function EmployeeRewards() {
           </DialogHeader>
           {selectedReward && (
             <div className="py-4 space-y-3">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-900 mb-1">
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+                <p className="text-sm text-success mb-1">
                   <strong>Reward:</strong> {selectedReward.name}
                 </p>
-                <p className="text-sm text-green-900 mb-1">
+                <p className="text-sm text-success mb-1">
                   <strong>Description:</strong> {selectedReward.description}
                 </p>
-                <p className="text-sm text-green-900">
+                <p className="text-sm text-success">
                   <strong>Cost:</strong> {selectedReward.points} points
                 </p>
               </div>
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-900 mb-1">
+              <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+                <p className="text-sm text-info mb-1">
                   <strong>Current Balance:</strong> {pointsBalance.toLocaleString()} points
                 </p>
-                <p className="text-sm text-blue-900">
+                <p className="text-sm text-info">
                   <strong>After Redemption:</strong> {(pointsBalance - selectedReward.points).toLocaleString()} points
                 </p>
               </div>
@@ -346,23 +346,23 @@ export default function EmployeeRewards() {
             <DialogDescription>Download your complete points and achievements history</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <p className="text-sm text-[#101828] font-semibold mb-3">Export includes:</p>
-              <ul className="text-sm text-[#4a5565] space-y-2">
+            <div className="p-4 bg-background-subtle border border-border rounded-lg">
+              <p className="text-sm text-foreground font-semibold mb-3">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-2">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#00bc7d] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>
                   Points earned history with dates
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#00bc7d] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>
                   All unlocked achievements
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#00bc7d] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>
                   Redeemed rewards record
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#00bc7d] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>
                   Leaderboard position tracking
                 </li>
               </ul>

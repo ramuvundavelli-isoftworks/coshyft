@@ -89,10 +89,10 @@ export default function SuperAdminDashboard() {
       {/* Page Header */}
       <div className="flex items-start justify-between py-4">
         <div>
-          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-foreground tracking-[0.0703px] mb-2">
             Super Admin Dashboard
           </h1>
-          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-muted-foreground tracking-[-0.3125px]">
             Platform-wide monitoring and tenant management
           </p>
         </div>
@@ -101,16 +101,16 @@ export default function SuperAdminDashboard() {
           <Button
             variant="outline"
             onClick={() => setIsSystemHealthDialogOpen(true)}
-            className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
+            className="h-9 bg-card border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle shadow-sm hover:shadow-md"
           >
             <Activity className="h-4 w-4 mr-2" />
-            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-foreground tracking-[-0.1504px]">
               System Health
             </span>
           </Button>
           <Button
             onClick={() => setIsAddTenantDialogOpen(true)}
-            className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
+            className="h-9 bg-brand-500 hover:bg-brand-500 text-white shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4 mr-2" />
             <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
@@ -147,7 +147,7 @@ export default function SuperAdminDashboard() {
       {/* System Metrics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Platform User Growth</h3>
+          <h3 className="font-semibold text-foreground mb-4">Platform User Growth</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Line
               data={{
@@ -168,7 +168,7 @@ export default function SuperAdminDashboard() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">CO₂ Saved Over Time (kg)</h3>
+          <h3 className="font-semibold text-foreground mb-4">CO₂ Saved Over Time (kg)</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Line
               data={{
@@ -192,14 +192,14 @@ export default function SuperAdminDashboard() {
       {/* Tenants Table */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Tenant Overview</h3>
+          <h3 className="font-semibold text-foreground">Tenant Overview</h3>
           <Button variant="outline" size="sm" onClick={() => setIsExportDialogOpen(true)}>
             <Download className="h-4 w-4 mr-1" />
             Export
           </Button>
         </div>
         {tenantsLoading ? (
-          <p className="text-sm text-gray-500 py-4 text-center">Loading tenants...</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">Loading tenants...</p>
         ) : (
           <Table>
             <TableHeader>
@@ -219,10 +219,10 @@ export default function SuperAdminDashboard() {
                   <TableCell className="font-medium">{tenant.name}</TableCell>
                   <TableCell>
                     <Badge className={
-                      tenant.status === 'active'      ? 'bg-green-100 text-green-700' :
-                      tenant.status === 'trial'       ? 'bg-blue-100 text-blue-700' :
-                      tenant.status === 'suspended'   ? 'bg-red-100 text-red-700' :
-                                                        'bg-gray-100 text-gray-700'
+                      tenant.status === 'active'      ? 'bg-success-subtle text-success' :
+                      tenant.status === 'trial'       ? 'bg-info-subtle text-info' :
+                      tenant.status === 'suspended'   ? 'bg-destructive-subtle text-destructive' :
+                                                        'bg-muted text-foreground'
                     }>
                       {tenant.status}
                     </Badge>
@@ -231,7 +231,7 @@ export default function SuperAdminDashboard() {
                   <TableCell>{tenant.office_count ?? 0}</TableCell>
                   <TableCell>{(tenant.total_emissions ?? 0).toLocaleString()}</TableCell>
                   <TableCell>
-                    <Badge className="bg-purple-100 text-purple-700">{tenant.plan}</Badge>
+                    <Badge className="bg-info-subtle text-info">{tenant.plan}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -266,29 +266,29 @@ export default function SuperAdminDashboard() {
             <div className="py-4">
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTenant.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTenant.status}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Plan</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTenant.plan}</p>
+                  <Label className="text-sm text-muted-foreground">Plan</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTenant.plan}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Users</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{(selectedTenant.user_count ?? 0).toLocaleString()}</p>
+                  <Label className="text-sm text-muted-foreground">Total Users</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{(selectedTenant.user_count ?? 0).toLocaleString()}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Emissions (tCO₂e)</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{(selectedTenant.total_emissions ?? 0).toLocaleString()}</p>
+                  <Label className="text-sm text-muted-foreground">Emissions (tCO₂e)</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{(selectedTenant.total_emissions ?? 0).toLocaleString()}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Contact</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTenant.contact_name}</p>
-                  <p className="text-sm text-gray-600">{selectedTenant.contact_email}</p>
+                  <Label className="text-sm text-muted-foreground">Contact</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTenant.contact_name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedTenant.contact_email}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Region</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTenant.primary_region}</p>
+                  <Label className="text-sm text-muted-foreground">Region</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTenant.primary_region}</p>
                 </Card>
               </div>
             </div>
@@ -387,29 +387,29 @@ export default function SuperAdminDashboard() {
             ]).map((svc: any) => (
               <div key={svc.name} className="p-4 border rounded-lg">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-gray-900">{svc.name}</span>
-                  <Badge className={svc.status === 'healthy' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                  <span className="font-medium text-foreground">{svc.name}</span>
+                  <Badge className={svc.status === 'healthy' ? 'bg-success-subtle text-success' : 'bg-destructive-subtle text-destructive'}>
                     {svc.status === 'healthy' ? 'Healthy' : svc.status}
                   </Badge>
                 </div>
                 {svc.latency_ms != null && (
-                  <p className="text-sm text-gray-500 mt-1">{svc.latency_ms}ms latency</p>
+                  <p className="text-sm text-muted-foreground mt-1">{svc.latency_ms}ms latency</p>
                 )}
               </div>
             ))}
             {healthData && (
               <div className="grid grid-cols-3 gap-3 pt-2">
-                <div className="p-3 bg-gray-50 rounded-lg text-center">
-                  <p className="text-xs text-gray-500">CPU</p>
-                  <p className="font-bold text-gray-900">{healthData.cpu_usage_percent}%</p>
+                <div className="p-3 bg-background-subtle rounded-lg text-center">
+                  <p className="text-xs text-muted-foreground">CPU</p>
+                  <p className="font-bold text-foreground">{healthData.cpu_usage_percent}%</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg text-center">
-                  <p className="text-xs text-gray-500">Memory</p>
-                  <p className="font-bold text-gray-900">{healthData.memory_usage_percent}%</p>
+                <div className="p-3 bg-background-subtle rounded-lg text-center">
+                  <p className="text-xs text-muted-foreground">Memory</p>
+                  <p className="font-bold text-foreground">{healthData.memory_usage_percent}%</p>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg text-center">
-                  <p className="text-xs text-gray-500">Disk</p>
-                  <p className="font-bold text-gray-900">{healthData.disk_usage_percent}%</p>
+                <div className="p-3 bg-background-subtle rounded-lg text-center">
+                  <p className="text-xs text-muted-foreground">Disk</p>
+                  <p className="font-bold text-foreground">{healthData.disk_usage_percent}%</p>
                 </div>
               </div>
             )}

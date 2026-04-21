@@ -220,28 +220,28 @@ export default function DPIAModule() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-success-subtle text-success border-success/25';
       case 'in-review':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-info-subtle text-info border-info/25';
       case 'draft':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
       case 'requires-update':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return 'bg-warning-subtle text-warning border-warning/25';
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
       case 'low':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-success-subtle text-success border-success/25';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return 'bg-warning-subtle text-warning border-warning/25';
       case 'high':
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-destructive-subtle text-destructive border-destructive/25';
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -250,10 +250,10 @@ export default function DPIAModule() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-foreground">
             Data Protection Impact Assessments
           </h1>
-          <p className="text-gray-600 mt-1">GDPR Article 35 compliance for employee data processing</p>
+          <p className="text-muted-foreground mt-1">GDPR Article 35 compliance for employee data processing</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline">
@@ -269,48 +269,48 @@ export default function DPIAModule() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{dpias.length}</span>
+            <span className="text-2xl font-semibold text-foreground">{dpias.length}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Total DPIAs</p>
-          <p className="text-xs text-[#4a5565] mt-1">Active assessments</p>
+          <p className="text-sm text-muted-foreground">Total DPIAs</p>
+          <p className="text-xs text-muted-foreground mt-1">Active assessments</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{approvedCount}</span>
+            <span className="text-2xl font-semibold text-foreground">{approvedCount}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">DPO Approved</p>
-          <p className="text-xs text-green-600 mt-1">Compliant</p>
+          <p className="text-sm text-muted-foreground">DPO Approved</p>
+          <p className="text-xs text-success mt-1">Compliant</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{highRiskCount}</span>
+            <span className="text-2xl font-semibold text-foreground">{highRiskCount}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">High Risk</p>
-          <p className="text-xs text-red-600 mt-1">Requires attention</p>
+          <p className="text-sm text-muted-foreground">High Risk</p>
+          <p className="text-xs text-destructive mt-1">Requires attention</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Eye className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Eye className="h-5 w-5 text-warning" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{dueForReview}</span>
+            <span className="text-2xl font-semibold text-foreground">{dueForReview}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Due for Review</p>
-          <p className="text-xs text-yellow-600 mt-1">Within 30 days</p>
+          <p className="text-sm text-muted-foreground">Due for Review</p>
+          <p className="text-xs text-warning mt-1">Within 30 days</p>
         </Card>
       </div>
 
@@ -324,7 +324,7 @@ export default function DPIAModule() {
 
         {/* Active DPIAs Tab */}
         <TabsContent value="assessments" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
+          <Card className="p-6 border border-border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -339,9 +339,9 @@ export default function DPIAModule() {
               </TableHeader>
               <TableBody>
                 {dpias.map((dpia) => (
-                  <TableRow key={dpia.id} className="hover:bg-gray-50">
+                  <TableRow key={dpia.id} className="hover:bg-background-subtle">
                     <TableCell className="font-medium">{dpia.name}</TableCell>
-                    <TableCell className="max-w-xs truncate text-sm text-[#6a7282]">
+                    <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
                       {dpia.processingActivity}
                     </TableCell>
                     <TableCell>
@@ -350,14 +350,14 @@ export default function DPIAModule() {
                     <TableCell>
                       <Badge className={getRiskColor(dpia.riskLevel)}>{dpia.riskLevel}</Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-[#6a7282]">
+                    <TableCell className="text-sm text-muted-foreground">
                       {new Date(dpia.nextReview).toLocaleDateString('en-IE')}
                     </TableCell>
                     <TableCell>
                       {dpia.dpoApproved ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CheckCircle className="h-5 w-5 text-success" />
                       ) : (
-                        <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                        <AlertTriangle className="h-5 w-5 text-warning" />
                       )}
                     </TableCell>
                     <TableCell>
@@ -374,9 +374,9 @@ export default function DPIAModule() {
 
         {/* Risk Register Tab */}
         <TabsContent value="risks" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
+          <Card className="p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#101828]">Privacy Risk Register</h3>
+              <h3 className="text-lg font-semibold text-foreground">Privacy Risk Register</h3>
               <Button onClick={() => setIsRiskDialogOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Risk
@@ -386,25 +386,25 @@ export default function DPIAModule() {
               {risks.map((risk) => (
                 <div
                   key={risk.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-[#00bc7d] transition-colors"
+                  className="border border-border rounded-lg p-4 hover:border-brand-500 transition-colors"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h4 className="font-medium text-[#101828] mb-1">{risk.description}</h4>
-                      <p className="text-sm text-[#6a7282]">Mitigation: {risk.mitigation}</p>
+                      <h4 className="font-medium text-foreground mb-1">{risk.description}</h4>
+                      <p className="text-sm text-muted-foreground">Mitigation: {risk.mitigation}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <p className="text-xs text-[#6a7282] mb-1">Likelihood</p>
+                      <p className="text-xs text-muted-foreground mb-1">Likelihood</p>
                       <Badge className={getRiskColor(risk.likelihood)}>{risk.likelihood}</Badge>
                     </div>
                     <div>
-                      <p className="text-xs text-[#6a7282] mb-1">Impact</p>
+                      <p className="text-xs text-muted-foreground mb-1">Impact</p>
                       <Badge className={getRiskColor(risk.impact)}>{risk.impact}</Badge>
                     </div>
                     <div>
-                      <p className="text-xs text-[#6a7282] mb-1">Residual Risk</p>
+                      <p className="text-xs text-muted-foreground mb-1">Residual Risk</p>
                       <Badge className={getRiskColor(risk.residualRisk)}>{risk.residualRisk}</Badge>
                     </div>
                   </div>
@@ -417,75 +417,75 @@ export default function DPIAModule() {
         {/* Compliance Overview Tab */}
         <TabsContent value="compliance" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">GDPR Article 35 Checklist</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">GDPR Article 35 Checklist</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">
+                    <p className="text-sm font-medium text-foreground">
                       Systematic and extensive processing
                     </p>
-                    <p className="text-xs text-[#6a7282]">Carpooling platform qualifies</p>
+                    <p className="text-xs text-muted-foreground">Carpooling platform qualifies</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Location data monitoring</p>
-                    <p className="text-xs text-[#6a7282]">Real-time tracking for carpooling</p>
+                    <p className="text-sm font-medium text-foreground">Location data monitoring</p>
+                    <p className="text-xs text-muted-foreground">Real-time tracking for carpooling</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">DPO consultation completed</p>
-                    <p className="text-xs text-[#6a7282]">All high-risk DPIAs reviewed</p>
+                    <p className="text-sm font-medium text-foreground">DPO consultation completed</p>
+                    <p className="text-xs text-muted-foreground">All high-risk DPIAs reviewed</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Data subject consultation</p>
-                    <p className="text-xs text-[#6a7282]">Privacy notices provided to employees</p>
+                    <p className="text-sm font-medium text-foreground">Data subject consultation</p>
+                    <p className="text-xs text-muted-foreground">Privacy notices provided to employees</p>
                   </div>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Data Processing Principles</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Data Processing Principles</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <Lock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Lock className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Purpose Limitation</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Purpose Limitation</p>
+                    <p className="text-xs text-muted-foreground">
                       Data used only for emissions reporting and carpooling
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Lock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Lock className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Data Minimization</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Data Minimization</p>
+                    <p className="text-xs text-muted-foreground">
                       Collect only essential location and route data
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Lock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Lock className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Storage Limitation</p>
-                    <p className="text-xs text-[#6a7282]">Auto-delete after 7 years (CSRD requirement)</p>
+                    <p className="text-sm font-medium text-foreground">Storage Limitation</p>
+                    <p className="text-xs text-muted-foreground">Auto-delete after 7 years (CSRD requirement)</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Lock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Lock className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Security Measures</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Security Measures</p>
+                    <p className="text-xs text-muted-foreground">
                       Encryption, pseudonymization, access controls
                     </p>
                   </div>
@@ -585,7 +585,7 @@ export default function DPIAModule() {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-[#00bc7d]" />
+              <Shield className="h-6 w-6 text-brand-500" />
               {selectedDPIA?.name}
             </DialogTitle>
             <DialogDescription>{selectedDPIA?.processingActivity}</DialogDescription>
@@ -593,32 +593,32 @@ export default function DPIAModule() {
           {selectedDPIA && (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Status</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Status</p>
                   <Badge className={getStatusColor(selectedDPIA.status)}>{selectedDPIA.status}</Badge>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Risk Level</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Risk Level</p>
                   <Badge className={getRiskColor(selectedDPIA.riskLevel)}>
                     {selectedDPIA.riskLevel}
                   </Badge>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Legal Basis</p>
-                  <p className="text-sm font-medium text-[#101828]">{selectedDPIA.legalBasis}</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Legal Basis</p>
+                  <p className="text-sm font-medium text-foreground">{selectedDPIA.legalBasis}</p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">DPO Approved</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">DPO Approved</p>
                   {selectedDPIA.dpoApproved ? (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                   ) : (
-                    <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    <AlertTriangle className="h-5 w-5 text-warning" />
                   )}
                 </Card>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-[#101828] mb-2">Data Types Processed</p>
+                <p className="text-sm font-medium text-foreground mb-2">Data Types Processed</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedDPIA.dataTypes.map((type, index) => (
                     <Badge key={index} variant="outline">
@@ -630,20 +630,20 @@ export default function DPIAModule() {
 
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <p className="text-[#6a7282] mb-1">Created</p>
-                  <p className="font-medium text-[#101828]">
+                  <p className="text-muted-foreground mb-1">Created</p>
+                  <p className="font-medium text-foreground">
                     {new Date(selectedDPIA.dateCreated).toLocaleDateString('en-IE')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#6a7282] mb-1">Last Review</p>
-                  <p className="font-medium text-[#101828]">
+                  <p className="text-muted-foreground mb-1">Last Review</p>
+                  <p className="font-medium text-foreground">
                     {new Date(selectedDPIA.lastReview).toLocaleDateString('en-IE')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#6a7282] mb-1">Next Review</p>
-                  <p className="font-medium text-[#101828]">
+                  <p className="text-muted-foreground mb-1">Next Review</p>
+                  <p className="font-medium text-foreground">
                     {new Date(selectedDPIA.nextReview).toLocaleDateString('en-IE')}
                   </p>
                 </div>

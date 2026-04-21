@@ -111,8 +111,8 @@ export default function AuditorBaselineReview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Baseline Review</h1>
-          <p className="text-gray-600 mt-1">Verify baseline integrity and methodology</p>
+          <h1 className="text-3xl font-bold text-foreground">Baseline Review</h1>
+          <p className="text-muted-foreground mt-1">Verify baseline integrity and methodology</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => setIsAddNoteDialogOpen(true)}>
@@ -130,45 +130,45 @@ export default function AuditorBaselineReview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Baseline Year</p>
-              <p className="text-2xl font-bold text-gray-900">{baselineInfo.year}</p>
+              <p className="text-sm text-muted-foreground">Baseline Year</p>
+              <p className="text-2xl font-bold text-foreground">{baselineInfo.year}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Data Quality</p>
-              <p className="text-2xl font-bold text-gray-900">{baselineInfo.dataQuality}%</p>
+              <p className="text-sm text-muted-foreground">Data Quality</p>
+              <p className="text-2xl font-bold text-foreground">{baselineInfo.dataQuality}%</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Shield className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Status</p>
-              <p className="text-lg font-bold text-green-600">{baselineInfo.verificationStatus}</p>
+              <p className="text-sm text-muted-foreground">Status</p>
+              <p className="text-lg font-bold text-success">{baselineInfo.verificationStatus}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <FileText className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Emissions</p>
-              <p className="text-xl font-bold text-gray-900">{baselineInfo.totalEmissions} tCO₂e</p>
+              <p className="text-sm text-muted-foreground">Total Emissions</p>
+              <p className="text-xl font-bold text-foreground">{baselineInfo.totalEmissions} tCO₂e</p>
             </div>
           </div>
         </Card>
@@ -176,23 +176,23 @@ export default function AuditorBaselineReview() {
 
       {/* Baseline Details */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Baseline Information</h3>
+        <h3 className="font-semibold text-foreground mb-4">Baseline Information</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label className="text-sm text-gray-600">Methodology</Label>
-            <p className="font-medium text-gray-900 mt-1">{baselineInfo.methodology}</p>
+            <Label className="text-sm text-muted-foreground">Methodology</Label>
+            <p className="font-medium text-foreground mt-1">{baselineInfo.methodology}</p>
           </div>
           <div>
-            <Label className="text-sm text-gray-600">Scope</Label>
-            <p className="font-medium text-gray-900 mt-1">{baselineInfo.scope}</p>
+            <Label className="text-sm text-muted-foreground">Scope</Label>
+            <p className="font-medium text-foreground mt-1">{baselineInfo.scope}</p>
           </div>
           <div>
-            <Label className="text-sm text-gray-600">Approval Date</Label>
-            <p className="font-medium text-gray-900 mt-1">{baselineInfo.approvalDate}</p>
+            <Label className="text-sm text-muted-foreground">Approval Date</Label>
+            <p className="font-medium text-foreground mt-1">{baselineInfo.approvalDate}</p>
           </div>
           <div>
-            <Label className="text-sm text-gray-600">Approved By</Label>
-            <p className="font-medium text-gray-900 mt-1">{baselineInfo.approvedBy}</p>
+            <Label className="text-sm text-muted-foreground">Approved By</Label>
+            <p className="font-medium text-foreground mt-1">{baselineInfo.approvedBy}</p>
           </div>
         </div>
       </Card>
@@ -200,7 +200,7 @@ export default function AuditorBaselineReview() {
       {/* Baseline Components */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Baseline Components</h3>
+          <h3 className="font-semibold text-foreground">Baseline Components</h3>
           <Button variant="outline" size="sm" onClick={() => setIsApproveDialogOpen(true)}>
             <CheckCircle className="h-4 w-4 mr-1" />
             Approve Baseline
@@ -226,9 +226,9 @@ export default function AuditorBaselineReview() {
                 <TableCell>{(item.emissions / item.employees).toFixed(2)}</TableCell>
                 <TableCell>
                   {item.verified ? (
-                    <Badge className="bg-green-100 text-green-700">Verified</Badge>
+                    <Badge className="bg-success-subtle text-success">Verified</Badge>
                   ) : (
-                    <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                    <Badge className="bg-warning-subtle text-warning">Pending</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -275,17 +275,17 @@ export default function AuditorBaselineReview() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-gray-600">Total Emissions</Label>
-                    <p className="font-medium text-gray-900 mt-1">{selectedItem.emissions} tCO₂e</p>
+                    <Label className="text-sm text-muted-foreground">Total Emissions</Label>
+                    <p className="font-medium text-foreground mt-1">{selectedItem.emissions} tCO₂e</p>
                   </div>
                   <div>
-                    <Label className="text-sm text-gray-600">Employees</Label>
-                    <p className="font-medium text-gray-900 mt-1">{selectedItem.employees}</p>
+                    <Label className="text-sm text-muted-foreground">Employees</Label>
+                    <p className="font-medium text-foreground mt-1">{selectedItem.employees}</p>
                   </div>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Verification Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">
+                  <Label className="text-sm text-muted-foreground">Verification Status</Label>
+                  <p className="font-medium text-foreground mt-1">
                     {selectedItem.verified ? 'Verified' : 'Pending Verification'}
                   </p>
                 </div>
@@ -359,14 +359,14 @@ export default function AuditorBaselineReview() {
             <DialogDescription>Provide audit approval for baseline</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
-              <p className="text-sm text-green-900">
+            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg mb-4">
+              <p className="text-sm text-success">
                 <strong>Baseline Year:</strong> {baselineInfo.year}
               </p>
-              <p className="text-sm text-green-900">
+              <p className="text-sm text-success">
                 <strong>Total Emissions:</strong> {baselineInfo.totalEmissions} tCO₂e
               </p>
-              <p className="text-sm text-green-900">
+              <p className="text-sm text-success">
                 <strong>Data Quality:</strong> {baselineInfo.dataQuality}%
               </p>
             </div>
@@ -395,9 +395,9 @@ export default function AuditorBaselineReview() {
             <DialogDescription>Download baseline audit documentation</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Export includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Baseline methodology documentation</li>
                 <li>Component-level verification</li>
                 <li>Audit notes and observations</li>

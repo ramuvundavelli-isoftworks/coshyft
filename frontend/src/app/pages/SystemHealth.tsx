@@ -40,8 +40,8 @@ export default function SystemHealth() {
   const services: any[] = health?.services ?? [];
   const overallStatus = health?.status ?? 'healthy';
 
-  const statusColor = overallStatus === 'healthy'  ? 'text-green-600' :
-                      overallStatus === 'degraded' ? 'text-yellow-600' : 'text-red-600';
+  const statusColor = overallStatus === 'healthy'  ? 'text-success' :
+                      overallStatus === 'degraded' ? 'text-warning' : 'text-destructive';
   const statusLabel = overallStatus === 'healthy'  ? 'Operational' :
                       overallStatus === 'degraded' ? 'Degraded' : 'Down';
 
@@ -49,8 +49,8 @@ export default function SystemHealth() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">System Health</h1>
-          <p className="text-gray-600 mt-1">Real-time platform monitoring and performance</p>
+          <h1 className="text-3xl font-bold text-foreground">System Health</h1>
+          <p className="text-muted-foreground mt-1">Real-time platform monitoring and performance</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handleRefresh} disabled={loading}>
@@ -68,37 +68,37 @@ export default function SystemHealth() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg"><CheckCircle className="h-5 w-5 text-green-600" /></div>
+            <div className="p-2 bg-success-subtle rounded-lg"><CheckCircle className="h-5 w-5 text-success" /></div>
             <div>
-              <p className="text-sm text-gray-600">System Status</p>
+              <p className="text-sm text-muted-foreground">System Status</p>
               <p className={`text-lg font-bold ${statusColor}`}>{loading ? '—' : statusLabel}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg"><Activity className="h-5 w-5 text-blue-600" /></div>
+            <div className="p-2 bg-info-subtle rounded-lg"><Activity className="h-5 w-5 text-info" /></div>
             <div>
-              <p className="text-sm text-gray-600">Uptime (hours)</p>
-              <p className="text-2xl font-bold text-gray-900">{loading ? '—' : (health?.uptime_hours ?? '—')}</p>
+              <p className="text-sm text-muted-foreground">Uptime (hours)</p>
+              <p className="text-2xl font-bold text-foreground">{loading ? '—' : (health?.uptime_hours ?? '—')}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg"><Zap className="h-5 w-5 text-purple-600" /></div>
+            <div className="p-2 bg-info-subtle rounded-lg"><Zap className="h-5 w-5 text-info" /></div>
             <div>
-              <p className="text-sm text-gray-600">API Latency</p>
-              <p className="text-2xl font-bold text-gray-900">{loading ? '—' : `${health?.api_latency_ms ?? '—'}ms`}</p>
+              <p className="text-sm text-muted-foreground">API Latency</p>
+              <p className="text-2xl font-bold text-foreground">{loading ? '—' : `${health?.api_latency_ms ?? '—'}ms`}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg"><Database className="h-5 w-5 text-green-600" /></div>
+            <div className="p-2 bg-success-subtle rounded-lg"><Database className="h-5 w-5 text-success" /></div>
             <div>
-              <p className="text-sm text-gray-600">DB Latency</p>
-              <p className="text-2xl font-bold text-gray-900">{loading ? '—' : `${health?.db_latency_ms ?? '—'}ms`}</p>
+              <p className="text-sm text-muted-foreground">DB Latency</p>
+              <p className="text-2xl font-bold text-foreground">{loading ? '—' : `${health?.db_latency_ms ?? '—'}ms`}</p>
             </div>
           </div>
         </Card>
@@ -106,7 +106,7 @@ export default function SystemHealth() {
 
       {/* Resource Usage Chart */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Resource Usage — Last 24h</h3>
+        <h3 className="font-semibold text-foreground mb-4">Resource Usage — Last 24h</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <Line
             data={{
@@ -125,26 +125,26 @@ export default function SystemHealth() {
       {/* Service Status & Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Service Status</h3>
+          <h3 className="font-semibold text-foreground mb-4">Service Status</h3>
           <div className="space-y-3">
             {services.length > 0 ? services.map((svc: any) => (
               <div key={svc.name} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Server className="h-5 w-5 text-gray-600" />
+                  <Server className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <span className="font-medium text-gray-900">{svc.name}</span>
+                    <span className="font-medium text-foreground">{svc.name}</span>
                     {svc.latency_ms != null && (
-                      <p className="text-xs text-gray-500">{svc.latency_ms}ms</p>
+                      <p className="text-xs text-muted-foreground">{svc.latency_ms}ms</p>
                     )}
                   </div>
                 </div>
-                <Badge className={svc.status === 'healthy' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                <Badge className={svc.status === 'healthy' ? 'bg-success-subtle text-success' : 'bg-destructive-subtle text-destructive'}>
                   <CheckCircle className="h-3 w-3 mr-1" />
                   {svc.status === 'healthy' ? 'Healthy' : svc.status}
                 </Badge>
               </div>
             )) : (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-muted-foreground text-center py-4">
                 {loading ? 'Loading...' : 'No service data'}
               </p>
             )}
@@ -152,7 +152,7 @@ export default function SystemHealth() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Platform Metrics</h3>
+          <h3 className="font-semibold text-foreground mb-4">Platform Metrics</h3>
           <div className="space-y-3">
             {([
               ['Active Connections',  health?.active_connections   ?? '—'],
@@ -163,8 +163,8 @@ export default function SystemHealth() {
               ['Uptime (hours)',       health?.uptime_hours ?? '—'],
             ] as [string, any][]).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between p-3 border rounded-lg">
-                <span className="font-medium text-gray-900">{label}</span>
-                <Badge className="bg-gray-100 text-gray-700">{String(value)}</Badge>
+                <span className="font-medium text-foreground">{label}</span>
+                <Badge className="bg-muted text-foreground">{String(value)}</Badge>
               </div>
             ))}
           </div>
@@ -179,9 +179,9 @@ export default function SystemHealth() {
             <DialogDescription>Download comprehensive system metrics</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Report includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Report includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>System uptime and latency metrics</li>
                 <li>CPU, memory and disk usage</li>
                 <li>Service health status</li>

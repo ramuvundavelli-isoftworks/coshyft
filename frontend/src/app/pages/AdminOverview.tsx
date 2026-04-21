@@ -32,8 +32,8 @@ export default function AdminOverview() {
     <div className="space-y-6">
       {/* Header */}
       <div className="py-4">
-        <h1 className="font-bold text-[32px] text-[#101828] tracking-[0.07px]">Operations Overview</h1>
-        <p className="text-[16px] text-[#6a7282] mt-1">Monitor participation, rides, and operational metrics</p>
+        <h1 className="font-bold text-[32px] text-foreground tracking-[0.07px]">Operations Overview</h1>
+        <p className="text-[16px] text-muted-foreground mt-1">Monitor participation, rides, and operational metrics</p>
       </div>
 
       {/* KPIs */}
@@ -65,14 +65,14 @@ export default function AdminOverview() {
 
       {/* Low participation alert */}
       {lowDepts.length > 0 && (
-        <Card className="p-4 bg-yellow-50 border-yellow-200">
+        <Card className="p-4 bg-warning-subtle border-warning/25">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-warning mt-0.5 shrink-0" />
             <div className="flex-1">
-              <h3 className="font-medium text-yellow-900">
+              <h3 className="font-medium text-warning">
                 {lowDepts.length} Department{lowDepts.length > 1 ? 's' : ''} Below 75% Target
               </h3>
-              <p className="text-sm text-yellow-700 mt-1">
+              <p className="text-sm text-warning mt-1">
                 {lowDepts.map(d => d.department).join(', ')} — consider sending engagement reminders
               </p>
             </div>
@@ -88,25 +88,25 @@ export default function AdminOverview() {
         {/* Participation by Department */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Participation by Department</h2>
+            <h2 className="text-lg font-semibold text-foreground">Participation by Department</h2>
             <Link to="/admin/participation">
               <Button variant="ghost" size="sm">View All</Button>
             </Link>
           </div>
           {depts.length === 0 ? (
-            <p className="text-sm text-gray-500 py-8 text-center">No department data yet</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">No department data yet</p>
           ) : (
             <div className="space-y-3">
               {depts.slice(0, 6).map((d: any) => (
                 <div key={d.department} className="flex items-center gap-3">
-                  <span className="text-sm text-gray-600 w-28 shrink-0 truncate">{d.department}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                  <span className="text-sm text-muted-foreground w-28 shrink-0 truncate">{d.department}</span>
+                  <div className="flex-1 bg-muted rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full ${d.participation_rate >= 75 ? 'bg-green-500' : 'bg-yellow-500'}`}
+                      className={`h-2 rounded-full ${d.participation_rate >= 75 ? 'bg-success' : 'bg-warning'}`}
                       style={{ width: `${Math.min(d.participation_rate, 100)}%` }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-gray-900 w-12 text-right">
+                  <span className="text-sm font-medium text-foreground w-12 text-right">
                     {d.participation_rate}%
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export default function AdminOverview() {
 
         {/* Summary stats */}
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Platform Summary</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Platform Summary</h2>
           <div className="space-y-3">
             {([
               ['Total Commutes Logged', (overview?.total_commutes_logged ?? 0).toLocaleString()],
@@ -127,8 +127,8 @@ export default function AdminOverview() {
               ['Total Emissions (kg)', (overview?.total_emissions_kg ?? 0).toLocaleString()],
             ] as [string, any][]).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between p-3 border rounded-lg">
-                <span className="text-sm text-gray-700">{label}</span>
-                <Badge className="bg-gray-100 text-gray-800">
+                <span className="text-sm text-foreground">{label}</span>
+                <Badge className="bg-muted text-foreground">
                   {loading ? '—' : value}
                 </Badge>
               </div>
@@ -140,7 +140,7 @@ export default function AdminOverview() {
       {/* Mode Adoption & Locations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Mode Adoption</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Current Mode Adoption</h2>
           <div style={{ height: '220px', width: '100%' }}>
             <Doughnut
               data={{
@@ -159,9 +159,9 @@ export default function AdminOverview() {
               <div key={m.mode} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: modeColors[i] }} />
-                  <span className="text-gray-700">{m.mode}</span>
+                  <span className="text-foreground">{m.mode}</span>
                 </div>
-                <span className="font-medium text-gray-900">{m.value}%</span>
+                <span className="font-medium text-foreground">{m.value}%</span>
               </div>
             ))}
           </div>
@@ -170,27 +170,27 @@ export default function AdminOverview() {
         {/* Locations */}
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Office Locations</h2>
+            <h2 className="text-lg font-semibold text-foreground">Office Locations</h2>
             <Link to="/admin/locations">
               <Button variant="ghost" size="sm">Manage</Button>
             </Link>
           </div>
           {locationList.length === 0 ? (
-            <p className="text-sm text-gray-500 py-8 text-center">No locations added yet</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">No locations added yet</p>
           ) : (
             <div className="space-y-3">
               {locationList.slice(0, 5).map((loc: any) => (
                 <div key={loc.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-blue-50 rounded">
-                      <MapPin className="h-4 w-4 text-blue-600" />
+                    <div className="p-1.5 bg-info-subtle rounded">
+                      <MapPin className="h-4 w-4 text-info" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">{loc.name}</p>
-                      <p className="text-xs text-gray-500">{loc.city}, {loc.country}</p>
+                      <p className="font-medium text-foreground text-sm">{loc.name}</p>
+                      <p className="text-xs text-muted-foreground">{loc.city}, {loc.country}</p>
                     </div>
                   </div>
-                  <Badge className={loc.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}>
+                  <Badge className={loc.is_active ? 'bg-success-subtle text-success' : 'bg-muted text-muted-foreground'}>
                     {loc.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
@@ -205,28 +205,28 @@ export default function AdminOverview() {
         <Link to="/admin/users">
           <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-blue-100 rounded-lg"><Users className="h-6 w-6 text-blue-600" /></div>
-              <h3 className="font-semibold text-gray-900">Manage Users</h3>
+              <div className="p-3 bg-info-subtle rounded-lg"><Users className="h-6 w-6 text-info" /></div>
+              <h3 className="font-semibold text-foreground">Manage Users</h3>
             </div>
-            <p className="text-sm text-gray-600">Add, edit, or suspend user accounts</p>
+            <p className="text-sm text-muted-foreground">Add, edit, or suspend user accounts</p>
           </Card>
         </Link>
         <Link to="/admin/participation">
           <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-green-100 rounded-lg"><BarChart3 className="h-6 w-6 text-green-600" /></div>
-              <h3 className="font-semibold text-gray-900">View Analytics</h3>
+              <div className="p-3 bg-success-subtle rounded-lg"><BarChart3 className="h-6 w-6 text-success" /></div>
+              <h3 className="font-semibold text-foreground">View Analytics</h3>
             </div>
-            <p className="text-sm text-gray-600">Deep dive into participation metrics</p>
+            <p className="text-sm text-muted-foreground">Deep dive into participation metrics</p>
           </Card>
         </Link>
         <Link to="/admin/rides">
           <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-purple-100 rounded-lg"><Car className="h-6 w-6 text-purple-600" /></div>
-              <h3 className="font-semibold text-gray-900">Monitor Rides</h3>
+              <div className="p-3 bg-info-subtle rounded-lg"><Car className="h-6 w-6 text-info" /></div>
+              <h3 className="font-semibold text-foreground">Monitor Rides</h3>
             </div>
-            <p className="text-sm text-gray-600">Track active and completed rides</p>
+            <p className="text-sm text-muted-foreground">Track active and completed rides</p>
           </Card>
         </Link>
       </div>

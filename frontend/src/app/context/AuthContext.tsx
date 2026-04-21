@@ -7,7 +7,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { authApi, type UserProfile } from '../api/auth.api';
 import { getToken, clearTokens } from '../api/client';
-import { isMockMode } from '../api/client';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -34,22 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setIsLoading(false);
       });
-    } else if (isMockMode()) {
-      // In mock/demo mode, auto-authenticate so ProtectedRoute doesn't block
-      setUser({
-        id: 'user-sus-001',
-        email: 'sarah.mitchell@company.ie',
-        name: 'Sarah Mitchell',
-        role: 'sustainability',
-        department: 'Sustainability',
-        locale: 'en-IE',
-        region: 'IE',
-        tenant_id: 'tenant-001',
-        is_active: true,
-        created_at: '2025-01-01T00:00:00Z',
-        updated_at: '2026-03-01T00:00:00Z',
-      });
-      setIsLoading(false);
     } else {
       setIsLoading(false);
     }

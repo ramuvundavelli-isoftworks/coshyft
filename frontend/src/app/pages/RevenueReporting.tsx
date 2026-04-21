@@ -234,15 +234,15 @@ export default function RevenueReporting() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'accepted':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-success-subtle text-success border-success/25';
       case 'submitted':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-info-subtle text-info border-info/25';
       case 'draft':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
       case 'rejected':
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-destructive-subtle text-destructive border-destructive/25';
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -264,8 +264,8 @@ export default function RevenueReporting() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Revenue Commissioners Reporting</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Revenue Commissioners Reporting</h1>
+          <p className="text-muted-foreground mt-1">
             Irish tax compliance for workplace benefit schemes
           </p>
         </div>
@@ -283,50 +283,50 @@ export default function RevenueReporting() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{reports.length}</span>
+            <span className="text-2xl font-semibold text-foreground">{reports.length}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Total Reports</p>
-          <p className="text-xs text-[#4a5565] mt-1">All tax years</p>
+          <p className="text-sm text-muted-foreground">Total Reports</p>
+          <p className="text-xs text-muted-foreground mt-1">All tax years</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{totalAccepted}</span>
+            <span className="text-2xl font-semibold text-foreground">{totalAccepted}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Accepted by Revenue</p>
-          <p className="text-xs text-green-600 mt-1">Compliant</p>
+          <p className="text-sm text-muted-foreground">Accepted by Revenue</p>
+          <p className="text-xs text-success mt-1">Compliant</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Euro className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Euro className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">
+            <span className="text-2xl font-semibold text-foreground">
               {formatCurrency(totalValue2026, 'EUR')}
             </span>
           </div>
-          <p className="text-sm text-[#6a7282]">Total Benefit Value</p>
-          <p className="text-xs text-[#4a5565] mt-1">Tax year 2026</p>
+          <p className="text-sm text-muted-foreground">Total Benefit Value</p>
+          <p className="text-xs text-muted-foreground mt-1">Tax year 2026</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Users className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Users className="h-5 w-5 text-warning" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{activeBenefits}</span>
+            <span className="text-2xl font-semibold text-foreground">{activeBenefits}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Active Participants</p>
-          <p className="text-xs text-[#4a5565] mt-1">Current schemes</p>
+          <p className="text-sm text-muted-foreground">Active Participants</p>
+          <p className="text-xs text-muted-foreground mt-1">Current schemes</p>
         </Card>
       </div>
 
@@ -340,8 +340,8 @@ export default function RevenueReporting() {
 
         {/* Revenue Reports Tab */}
         <TabsContent value="reports" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">Submitted Reports</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Submitted Reports</h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -357,10 +357,10 @@ export default function RevenueReporting() {
               </TableHeader>
               <TableBody>
                 {reports.map((report) => (
-                  <TableRow key={report.id} className="hover:bg-gray-50">
+                  <TableRow key={report.id} className="hover:bg-background-subtle">
                     <TableCell className="font-medium">{report.reportName}</TableCell>
                     <TableCell>{report.taxYear}</TableCell>
-                    <TableCell className="text-sm text-[#6a7282]">{report.filingPeriod}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{report.filingPeriod}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(report.status)}>{report.status}</Badge>
                     </TableCell>
@@ -368,7 +368,7 @@ export default function RevenueReporting() {
                     <TableCell className="font-medium">
                       {formatCurrency(report.totalValue, 'EUR')}
                     </TableCell>
-                    <TableCell className="text-xs text-[#6a7282] font-mono">
+                    <TableCell className="text-xs text-muted-foreground font-mono">
                       {report.revenueReference || '-'}
                     </TableCell>
                     <TableCell>
@@ -403,8 +403,8 @@ export default function RevenueReporting() {
 
         {/* Benefit Records Tab */}
         <TabsContent value="benefits" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">Employee Benefit Records</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Employee Benefit Records</h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -420,19 +420,19 @@ export default function RevenueReporting() {
                 {benefits.map((benefit) => {
                   const BenefitIcon = getBenefitIcon(benefit.benefitType);
                   return (
-                    <TableRow key={benefit.id} className="hover:bg-gray-50">
+                    <TableRow key={benefit.id} className="hover:bg-background-subtle">
                       <TableCell className="font-medium">{benefit.employeeName}</TableCell>
                       <TableCell className="font-mono text-sm">{benefit.ppsNumber}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <BenefitIcon className="h-4 w-4 text-[#4a5565]" />
+                          <BenefitIcon className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">{getReportTypeName(benefit.benefitType)}</span>
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">
                         {formatCurrency(benefit.annualValue, 'EUR')}
                       </TableCell>
-                      <TableCell className="text-sm text-[#6a7282]">
+                      <TableCell className="text-sm text-muted-foreground">
                         {new Date(benefit.startDate).toLocaleDateString('en-IE', {
                           day: '2-digit',
                           month: '2-digit',
@@ -449,8 +449,8 @@ export default function RevenueReporting() {
                         <Badge
                           className={
                             benefit.status === 'active'
-                              ? 'bg-green-100 text-green-700 border-green-200'
-                              : 'bg-gray-100 text-gray-700 border-gray-200'
+                              ? 'bg-success-subtle text-success border-success/25'
+                              : 'bg-muted text-foreground border-border'
                           }
                         >
                           {benefit.status}
@@ -467,79 +467,79 @@ export default function RevenueReporting() {
         {/* Compliance Guide Tab */}
         <TabsContent value="compliance" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 TaxSaver Commuter Scheme
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Annual Limit</p>
-                    <p className="text-xs text-[#6a7282]">€1,500 per employee per tax year</p>
+                    <p className="text-sm font-medium text-foreground">Annual Limit</p>
+                    <p className="text-xs text-muted-foreground">€1,500 per employee per tax year</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Eligible Services</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Eligible Services</p>
+                    <p className="text-xs text-muted-foreground">
                       Dublin Bus, Irish Rail, Luas, Bus Éireann, Go-Ahead Ireland
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Tax Treatment</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Tax Treatment</p>
+                    <p className="text-xs text-muted-foreground">
                       Exempt from income tax, USC, and PRSI
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Reporting</p>
-                    <p className="text-xs text-[#6a7282]">Quarterly submissions via ROS</p>
+                    <p className="text-sm font-medium text-foreground">Reporting</p>
+                    <p className="text-xs text-muted-foreground">Quarterly submissions via ROS</p>
                   </div>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 Bike-to-Work Scheme
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Annual Limit</p>
-                    <p className="text-xs text-[#6a7282]">€1,500 per employee (€3,000 for e-bikes)</p>
+                    <p className="text-sm font-medium text-foreground">Annual Limit</p>
+                    <p className="text-xs text-muted-foreground">€1,500 per employee (€3,000 for e-bikes)</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Eligible Items</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Eligible Items</p>
+                    <p className="text-xs text-muted-foreground">
                       Bicycles, e-bikes, safety equipment (helmet, lights, locks)
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Repayment Period</p>
-                    <p className="text-xs text-[#6a7282]">Maximum 12 months via salary sacrifice</p>
+                    <p className="text-sm font-medium text-foreground">Repayment Period</p>
+                    <p className="text-xs text-muted-foreground">Maximum 12 months via salary sacrifice</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Tax Treatment</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Tax Treatment</p>
+                    <p className="text-xs text-muted-foreground">
                       Exempt from BIK (Benefit-in-Kind) taxation
                     </p>
                   </div>
@@ -547,81 +547,81 @@ export default function RevenueReporting() {
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 EV Incentive Scheme
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Annual Limit</p>
-                    <p className="text-xs text-[#6a7282]">€10,000 per employee for EV purchase support</p>
+                    <p className="text-sm font-medium text-foreground">Annual Limit</p>
+                    <p className="text-xs text-muted-foreground">€10,000 per employee for EV purchase support</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Eligible Vehicles</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Eligible Vehicles</p>
+                    <p className="text-xs text-muted-foreground">
                       Battery Electric Vehicles (BEVs), Plug-in Hybrids (PHEVs)
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Home Charging</p>
-                    <p className="text-xs text-[#6a7282]">Up to €600 grant for home charging point</p>
+                    <p className="text-sm font-medium text-foreground">Home Charging</p>
+                    <p className="text-xs text-muted-foreground">Up to €600 grant for home charging point</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Reporting</p>
-                    <p className="text-xs text-[#6a7282]">Annual P11D equivalent declaration</p>
+                    <p className="text-sm font-medium text-foreground">Reporting</p>
+                    <p className="text-xs text-muted-foreground">Annual P11D equivalent declaration</p>
                   </div>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 Filing Requirements
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-2">
-                  <Calendar className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Calendar className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Quarterly Deadlines</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Quarterly Deadlines</p>
+                    <p className="text-xs text-muted-foreground">
                       Q1: 15 Apr, Q2: 15 Jul, Q3: 15 Oct, Q4: 31 Jan
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Building2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Building2 className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Submission Method</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Submission Method</p>
+                    <p className="text-xs text-muted-foreground">
                       Electronic filing via Revenue Online Service (ROS)
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <FileText className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <FileText className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Record Retention</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Record Retention</p>
+                    <p className="text-xs text-muted-foreground">
                       Maintain records for 6 years after end of tax year
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-[#101828]">Compliance</p>
-                    <p className="text-xs text-[#6a7282]">
+                    <p className="text-sm font-medium text-foreground">Compliance</p>
+                    <p className="text-xs text-muted-foreground">
                       Late submissions may incur penalties up to €4,000
                     </p>
                   </div>
@@ -637,7 +637,7 @@ export default function RevenueReporting() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-[#00bc7d]" />
+              <FileText className="h-6 w-6 text-brand-500" />
               {selectedReport?.reportName}
             </DialogTitle>
             <DialogDescription>
@@ -647,39 +647,39 @@ export default function RevenueReporting() {
           {selectedReport && (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Status</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Status</p>
                   <Badge className={getStatusColor(selectedReport.status)}>
                     {selectedReport.status}
                   </Badge>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Participants</p>
-                  <p className="text-xl font-semibold text-[#101828]">
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Participants</p>
+                  <p className="text-xl font-semibold text-foreground">
                     {formatNumber(selectedReport.participantCount)}
                   </p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Total Value</p>
-                  <p className="text-xl font-semibold text-[#101828]">
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Total Value</p>
+                  <p className="text-xl font-semibold text-foreground">
                     {formatCurrency(selectedReport.totalValue, 'EUR')}
                   </p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Revenue Reference</p>
-                  <p className="text-sm font-mono text-[#101828]">
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Revenue Reference</p>
+                  <p className="text-sm font-mono text-foreground">
                     {selectedReport.revenueReference || 'Not assigned'}
                   </p>
                 </Card>
               </div>
 
               {selectedReport.submittedDate && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-green-900">Submitted to Revenue</p>
-                      <p className="text-sm text-green-700 mt-1">
+                      <p className="text-sm font-medium text-success">Submitted to Revenue</p>
+                      <p className="text-sm text-success mt-1">
                         Submitted on{' '}
                         {new Date(selectedReport.submittedDate).toLocaleDateString('en-IE', {
                           day: '2-digit',
@@ -715,23 +715,23 @@ export default function RevenueReporting() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-3">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 This will submit <strong>{selectedReport?.reportName}</strong> to the Revenue
                 Commissioners for tax year <strong>{selectedReport?.taxYear}</strong>.
               </p>
             </div>
-            <div className="space-y-2 text-sm text-[#4a5565]">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span>Report data validated</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span>PPS numbers verified</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span>Benefit calculations confirmed</span>
               </div>
             </div>

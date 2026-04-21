@@ -247,7 +247,7 @@ export default function CreateRecurringRideModal({
       <div>
         <Label htmlFor="origin">Pickup Location *</Label>
         <div className="relative mt-2">
-          <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="origin"
             value={originAddress}
@@ -261,7 +261,7 @@ export default function CreateRecurringRideModal({
       <div>
         <Label htmlFor="destination">Dropoff Location *</Label>
         <div className="relative mt-2">
-          <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="destination"
             value={destinationAddress}
@@ -275,7 +275,7 @@ export default function CreateRecurringRideModal({
       <div>
         <Label htmlFor="time">Departure Time *</Label>
         <div className="relative mt-2">
-          <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             id="time"
             type="time"
@@ -350,7 +350,7 @@ export default function CreateRecurringRideModal({
               </Button>
             ))}
           </div>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             Selected: {selectedDays.length > 0 ? selectedDays.map(d => d.slice(0, 3)).join(', ') : 'None'}
           </p>
         </div>
@@ -427,14 +427,14 @@ export default function CreateRecurringRideModal({
           />
         )}
         {!hasEndDate && (
-          <p className="text-xs text-gray-500">Rides will continue indefinitely</p>
+          <p className="text-xs text-muted-foreground">Rides will continue indefinitely</p>
         )}
       </div>
 
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-info-subtle border-info/25">
         <div className="flex items-start gap-2">
-          <Info className="h-4 w-4 text-blue-600 mt-0.5" />
-          <div className="text-sm text-blue-900">
+          <Info className="h-4 w-4 text-info mt-0.5" />
+          <div className="text-sm text-info">
             <p className="font-medium mb-1">Schedule Preview:</p>
             <p>{getScheduleDescription({
               departureTime,
@@ -495,7 +495,7 @@ export default function CreateRecurringRideModal({
           onChange={(e) => setDetourTolerance(parseInt(e.target.value))}
           className="mt-2"
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           How much extra time you're willing to spend picking up/dropping off passengers
         </p>
       </div>
@@ -553,8 +553,8 @@ export default function CreateRecurringRideModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Repeat className="h-6 w-6 text-blue-600" />
+            <div className="h-12 w-12 bg-info-subtle rounded-full flex items-center justify-center">
+              <Repeat className="h-6 w-6 text-info" />
             </div>
             <div>
               <DialogTitle className="text-xl">
@@ -573,7 +573,7 @@ export default function CreateRecurringRideModal({
             <div
               key={s}
               className={`flex-1 h-2 rounded-full transition-colors ${
-                s <= step ? 'bg-blue-600' : 'bg-gray-200'
+                s <= step ? 'bg-info' : 'bg-muted'
               }`}
             />
           ))}

@@ -1,5 +1,7 @@
 // Role definitions
 export type Role = 'employee' | 'admin' | 'sustainability' | 'auditor' | 'superadmin';
+/** Alias for Role — use Role in new code */
+export type UserRole = Role;
 
 // Localization types
 export type SupportedLocale = 'en-IE' | 'en-GB' | 'en-US' | 'ga-IE';
@@ -33,6 +35,8 @@ export interface User {
   department?: string;
   locale?: SupportedLocale;
   region?: SupportedRegion;
+  tenant_id?: string;
+  tenant_name?: string;
   gdprConsent?: GDPRConsent;
   dataRetention?: DataRetentionPolicy;
 }

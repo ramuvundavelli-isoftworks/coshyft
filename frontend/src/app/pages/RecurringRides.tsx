@@ -193,13 +193,13 @@ export default function RecurringRides() {
   const getStatusColor = (status: RecurringRideTemplate['status']) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return 'bg-success-subtle text-success border-success/25';
       case 'paused':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return 'bg-warning-subtle text-warning border-warning/25';
       case 'cancelled':
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-destructive-subtle text-destructive border-destructive/25';
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -225,8 +225,8 @@ export default function RecurringRides() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Recurring Rides</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Recurring Rides</h1>
+          <p className="text-muted-foreground mt-1">
             Manage your recurring ride schedules and templates
           </p>
         </div>
@@ -241,44 +241,44 @@ export default function RecurringRides() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Active Templates</span>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">Active Templates</span>
+            <CheckCircle className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             {templates.filter((t) => t.status === 'active').length}
           </p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Total Rides</span>
-            <Calendar className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Total Rides</span>
+            <Calendar className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{totalStats.totalRides}</p>
+          <p className="text-2xl font-bold text-foreground">{totalStats.totalRides}</p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Completed</span>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">Completed</span>
+            <CheckCircle className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-green-700">{totalStats.completedRides}</p>
+          <p className="text-2xl font-bold text-success">{totalStats.completedRides}</p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">CO₂ Saved</span>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">CO₂ Saved</span>
+            <TrendingUp className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-green-700">{totalStats.co2Saved.toFixed(1)} kg</p>
+          <p className="text-2xl font-bold text-success">{totalStats.co2Saved.toFixed(1)} kg</p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Conflicts</span>
-            <AlertCircle className={`h-4 w-4 ${conflicts.length > 0 ? 'text-red-600' : 'text-gray-400'}`} />
+            <span className="text-sm text-muted-foreground">Conflicts</span>
+            <AlertCircle className={`h-4 w-4 ${conflicts.length > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
           </div>
-          <p className={`text-2xl font-bold ${conflicts.length > 0 ? 'text-red-700' : 'text-gray-900'}`}>
+          <p className={`text-2xl font-bold ${conflicts.length > 0 ? 'text-destructive' : 'text-foreground'}`}>
             {conflicts.length}
           </p>
         </Card>
@@ -286,16 +286,16 @@ export default function RecurringRides() {
 
       {/* Conflicts Alert */}
       {conflicts.length > 0 && (
-        <Card className="p-4 bg-yellow-50 border-yellow-200">
+        <Card className="p-4 bg-warning-subtle border-warning/25">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900 mb-2">
+              <h3 className="font-semibold text-warning mb-2">
                 Schedule Conflicts Detected
               </h3>
               <div className="space-y-2">
                 {conflicts.slice(0, 3).map((conflict) => (
-                  <div key={conflict.id} className="text-sm text-yellow-800">
+                  <div key={conflict.id} className="text-sm text-warning">
                     <p className="font-medium">{conflict.description}</p>
                     <p className="text-xs mt-1">
                       Suggestions: {conflict.suggestions.join(' • ')}
@@ -304,7 +304,7 @@ export default function RecurringRides() {
                 ))}
               </div>
               {conflicts.length > 3 && (
-                <p className="text-xs text-yellow-700 mt-2">
+                <p className="text-xs text-warning mt-2">
                   +{conflicts.length - 3} more conflicts
                 </p>
               )}
@@ -319,7 +319,7 @@ export default function RecurringRides() {
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -357,7 +357,7 @@ export default function RecurringRides() {
           </Select>
 
           {/* View Mode Toggle */}
-          <div className="flex gap-1 border rounded-lg p-1 bg-white">
+          <div className="flex gap-1 border rounded-lg p-1 bg-card">
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
@@ -388,11 +388,11 @@ export default function RecurringRides() {
         <div className="space-y-4">
           {filteredTemplates.length === 0 ? (
             <Card className="p-12 text-center">
-              <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 No templates found
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchQuery || statusFilter !== 'all' || patternFilter !== 'all'
                   ? 'Try adjusting your filters'
                   : 'Create your first recurring ride template to get started'}
@@ -418,7 +418,7 @@ export default function RecurringRides() {
                 <Card key={template.id} className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4">
                     {/* Icon */}
-                    <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
+                    <div className="h-12 w-12 bg-info-subtle rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
                       {getPatternIcon(template.pattern)}
                     </div>
 
@@ -427,25 +427,25 @@ export default function RecurringRides() {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-foreground">
                               {template.name}
                             </h3>
                             <Badge variant="outline" className={getStatusColor(template.status)}>
                               {template.status}
                             </Badge>
                             {template.isDriver && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                              <Badge variant="outline" className="bg-info-subtle text-info">
                                 Driver
                               </Badge>
                             )}
                             {template.autoAccept && (
-                              <Badge variant="outline" className="bg-green-50 text-green-700">
+                              <Badge variant="outline" className="bg-success-subtle text-success">
                                 Auto-accept
                               </Badge>
                             )}
                           </div>
                           {template.description && (
-                            <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                            <p className="text-sm text-muted-foreground mb-2">{template.description}</p>
                           )}
                         </div>
 
@@ -480,7 +480,7 @@ export default function RecurringRides() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteTemplate(template.id)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -490,17 +490,17 @@ export default function RecurringRides() {
                       {/* Route Info */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                         <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-info mt-0.5 flex-shrink-0" />
                           <div className="text-sm">
-                            <p className="text-gray-500">From</p>
-                            <p className="text-gray-900 font-medium">{template.origin.address}</p>
+                            <p className="text-muted-foreground">From</p>
+                            <p className="text-foreground font-medium">{template.origin.address}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
                           <div className="text-sm">
-                            <p className="text-gray-500">To</p>
-                            <p className="text-gray-900 font-medium">
+                            <p className="text-muted-foreground">To</p>
+                            <p className="text-foreground font-medium">
                               {template.destination.address}
                             </p>
                           </div>
@@ -510,52 +510,52 @@ export default function RecurringRides() {
                       {/* Schedule Info */}
                       <div className="flex items-center gap-6 mb-4 text-sm">
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-700">{template.departureTime}</span>
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-foreground">{template.departureTime}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-700">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-foreground">
                             {getScheduleDescription(template)}
                           </span>
                         </div>
                         {template.isDriver && (
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-gray-400" />
-                            <span className="text-gray-700">{template.seats} seats</span>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-foreground">{template.seats} seats</span>
                           </div>
                         )}
                       </div>
 
                       {/* Statistics */}
-                      <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 rounded-lg">
+                      <div className="grid grid-cols-5 gap-4 p-3 bg-background-subtle rounded-lg">
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">Total Rides</p>
-                          <p className="text-lg font-semibold text-gray-900">
+                          <p className="text-xs text-muted-foreground mb-1">Total Rides</p>
+                          <p className="text-lg font-semibold text-foreground">
                             {template.statistics.totalRidesGenerated}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">Completed</p>
-                          <p className="text-lg font-semibold text-green-700">
+                          <p className="text-xs text-muted-foreground mb-1">Completed</p>
+                          <p className="text-lg font-semibold text-success">
                             {template.statistics.totalRidesCompleted}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">Completion Rate</p>
-                          <p className="text-lg font-semibold text-blue-700">
+                          <p className="text-xs text-muted-foreground mb-1">Completion Rate</p>
+                          <p className="text-lg font-semibold text-info">
                             {completionRate.toFixed(0)}%
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">CO₂ Saved</p>
-                          <p className="text-lg font-semibold text-green-700">
+                          <p className="text-xs text-muted-foreground mb-1">CO₂ Saved</p>
+                          <p className="text-lg font-semibold text-success">
                             {template.statistics.totalCO2Saved.toFixed(1)} kg
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">Avg Passengers</p>
-                          <p className="text-lg font-semibold text-gray-900">
+                          <p className="text-xs text-muted-foreground mb-1">Avg Passengers</p>
+                          <p className="text-lg font-semibold text-foreground">
                             {template.statistics.averagePassengers.toFixed(1)}
                           </p>
                         </div>
@@ -565,7 +565,7 @@ export default function RecurringRides() {
                       {upcomingRides.length > 0 && template.status === 'active' && (
                         <div className="mt-4 pt-4 border-t">
                           <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-700">
+                            <p className="text-sm font-medium text-foreground">
                               Next 7 days: {upcomingRides.length} ride(s)
                             </p>
                             <Button

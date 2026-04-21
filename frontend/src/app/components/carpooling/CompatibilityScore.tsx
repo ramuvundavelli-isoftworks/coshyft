@@ -36,19 +36,19 @@ export default function CompatibilityScore({
   const matchQuality = getMatchQuality(overallScore);
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 80) return 'text-green-500';
-    if (score >= 70) return 'text-blue-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 90) return 'text-success';
+    if (score >= 80) return 'text-success';
+    if (score >= 70) return 'text-info';
+    if (score >= 60) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getBgColor = (score: number) => {
-    if (score >= 90) return 'bg-green-600';
-    if (score >= 80) return 'bg-green-500';
-    if (score >= 70) return 'bg-blue-600';
-    if (score >= 60) return 'bg-yellow-600';
-    return 'bg-red-600';
+    if (score >= 90) return 'bg-success';
+    if (score >= 80) return 'bg-success';
+    if (score >= 70) return 'bg-info';
+    if (score >= 60) return 'bg-warning';
+    return 'bg-destructive';
   };
 
   const getBadgeVariant = (color: string) => {
@@ -76,12 +76,12 @@ export default function CompatibilityScore({
         variant={getBadgeVariant(matchQuality.color)}
         className={`${
           matchQuality.color === 'green'
-            ? 'bg-green-50 text-green-700 border-green-200'
+            ? 'bg-success-subtle text-success border-success/25'
             : matchQuality.color === 'blue'
-            ? 'bg-blue-50 text-blue-700 border-blue-200'
+            ? 'bg-info-subtle text-info border-info/25'
             : matchQuality.color === 'yellow'
-            ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-            : 'bg-red-50 text-red-700 border-red-200'
+            ? 'bg-warning-subtle text-warning border-warning/25'
+            : 'bg-destructive-subtle text-destructive border-destructive/25'
         }`}
       >
         {overallScore}% Match
@@ -96,8 +96,8 @@ export default function CompatibilityScore({
           <div className={`${getScoreColor(overallScore)} font-bold text-2xl`}>
             {overallScore}%
           </div>
-          <div className="text-sm text-gray-600">
-            <div className="font-medium text-gray-900">{matchQuality.label}</div>
+          <div className="text-sm text-muted-foreground">
+            <div className="font-medium text-foreground">{matchQuality.label}</div>
             <div className="text-xs">{matchQuality.description}</div>
           </div>
         </div>
@@ -114,20 +114,20 @@ export default function CompatibilityScore({
               {overallScore}%
             </div>
             <div>
-              <div className="font-semibold text-gray-900 text-lg">{matchQuality.label}</div>
-              <div className="text-sm text-gray-600">{matchQuality.description}</div>
+              <div className="font-semibold text-foreground text-lg">{matchQuality.label}</div>
+              <div className="text-sm text-muted-foreground">{matchQuality.description}</div>
             </div>
           </div>
         </div>
         <Badge
           className={`${
             matchQuality.color === 'green'
-              ? 'bg-green-100 text-green-700'
+              ? 'bg-success-subtle text-success'
               : matchQuality.color === 'blue'
-              ? 'bg-blue-100 text-blue-700'
+              ? 'bg-info-subtle text-info'
               : matchQuality.color === 'yellow'
-              ? 'bg-yellow-100 text-yellow-700'
-              : 'bg-red-100 text-red-700'
+              ? 'bg-warning-subtle text-warning'
+              : 'bg-destructive-subtle text-destructive'
           }`}
         >
           <TrendingUp className="h-3 w-3 mr-1" />
@@ -139,7 +139,7 @@ export default function CompatibilityScore({
         {/* Overall Score Bar */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Overall Compatibility</span>
+            <span className="text-sm font-medium text-foreground">Overall Compatibility</span>
             <span className={`text-sm font-semibold ${getScoreColor(overallScore)}`}>
               {overallScore}%
             </span>
@@ -150,14 +150,14 @@ export default function CompatibilityScore({
         {/* Detailed Scores */}
         {(routeScore !== undefined || timeScore !== undefined || preferencesScore !== undefined || ratingScore !== undefined) && (
           <div className="pt-4 border-t space-y-3">
-            <div className="text-sm font-medium text-gray-700 mb-3">Score Breakdown</div>
+            <div className="text-sm font-medium text-foreground mb-3">Score Breakdown</div>
 
             {routeScore !== undefined && (
               <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-gray-400" />
+                <MapPin className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-600">Route Compatibility</span>
+                    <span className="text-sm text-muted-foreground">Route Compatibility</span>
                     <span className="text-sm font-medium">{Math.round(routeScore)}%</span>
                   </div>
                   <Progress value={routeScore} className="h-2" />
@@ -167,10 +167,10 @@ export default function CompatibilityScore({
 
             {timeScore !== undefined && (
               <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-gray-400" />
+                <Clock className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-600">Schedule Match</span>
+                    <span className="text-sm text-muted-foreground">Schedule Match</span>
                     <span className="text-sm font-medium">{Math.round(timeScore)}%</span>
                   </div>
                   <Progress value={timeScore} className="h-2" />
@@ -180,10 +180,10 @@ export default function CompatibilityScore({
 
             {preferencesScore !== undefined && (
               <div className="flex items-center gap-3">
-                <Heart className="h-4 w-4 text-gray-400" />
+                <Heart className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-600">Preferences Alignment</span>
+                    <span className="text-sm text-muted-foreground">Preferences Alignment</span>
                     <span className="text-sm font-medium">{Math.round(preferencesScore)}%</span>
                   </div>
                   <Progress value={preferencesScore} className="h-2" />
@@ -193,10 +193,10 @@ export default function CompatibilityScore({
 
             {ratingScore !== undefined && (
               <div className="flex items-center gap-3">
-                <Star className="h-4 w-4 text-gray-400" />
+                <Star className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-600">Driver Rating</span>
+                    <span className="text-sm text-muted-foreground">Driver Rating</span>
                     <span className="text-sm font-medium">{Math.round(ratingScore)}%</span>
                   </div>
                   <Progress value={ratingScore} className="h-2" />
@@ -209,24 +209,24 @@ export default function CompatibilityScore({
         {/* Recommendation */}
         <div className={`p-4 rounded-lg border-2 ${
           overallScore >= 80
-            ? 'bg-green-50 border-green-200'
+            ? 'bg-success-subtle border-success/25'
             : overallScore >= 60
-            ? 'bg-blue-50 border-blue-200'
-            : 'bg-yellow-50 border-yellow-200'
+            ? 'bg-info-subtle border-info/25'
+            : 'bg-warning-subtle border-warning/25'
         }`}>
           <div className="flex items-start gap-2">
             {getIcon(overallScore)}
             <div className="text-sm">
               {overallScore >= 80 ? (
-                <p className="text-green-800">
+                <p className="text-success">
                   <strong>Highly Recommended!</strong> This ride is an excellent match for your commute preferences and schedule.
                 </p>
               ) : overallScore >= 60 ? (
-                <p className="text-blue-800">
+                <p className="text-info">
                   <strong>Good Option.</strong> This ride meets most of your criteria with minor differences in preferences.
                 </p>
               ) : (
-                <p className="text-yellow-800">
+                <p className="text-warning">
                   <strong>Consider Carefully.</strong> This ride has some compatibility concerns. Review the details before booking.
                 </p>
               )}

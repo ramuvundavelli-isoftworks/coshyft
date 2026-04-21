@@ -142,8 +142,8 @@ export default function EmployeeSettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+          <p className="text-muted-foreground mt-1">
             Manage your account preferences and privacy
           </p>
         </div>
@@ -152,8 +152,8 @@ export default function EmployeeSettings() {
       {/* Profile Settings */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Settings className="h-5 w-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Profile Settings</h3>
+          <Settings className="h-5 w-5 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground">Profile Settings</h3>
         </div>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,14 +196,14 @@ export default function EmployeeSettings() {
       {/* Notification Settings */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Bell className="h-5 w-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Notification Preferences</h3>
+          <Bell className="h-5 w-5 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground">Notification Preferences</h3>
         </div>
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Email Notifications</p>
-              <p className="text-sm text-gray-600">Receive notifications via email</p>
+              <p className="font-medium text-foreground">Email Notifications</p>
+              <p className="text-sm text-muted-foreground">Receive notifications via email</p>
             </div>
             <Switch
               checked={notificationSettings.emailNotifications}
@@ -214,8 +214,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Ride Requests</p>
-              <p className="text-sm text-gray-600">Notify when someone requests your ride</p>
+              <p className="font-medium text-foreground">Ride Requests</p>
+              <p className="text-sm text-muted-foreground">Notify when someone requests your ride</p>
             </div>
             <Switch
               checked={notificationSettings.rideRequests}
@@ -226,8 +226,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Ride Matches</p>
-              <p className="text-sm text-gray-600">Notify when rides match your preferences</p>
+              <p className="font-medium text-foreground">Ride Matches</p>
+              <p className="text-sm text-muted-foreground">Notify when rides match your preferences</p>
             </div>
             <Switch
               checked={notificationSettings.rideMatches}
@@ -238,8 +238,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Achievements</p>
-              <p className="text-sm text-gray-600">Notify when you unlock achievements</p>
+              <p className="font-medium text-foreground">Achievements</p>
+              <p className="text-sm text-muted-foreground">Notify when you unlock achievements</p>
             </div>
             <Switch
               checked={notificationSettings.achievements}
@@ -250,8 +250,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Weekly Report</p>
-              <p className="text-sm text-gray-600">Receive weekly impact summary</p>
+              <p className="font-medium text-foreground">Weekly Report</p>
+              <p className="text-sm text-muted-foreground">Receive weekly impact summary</p>
             </div>
             <Switch
               checked={notificationSettings.weeklyReport}
@@ -262,8 +262,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Monthly Report</p>
-              <p className="text-sm text-gray-600">Receive monthly impact summary</p>
+              <p className="font-medium text-foreground">Monthly Report</p>
+              <p className="text-sm text-muted-foreground">Receive monthly impact summary</p>
             </div>
             <Switch
               checked={notificationSettings.monthlyReport}
@@ -282,14 +282,14 @@ export default function EmployeeSettings() {
       {/* Privacy Settings */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Shield className="h-5 w-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Privacy & Visibility</h3>
+          <Shield className="h-5 w-5 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground">Privacy & Visibility</h3>
         </div>
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Profile Visibility</p>
-              <p className="text-sm text-gray-600">Allow others to see your profile</p>
+              <p className="font-medium text-foreground">Profile Visibility</p>
+              <p className="text-sm text-muted-foreground">Allow others to see your profile</p>
             </div>
             <Switch
               checked={privacySettings.profileVisible}
@@ -300,8 +300,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Show Location</p>
-              <p className="text-sm text-gray-600">Display your commute location to others</p>
+              <p className="font-medium text-foreground">Show Location</p>
+              <p className="text-sm text-muted-foreground">Display your commute location to others</p>
             </div>
             <Switch
               checked={privacySettings.showLocation}
@@ -312,8 +312,8 @@ export default function EmployeeSettings() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div>
-              <p className="font-medium text-gray-900">Share Trip Data</p>
-              <p className="text-sm text-gray-600">Share anonymized trip data for reporting</p>
+              <p className="font-medium text-foreground">Share Trip Data</p>
+              <p className="text-sm text-muted-foreground">Share anonymized trip data for reporting</p>
             </div>
             <Switch
               checked={privacySettings.shareTrips}
@@ -332,8 +332,8 @@ export default function EmployeeSettings() {
       {/* Commute Preferences */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <MapPin className="h-5 w-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Commute Preferences</h3>
+          <MapPin className="h-5 w-5 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground">Commute Preferences</h3>
         </div>
         <div className="space-y-4">
           <div>
@@ -417,8 +417,8 @@ export default function EmployeeSettings() {
                 placeholder="Confirm new password"
               />
             </div>
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-3 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 Password must be at least 8 characters and include uppercase, lowercase, and numbers.
               </p>
             </div>

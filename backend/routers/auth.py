@@ -16,6 +16,7 @@ from auth.passwords import hash_password, verify_password
 from auth.dependencies import get_current_user
 from auth.constants import TokenType
 from models.user import User, GDPRConsent
+from models.tenant import Tenant
 from schemas.auth import LoginRequest, RegisterRequest, TokenResponse, RefreshRequest, GDPRConsentUpdate, PasswordChangeRequest
 from schemas.user import UserRead, UserUpdate
 from schemas.common import ApiResponse
@@ -154,9 +155,21 @@ async def logout(
 
 
 @router.get("/me", response_model=ApiResponse[UserRead])
-async def get_me(user: User = Depends(get_current_user)):
-    """Get current authenticated user."""
-    return ApiResponse(success=True, data=UserRead.model_validate(user))
+async def get_me(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get current authenticated user, including tenant name."""
+    tenant_name = None
+    if user.tenant_id:
+        tenant = (await session.execute(
+            select(Tenant).where(Tenant.id == user.tenant_id)
+        )).scalar_one_or_none()
+        if tenant:
+            tenant_name = tenant.name
+
+    data = UserRead.model_validate(user).model_copy(update={"tenant_name": tenant_name})
+    return ApiResponse(success=True, data=data)
 
 
 @router.put("/me", response_model=ApiResponse[UserRead])

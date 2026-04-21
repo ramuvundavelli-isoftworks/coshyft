@@ -24,39 +24,39 @@ interface CommuteHeatmapProps {
 const modeConfig = {
   carpool: {
     label: 'Carpool',
-    color: 'bg-green-500',
+    color: 'bg-success',
     icon: Users,
-    textColor: 'text-green-900',
+    textColor: 'text-success',
   },
   drive: {
     label: 'Drive Alone',
-    color: 'bg-orange-400',
+    color: 'bg-warning',
     icon: Car,
-    textColor: 'text-orange-900',
+    textColor: 'text-warning',
   },
   bus: {
     label: 'Public Transit',
-    color: 'bg-blue-500',
+    color: 'bg-info',
     icon: Bus,
-    textColor: 'text-blue-900',
+    textColor: 'text-info',
   },
   bike: {
     label: 'Bike',
-    color: 'bg-teal-500',
+    color: 'bg-success',
     icon: Bike,
-    textColor: 'text-teal-900',
+    textColor: 'text-success',
   },
   walk: {
     label: 'Walk',
-    color: 'bg-purple-500',
+    color: 'bg-info',
     icon: Footprints,
-    textColor: 'text-purple-900',
+    textColor: 'text-foreground',
   },
   remote: {
     label: 'Work from Home',
-    color: 'bg-gray-400',
+    color: 'bg-muted-foreground',
     icon: Home,
-    textColor: 'text-gray-900',
+    textColor: 'text-foreground',
   },
 };
 
@@ -105,12 +105,12 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Monthly Commute Pattern</h2>
-          <p className="text-sm text-gray-600">{month} {year}</p>
+          <h2 className="text-lg font-semibold text-foreground">Monthly Commute Pattern</h2>
+          <p className="text-sm text-muted-foreground">{month} {year}</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-green-600">{totalCO2Saved.toFixed(1)} kg</p>
-          <p className="text-xs text-gray-600">CO₂ saved this month</p>
+          <p className="text-2xl font-bold text-success">{totalCO2Saved.toFixed(1)} kg</p>
+          <p className="text-xs text-muted-foreground">CO₂ saved this month</p>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-2 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-xs font-medium text-gray-500 text-center">
+            <div key={day} className="text-xs font-medium text-muted-foreground text-center">
               {day}
             </div>
           ))}
@@ -134,9 +134,9 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
                   return (
                     <div
                       key={dayIdx}
-                      className="aspect-square rounded border border-gray-200 bg-gray-50 flex items-center justify-center"
+                      className="aspect-square rounded border border-border bg-background-subtle flex items-center justify-center"
                     >
-                      {day && <span className="text-xs text-gray-400">{day.day}</span>}
+                      {day && <span className="text-xs text-muted-foreground">{day.day}</span>}
                     </div>
                   );
                 }
@@ -161,7 +161,7 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
                           <p>{config.label}</p>
                           {day.distance && <p>Distance: {day.distance} km</p>}
                           {day.co2Saved && day.co2Saved > 0 && (
-                            <p className="text-green-600 font-medium">
+                            <p className="text-success font-medium">
                               CO₂ saved: {day.co2Saved.toFixed(1)} kg
                             </p>
                           )}
@@ -178,7 +178,7 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
 
       {/* Legend */}
       <div className="border-t pt-4">
-        <p className="text-xs font-medium text-gray-700 mb-3">Commute Modes</p>
+        <p className="text-xs font-medium text-foreground mb-3">Commute Modes</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Object.entries(modeConfig).map(([key, config]) => {
             const Icon = config.icon;
@@ -189,8 +189,8 @@ export function CommuteHeatmap({ month, year, data }: CommuteHeatmapProps) {
                   <Icon className="h-4 w-4 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-gray-900 truncate">{config.label}</p>
-                  <p className="text-xs text-gray-600">{count} days</p>
+                  <p className="text-xs font-medium text-foreground truncate">{config.label}</p>
+                  <p className="text-xs text-muted-foreground">{count} days</p>
                 </div>
               </div>
             );

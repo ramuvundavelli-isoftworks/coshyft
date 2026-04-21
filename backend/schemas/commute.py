@@ -3,12 +3,12 @@ Commute Schemas
 """
 
 from typing import Optional, List
-from datetime import date, datetime
-from pydantic import BaseModel, Field
+from datetime import date as DateType, datetime
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class CommuteEntryCreate(BaseModel):
-    date: date
+    date: DateType
     transport_mode_id: str
     distance_km: float = Field(ge=0)
     duration_minutes: Optional[int] = Field(default=None, ge=0)
@@ -25,9 +25,11 @@ class CommuteEntryCreate(BaseModel):
 
 
 class CommuteEntryRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
     id: str
     user_id: str
-    date: date
+    date: DateType = Field(validation_alias='commute_date')
     transport_mode_id: str
     transport_mode_label: str
     distance_km: float
@@ -43,9 +45,6 @@ class CommuteEntryRead(BaseModel):
     verification_method: str
     notes: Optional[str] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class CommuteEntryUpdate(BaseModel):
@@ -88,8 +87,8 @@ class EmissionCalculationResponse(BaseModel):
 
 
 class CommuteHistoryFilter(BaseModel):
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: Optional[DateType] = None
+    end_date: Optional[DateType] = None
     transport_mode_id: Optional[str] = None
     min_distance: Optional[float] = None
     max_distance: Optional[float] = None

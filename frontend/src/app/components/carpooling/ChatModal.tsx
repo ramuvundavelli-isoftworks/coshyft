@@ -158,7 +158,7 @@ export default function ChatModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0">
         {/* Header */}
-        <DialogHeader className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+        <DialogHeader className="p-4 border-b bg-gradient-to-r from-info-subtle to-info-subtle">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
@@ -171,7 +171,7 @@ export default function ChatModal({
               </Avatar>
               <div>
                 <DialogTitle className="text-base">{thread.name}</DialogTitle>
-                <div className="flex items-center gap-2 text-xs text-gray-600">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   {thread.type === 'ride' && thread.metadata?.rideDate && (
                     <>
                       <Clock className="h-3 w-3" />
@@ -182,7 +182,7 @@ export default function ChatModal({
                   )}
                   {otherParticipants[0]?.isOnline && (
                     <>
-                      <span className="h-2 w-2 bg-green-500 rounded-full"></span>
+                      <span className="h-2 w-2 bg-success rounded-full"></span>
                       <span>Online</span>
                     </>
                   )}
@@ -213,9 +213,9 @@ export default function ChatModal({
             <div key={date}>
               {/* Date Separator */}
               <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-xs text-gray-500 font-medium px-2">{date}</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
+                <div className="flex-1 h-px bg-muted"></div>
+                <span className="text-xs text-muted-foreground font-medium px-2">{date}</span>
+                <div className="flex-1 h-px bg-muted"></div>
               </div>
 
               {/* Messages */}
@@ -226,7 +226,7 @@ export default function ChatModal({
                 if (isSystem) {
                   return (
                     <div key={message.id} className="flex justify-center my-2">
-                      <div className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
+                      <div className="bg-muted text-muted-foreground text-xs px-3 py-1 rounded-full">
                         {message.content}
                       </div>
                     </div>
@@ -251,7 +251,7 @@ export default function ChatModal({
 
                     <div className={`max-w-[70%] ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
                       {!isOwn && (
-                        <span className="text-xs text-gray-600 mb-1 px-1">
+                        <span className="text-xs text-muted-foreground mb-1 px-1">
                           {message.senderName}
                         </span>
                       )}
@@ -259,15 +259,15 @@ export default function ChatModal({
                       <div
                         className={`group relative px-4 py-2 rounded-2xl ${
                           isOwn
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
+                            ? 'bg-info text-white'
+                            : 'bg-muted text-foreground'
                         }`}
                       >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                         
                         {/* Reaction Button (on hover) */}
                         <div className="absolute -top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-white shadow-lg rounded-full p-1 flex gap-1 border">
+                          <div className="bg-card shadow-lg rounded-full p-1 flex gap-1 border">
                             {['👍', '❤️', '😊', '🎉'].map((emoji) => (
                               <button
                                 key={emoji}
@@ -291,7 +291,7 @@ export default function ChatModal({
                             ).map(([emoji, count]) => (
                               <span
                                 key={emoji}
-                                className="text-xs bg-white bg-opacity-90 px-1.5 py-0.5 rounded-full border"
+                                className="text-xs bg-card bg-opacity-90 px-1.5 py-0.5 rounded-full border"
                               >
                                 {emoji} {count}
                               </span>
@@ -301,18 +301,18 @@ export default function ChatModal({
                       </div>
 
                       <div className="flex items-center gap-1 mt-1 px-1">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {formatMessageTime(message.timestamp)}
                         </span>
                         {isOwn && message.isRead && (
-                          <CheckCheck className="h-3 w-3 text-blue-600" />
+                          <CheckCheck className="h-3 w-3 text-info" />
                         )}
                       </div>
                     </div>
 
                     {isOwn && (
                       <Avatar className="h-8 w-8 mt-1">
-                        <AvatarFallback className="text-xs bg-blue-600 text-white">
+                        <AvatarFallback className="text-xs bg-info text-white">
                           You
                         </AvatarFallback>
                       </Avatar>
@@ -334,11 +334,11 @@ export default function ChatModal({
                     .join('')}
                 </AvatarFallback>
               </Avatar>
-              <div className="bg-gray-100 px-4 py-2 rounded-2xl">
+              <div className="bg-muted px-4 py-2 rounded-2xl">
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </div>
@@ -368,7 +368,7 @@ export default function ChatModal({
         )}
 
         {/* Input Area */}
-        <div className="p-4 border-t bg-gray-50">
+        <div className="p-4 border-t bg-background-subtle">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm">
               <Paperclip className="h-4 w-4" />
@@ -389,7 +389,7 @@ export default function ChatModal({
             <Button
               onClick={handleSend}
               disabled={!inputValue.trim()}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-info hover:bg-info"
             >
               <Send className="h-4 w-4" />
             </Button>

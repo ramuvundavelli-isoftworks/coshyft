@@ -73,6 +73,16 @@ export const superadminApi = {
     return api.get(`/superadmin/tenants/${tenantId}/users`, { params });
   },
 
+  async createTenantUser(tenantId: string, data: {
+    email: string;
+    name: string;
+    password: string;
+    role?: string;
+    department?: string;
+  }): Promise<ApiResponse> {
+    return api.post(`/superadmin/tenants/${tenantId}/users`, data);
+  },
+
   // ── Cross-tenant Users ─────────────────────────────────────────────────
   async getAllUsers(params?: {
     skip?: number;

@@ -71,7 +71,7 @@ export function LeapCardConnection({ isOpen, onClose, onConnect }: LeapCardConne
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="h-6 w-6 text-[#00bc7d]" />
+            <CreditCard className="h-6 w-6 text-brand-500" />
             Leap Card Integration
           </DialogTitle>
           <DialogDescription>
@@ -83,12 +83,12 @@ export function LeapCardConnection({ isOpen, onClose, onConnect }: LeapCardConne
           {/* Step 1: Input Card Number */}
           {step === 'input' && (
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Shield className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Shield className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-blue-900">Secure Connection</p>
-                    <p className="text-xs text-blue-700 mt-1">
+                    <p className="text-sm font-medium text-info">Secure Connection</p>
+                    <p className="text-xs text-info mt-1">
                       Your Leap Card data is encrypted and only used for emissions tracking. We never
                       access your payment information.
                     </p>
@@ -112,28 +112,28 @@ export function LeapCardConnection({ isOpen, onClose, onConnect }: LeapCardConne
                   maxLength={19}
                   className="font-mono"
                 />
-                <p className="text-xs text-[#6a7282] mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Enter the 16-digit number on your Leap Card
                 </p>
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium text-[#101828]">What we'll track:</p>
+                <p className="text-sm font-medium text-foreground">What we'll track:</p>
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Journey start and end points</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Transport mode (Dublin Bus, DART, Luas)</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Journey dates and times</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Distance traveled (for emissions calculation)</span>
                   </div>
                 </div>
@@ -144,10 +144,10 @@ export function LeapCardConnection({ isOpen, onClose, onConnect }: LeapCardConne
           {/* Step 2: Verification */}
           {step === 'verify' && (
             <div className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-green-900">Verification code sent</p>
-                <p className="text-xs text-green-700 mt-1">
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg text-center">
+                <CheckCircle className="h-12 w-12 text-success mx-auto mb-2" />
+                <p className="text-sm font-medium text-success">Verification code sent</p>
+                <p className="text-xs text-success mt-1">
                   Check your registered mobile number for a 6-digit code
                 </p>
               </div>
@@ -186,40 +186,40 @@ export function LeapCardConnection({ isOpen, onClose, onConnect }: LeapCardConne
           {/* Step 3: Connected */}
           {step === 'connected' && (
             <div className="space-y-4">
-              <div className="p-6 bg-green-50 border border-green-200 rounded-lg text-center">
-                <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-3" />
-                <p className="text-lg font-semibold text-green-900">Connected Successfully!</p>
-                <p className="text-sm text-green-700 mt-2">
+              <div className="p-6 bg-success-subtle border border-success/25 rounded-lg text-center">
+                <CheckCircle className="h-16 w-16 text-success mx-auto mb-3" />
+                <p className="text-lg font-semibold text-success">Connected Successfully!</p>
+                <p className="text-sm text-success mt-2">
                   Your Leap Card is now linked to your enwayu account
                 </p>
               </div>
 
-              <Card className="p-4 border border-gray-200">
+              <Card className="p-4 border border-border">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5 text-[#4a5565]" />
-                    <span className="text-sm font-medium text-[#101828]">Connected Card</span>
+                    <CreditCard className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">Connected Card</span>
                   </div>
-                  <Badge className="bg-green-100 text-green-700 border-green-200">Active</Badge>
+                  <Badge className="bg-success-subtle text-success border-success/25">Active</Badge>
                 </div>
-                <p className="text-sm text-[#6a7282] font-mono">
+                <p className="text-sm text-muted-foreground font-mono">
                   •••• •••• •••• {cardNumber.slice(-4)}
                 </p>
               </Card>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium text-[#101828]">Next steps:</p>
+                <p className="text-sm font-medium text-foreground">Next steps:</p>
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Journeys will sync automatically every 24 hours</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>Emissions calculated automatically from your trips</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[#4a5565]">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-success" />
                     <span>No manual journey logging required</span>
                   </div>
                 </div>
@@ -264,35 +264,35 @@ interface LeapCardStatusProps {
 
 export function LeapCardStatus({ isConnected, lastSync, journeyCount = 0, onConnect }: LeapCardStatusProps) {
   return (
-    <Card className="p-4 border border-gray-200">
+    <Card className="p-4 border border-border">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`p-3 rounded-lg ${isConnected ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <CreditCard className={`h-6 w-6 ${isConnected ? 'text-green-600' : 'text-gray-400'}`} />
+          <div className={`p-3 rounded-lg ${isConnected ? 'bg-success-subtle' : 'bg-muted'}`}>
+            <CreditCard className={`h-6 w-6 ${isConnected ? 'text-success' : 'text-muted-foreground'}`} />
           </div>
           <div>
-            <p className="font-semibold text-[#101828]">Leap Card Integration</p>
+            <p className="font-semibold text-foreground">Leap Card Integration</p>
             {isConnected ? (
               <div className="flex items-center gap-2 mt-1">
-                <Badge className="bg-green-100 text-green-700 border-green-200">
+                <Badge className="bg-success-subtle text-success border-success/25">
                   <CheckCircle className="h-3 w-3 mr-1" />
                   Connected
                 </Badge>
                 {lastSync && (
-                  <span className="text-xs text-[#6a7282]">
+                  <span className="text-xs text-muted-foreground">
                     Last sync: {lastSync.toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-[#6a7282] mt-1">Automatically track your public transport journeys</p>
+              <p className="text-sm text-muted-foreground mt-1">Automatically track your public transport journeys</p>
             )}
           </div>
         </div>
         {isConnected ? (
           <div className="text-right">
-            <p className="text-2xl font-semibold text-[#101828]">{journeyCount}</p>
-            <p className="text-xs text-[#6a7282]">Journeys synced</p>
+            <p className="text-2xl font-semibold text-foreground">{journeyCount}</p>
+            <p className="text-xs text-muted-foreground">Journeys synced</p>
           </div>
         ) : (
           <Button onClick={onConnect}>

@@ -32,12 +32,20 @@ const roleDefaultRoutes: Record<Role, string> = {
 };
 
 export function RoleGuard({ allowedRoles }: RoleGuardProps) {
-  const { currentUser } = useRole();
+  const { currentUser, isRoleLoading } = useRole();
   const userRole = currentUser.role;
 
+  // Wait for /auth/me to resolve before checking role — prevents stale-state redirects
+  if (isRoleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-8 w-8 border-4 border-success border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!allowedRoles.includes(userRole)) {
-    // Redirect to a friendly unauthorized page
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to={roleDefaultRoutes[userRole] || '/unauthorized'} replace />;
   }
 
   return <Outlet />;

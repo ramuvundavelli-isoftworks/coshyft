@@ -59,9 +59,9 @@ export default function RiskManagement() {
   const totalExposure = risks.filter(r => r.status !== 'closed').reduce((sum, r) => sum + r.financialExposure, 0);
 
   const riskColors = {
-    low: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700' },
-    medium: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-700' },
-    high: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' },
+    low: { bg: 'bg-success-subtle', border: 'border-success/25', text: 'text-success' },
+    medium: { bg: 'bg-warning-subtle', border: 'border-warning/25', text: 'text-warning' },
+    high: { bg: 'bg-destructive-subtle', border: 'border-destructive/25', text: 'text-destructive' },
   };
 
   const getRiskLevel = (likelihood: string, impact: string) => {
@@ -193,13 +193,13 @@ export default function RiskManagement() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Risk Management</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Risk Management</h1>
+          <p className="text-muted-foreground mt-1">
             Identify, assess, and mitigate compliance risks
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border rounded-lg p-1">
+          <div className="flex items-center gap-2 bg-card border rounded-lg p-1">
             <Button
               variant={view === 'table' ? 'default' : 'ghost'}
               size="sm"
@@ -226,45 +226,45 @@ export default function RiskManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Open Risks</p>
-              <p className="text-2xl font-bold text-gray-900">{openRisks}</p>
+              <p className="text-sm text-muted-foreground">Open Risks</p>
+              <p className="text-2xl font-bold text-foreground">{openRisks}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">High Impact</p>
-              <p className="text-2xl font-bold text-gray-900">{highImpactRisks}</p>
+              <p className="text-sm text-muted-foreground">High Impact</p>
+              <p className="text-2xl font-bold text-foreground">{highImpactRisks}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <DollarSign className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <DollarSign className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Financial Exposure</p>
-              <p className="text-2xl font-bold text-gray-900">${(totalExposure / 1000).toFixed(0)}K</p>
+              <p className="text-sm text-muted-foreground">Financial Exposure</p>
+              <p className="text-2xl font-bold text-foreground">${(totalExposure / 1000).toFixed(0)}K</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingUp className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Mitigated</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Mitigated</p>
+              <p className="text-2xl font-bold text-foreground">
                 {risks.filter(r => r.status === 'closed').length}
               </p>
             </div>
@@ -276,7 +276,7 @@ export default function RiskManagement() {
       {view === 'table' && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Risk Register</h2>
+            <h2 className="text-lg font-semibold text-foreground">Risk Register</h2>
             <Select defaultValue="all">
               <SelectTrigger className="w-40">
                 <SelectValue />
@@ -308,10 +308,10 @@ export default function RiskManagement() {
                 const colors = riskColors[riskLevel];
                 
                 return (
-                  <TableRow key={risk.id} className="hover:bg-gray-50">
+                  <TableRow key={risk.id} className="hover:bg-background-subtle">
                     <TableCell className="font-medium max-w-xs">
                       <div className="flex items-start gap-2">
-                        <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
                         <span>{risk.title}</span>
                       </div>
                     </TableCell>
@@ -336,11 +336,11 @@ export default function RiskManagement() {
                     <TableCell className="text-right font-medium">
                       ${risk.financialExposure.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">{risk.owner}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{risk.owner}</TableCell>
                     <TableCell>
                       <Badge
                         variant={risk.status === 'closed' ? 'outline' : 'default'}
-                        className={risk.status === 'closed' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                        className={risk.status === 'closed' ? 'bg-success-subtle text-success border-success/25' : ''}
                       >
                         {risk.status}
                       </Badge>
@@ -394,59 +394,59 @@ export default function RiskManagement() {
       {/* Heatmap View */}
       {view === 'heatmap' && (
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Risk Heatmap</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Risk Heatmap</h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-4 gap-4 text-center text-sm font-medium text-gray-700">
+            <div className="grid grid-cols-4 gap-4 text-center text-sm font-medium text-foreground">
               <div></div>
               <div>Low Impact</div>
               <div>Medium Impact</div>
               <div>High Impact</div>
             </div>
             <div className="grid grid-cols-4 gap-4">
-              <div className="flex items-center justify-end pr-4 text-sm font-medium text-gray-700">
+              <div className="flex items-center justify-end pr-4 text-sm font-medium text-foreground">
                 High Likelihood
               </div>
-              <div className="aspect-square border-2 border-yellow-300 bg-yellow-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-yellow-700">0</span>
+              <div className="aspect-square border-2 border-warning/40 bg-warning-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-warning">0</span>
               </div>
-              <div className="aspect-square border-2 border-red-300 bg-red-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-red-700">1</span>
+              <div className="aspect-square border-2 border-destructive/40 bg-destructive-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-destructive">1</span>
               </div>
-              <div className="aspect-square border-2 border-red-400 bg-red-200 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-red-800">1</span>
+              <div className="aspect-square border-2 border-destructive/50 bg-destructive-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-destructive">1</span>
               </div>
             </div>
             <div className="grid grid-cols-4 gap-4">
-              <div className="flex items-center justify-end pr-4 text-sm font-medium text-gray-700">
+              <div className="flex items-center justify-end pr-4 text-sm font-medium text-foreground">
                 Medium Likelihood
               </div>
-              <div className="aspect-square border-2 border-green-300 bg-green-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-green-700">0</span>
+              <div className="aspect-square border-2 border-success/40 bg-success-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-success">0</span>
               </div>
-              <div className="aspect-square border-2 border-yellow-300 bg-yellow-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-yellow-700">0</span>
+              <div className="aspect-square border-2 border-warning/40 bg-warning-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-warning">0</span>
               </div>
-              <div className="aspect-square border-2 border-red-300 bg-red-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-red-700">0</span>
+              <div className="aspect-square border-2 border-destructive/40 bg-destructive-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-destructive">0</span>
               </div>
             </div>
             <div className="grid grid-cols-4 gap-4">
-              <div className="flex items-center justify-end pr-4 text-sm font-medium text-gray-700">
+              <div className="flex items-center justify-end pr-4 text-sm font-medium text-foreground">
                 Low Likelihood
               </div>
-              <div className="aspect-square border-2 border-green-300 bg-green-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-green-700">0</span>
+              <div className="aspect-square border-2 border-success/40 bg-success-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-success">0</span>
               </div>
-              <div className="aspect-square border-2 border-green-200 bg-green-50 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-green-600">1</span>
+              <div className="aspect-square border-2 border-success/25 bg-success-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-success">1</span>
               </div>
-              <div className="aspect-square border-2 border-yellow-300 bg-yellow-100 rounded-lg p-4 flex items-center justify-center">
-                <span className="text-2xl font-bold text-yellow-700">0</span>
+              <div className="aspect-square border-2 border-warning/40 bg-warning-subtle rounded-lg p-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-warning">0</span>
               </div>
             </div>
           </div>
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-700">
+          <div className="mt-6 p-4 bg-background-subtle rounded-lg">
+            <p className="text-sm text-foreground">
               <strong>Note:</strong> Risk level = Likelihood × Impact. High-risk items require immediate mitigation planning.
             </p>
           </div>
@@ -455,15 +455,15 @@ export default function RiskManagement() {
 
       {/* Mitigation Actions */}
       {risks.filter(r => r.status === 'open' && getRiskLevel(r.likelihood, r.impact) === 'high').length > 0 && (
-        <Card className="p-6 bg-blue-50 border-blue-200">
-          <h3 className="font-semibold text-blue-900 mb-4">Recommended Mitigation Actions</h3>
+        <Card className="p-6 bg-info-subtle border-info/25">
+          <h3 className="font-semibold text-info mb-4">Recommended Mitigation Actions</h3>
           <div className="space-y-3">
             {risks.filter(r => r.status === 'open' && getRiskLevel(r.likelihood, r.impact) === 'high').map((risk) => (
-              <div key={risk.id} className="p-4 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+              <div key={risk.id} className="p-4 bg-card backdrop-blur-md rounded-[14px] border border-border-subtle/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{risk.title}</p>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="font-medium text-foreground">{risk.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
                       Owner: {risk.owner} • Exposure: ${risk.financialExposure.toLocaleString()}
                     </p>
                   </div>
@@ -709,9 +709,9 @@ export default function RiskManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 rounded-lg mb-4">
-              <p className="font-medium text-gray-900">{selectedRisk?.title}</p>
-              <p className="text-sm text-gray-600 mt-1">
+            <div className="p-4 bg-background-subtle rounded-lg mb-4">
+              <p className="font-medium text-foreground">{selectedRisk?.title}</p>
+              <p className="text-sm text-muted-foreground mt-1">
                 Owner: {selectedRisk?.owner} • Exposure: ${selectedRisk?.financialExposure.toLocaleString()}
               </p>
             </div>
@@ -750,15 +750,15 @@ export default function RiskManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <p className="font-medium text-blue-900">{selectedRisk?.title}</p>
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg mb-4">
+              <p className="font-medium text-info">{selectedRisk?.title}</p>
               <div className="flex items-center gap-4 mt-2 text-sm">
-                <span className="text-blue-700">
+                <span className="text-info">
                   Risk Level: <Badge variant="outline" className={riskColors[getRiskLevel(selectedRisk?.likelihood || 'medium', selectedRisk?.impact || 'medium')].bg}>
                     {getRiskLevel(selectedRisk?.likelihood || 'medium', selectedRisk?.impact || 'medium')}
                   </Badge>
                 </span>
-                <span className="text-blue-700">
+                <span className="text-info">
                   Exposure: ${selectedRisk?.financialExposure.toLocaleString()}
                 </span>
               </div>

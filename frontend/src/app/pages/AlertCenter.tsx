@@ -82,24 +82,24 @@ export default function AlertCenter() {
 
   const AlertCard = ({ alert }: { alert: Alert }) => {
     const icons = {
-      critical: <AlertTriangle className="h-5 w-5 text-red-600" />,
-      warning: <AlertCircle className="h-5 w-5 text-yellow-600" />,
-      info: <Info className="h-5 w-5 text-blue-600" />,
+      critical: <AlertTriangle className="h-5 w-5 text-destructive" />,
+      warning: <AlertCircle className="h-5 w-5 text-warning" />,
+      info: <Info className="h-5 w-5 text-info" />,
     };
 
     const bgColors = {
-      critical: 'bg-red-50 border-red-200',
-      warning: 'bg-yellow-50 border-yellow-200',
-      info: 'bg-blue-50 border-blue-200',
+      critical: 'bg-destructive-subtle border-destructive/25',
+      warning: 'bg-warning-subtle border-warning/25',
+      info: 'bg-info-subtle border-info/25',
     };
 
     return (
       <Card className={`p-6 ${bgColors[alert.severity]}`}>
         <div className="flex items-start gap-4">
           <div className={`p-3 rounded-lg ${
-            alert.severity === 'critical' ? 'bg-red-100' :
-            alert.severity === 'warning' ? 'bg-yellow-100' :
-            'bg-blue-100'
+            alert.severity === 'critical' ? 'bg-destructive-subtle' :
+            alert.severity === 'warning' ? 'bg-warning-subtle' :
+            'bg-info-subtle'
           }`}>
             {icons[alert.severity]}
           </div>
@@ -107,20 +107,20 @@ export default function AlertCenter() {
             <div className="flex items-start justify-between mb-2">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900">{alert.title}</h3>
+                  <h3 className="font-semibold text-foreground">{alert.title}</h3>
                   <Badge className={
-                    alert.severity === 'critical' ? 'bg-red-100 text-red-700' :
-                    alert.severity === 'warning' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-blue-100 text-blue-700'
+                    alert.severity === 'critical' ? 'bg-destructive-subtle text-destructive' :
+                    alert.severity === 'warning' ? 'bg-warning-subtle text-warning' :
+                    'bg-info-subtle text-info'
                   }>
                     {alert.severity}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-700">{alert.description}</p>
+                <p className="text-sm text-foreground">{alert.description}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 mt-4">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 {alert.timestamp.toLocaleString()}
               </span>
               {alert.linkedEntity && (
@@ -154,7 +154,7 @@ export default function AlertCenter() {
               </div>
             )}
             {alert.resolved && (
-              <div className="flex items-center gap-2 mt-4 text-sm text-green-600">
+              <div className="flex items-center gap-2 mt-4 text-sm text-success">
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Resolved</span>
               </div>
@@ -169,8 +169,8 @@ export default function AlertCenter() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Alert Center</h1>
-          <p className="text-gray-600 mt-1">Centralized system alerts and notifications</p>
+          <h1 className="text-3xl font-bold text-foreground">Alert Center</h1>
+          <p className="text-muted-foreground mt-1">Centralized system alerts and notifications</p>
         </div>
         <Button onClick={() => setIsExportDialogOpen(true)}>
           <Download className="h-4 w-4 mr-2" />
@@ -182,45 +182,45 @@ export default function AlertCenter() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-50 rounded-lg">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Critical</p>
-              <p className="text-2xl font-bold text-red-600">{criticalAlerts.length}</p>
+              <p className="text-sm text-muted-foreground">Critical</p>
+              <p className="text-2xl font-bold text-destructive">{criticalAlerts.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-50 rounded-lg">
-              <AlertCircle className="h-6 w-6 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertCircle className="h-6 w-6 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Warning</p>
-              <p className="text-2xl font-bold text-yellow-600">{warningAlerts.length}</p>
+              <p className="text-sm text-muted-foreground">Warning</p>
+              <p className="text-2xl font-bold text-warning">{warningAlerts.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Info className="h-6 w-6 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Info className="h-6 w-6 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Info</p>
-              <p className="text-2xl font-bold text-blue-600">{infoAlerts.length}</p>
+              <p className="text-sm text-muted-foreground">Info</p>
+              <p className="text-2xl font-bold text-info">{infoAlerts.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-50 rounded-lg">
-              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle2 className="h-6 w-6 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Resolved</p>
-              <p className="text-2xl font-bold text-green-600">{resolvedAlerts.length}</p>
+              <p className="text-sm text-muted-foreground">Resolved</p>
+              <p className="text-2xl font-bold text-success">{resolvedAlerts.length}</p>
             </div>
           </div>
         </Card>
@@ -246,8 +246,8 @@ export default function AlertCenter() {
         <TabsContent value="critical" className="space-y-3 mt-4">
           {criticalAlerts.length === 0 ? (
             <Card className="p-8 text-center">
-              <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-3" />
-              <p className="text-gray-600">No critical alerts</p>
+              <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
+              <p className="text-muted-foreground">No critical alerts</p>
             </Card>
           ) : (
             criticalAlerts.map(alert => <AlertCard key={alert.id} alert={alert} />)
@@ -257,8 +257,8 @@ export default function AlertCenter() {
         <TabsContent value="warning" className="space-y-3 mt-4">
           {warningAlerts.length === 0 ? (
             <Card className="p-8 text-center">
-              <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-3" />
-              <p className="text-gray-600">No warning alerts</p>
+              <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
+              <p className="text-muted-foreground">No warning alerts</p>
             </Card>
           ) : (
             warningAlerts.map(alert => <AlertCard key={alert.id} alert={alert} />)
@@ -268,8 +268,8 @@ export default function AlertCenter() {
         <TabsContent value="info" className="space-y-3 mt-4">
           {infoAlerts.length === 0 ? (
             <Card className="p-8 text-center">
-              <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-3" />
-              <p className="text-gray-600">No info alerts</p>
+              <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
+              <p className="text-muted-foreground">No info alerts</p>
             </Card>
           ) : (
             infoAlerts.map(alert => <AlertCard key={alert.id} alert={alert} />)
@@ -279,8 +279,8 @@ export default function AlertCenter() {
         <TabsContent value="resolved" className="space-y-3 mt-4">
           {resolvedAlerts.length === 0 ? (
             <Card className="p-8 text-center">
-              <Info className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600">No resolved alerts</p>
+              <Info className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">No resolved alerts</p>
             </Card>
           ) : (
             resolvedAlerts.map(alert => <AlertCard key={alert.id} alert={alert} />)
@@ -298,24 +298,24 @@ export default function AlertCenter() {
           {selectedAlert && (
             <div className="py-4 space-y-3">
               <div>
-                <Label className="text-sm text-gray-600">Severity</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedAlert.severity}</p>
+                <Label className="text-sm text-muted-foreground">Severity</Label>
+                <p className="font-medium text-foreground mt-1">{selectedAlert.severity}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Description</Label>
-                <p className="text-gray-900 mt-1">{selectedAlert.description}</p>
+                <Label className="text-sm text-muted-foreground">Description</Label>
+                <p className="text-foreground mt-1">{selectedAlert.description}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Category</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedAlert.category}</p>
+                <Label className="text-sm text-muted-foreground">Category</Label>
+                <p className="font-medium text-foreground mt-1">{selectedAlert.category}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Source</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedAlert.source}</p>
+                <Label className="text-sm text-muted-foreground">Source</Label>
+                <p className="font-medium text-foreground mt-1">{selectedAlert.source}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Timestamp</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedAlert.timestamp.toLocaleString()}</p>
+                <Label className="text-sm text-muted-foreground">Timestamp</Label>
+                <p className="font-medium text-foreground mt-1">{selectedAlert.timestamp.toLocaleString()}</p>
               </div>
             </div>
           )}

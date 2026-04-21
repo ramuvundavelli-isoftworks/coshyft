@@ -121,10 +121,10 @@ export default function AuditorOverview() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Title */}
         <div>
-          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Geist',sans-serif] font-bold text-[32px] leading-[40px] text-foreground tracking-[0.0703px] mb-2">
             Auditor Dashboard
           </h1>
-          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[24px] text-muted-foreground tracking-[-0.3125px]">
             Independent verification and audit oversight
           </p>
         </div>
@@ -134,17 +134,17 @@ export default function AuditorOverview() {
           <Button
             variant="outline"
             onClick={() => console.log('Schedule review')}
-            className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
+            className="h-9 bg-card border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle shadow-sm hover:shadow-md"
           >
             <Calendar className="h-4 w-4 mr-2" />
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-foreground tracking-[-0.1504px]">
               Schedule Review
             </span>
           </Button>
 
           <Button
             onClick={() => console.log('Export summary')}
-            className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
+            className="h-9 bg-brand-500 hover:bg-brand-500 text-white shadow-md hover:shadow-lg"
           >
             <Download className="h-4 w-4 mr-2" />
             <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
@@ -158,45 +158,45 @@ export default function AuditorOverview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Verified Items</p>
-              <p className="text-2xl font-bold text-gray-900">72</p>
+              <p className="text-sm text-muted-foreground">Verified Items</p>
+              <p className="text-2xl font-bold text-foreground">72</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Clock className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">In Review</p>
-              <p className="text-2xl font-bold text-gray-900">18</p>
+              <p className="text-sm text-muted-foreground">In Review</p>
+              <p className="text-2xl font-bold text-foreground">18</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Findings</p>
-              <p className="text-2xl font-bold text-gray-900">14</p>
+              <p className="text-sm text-muted-foreground">Total Findings</p>
+              <p className="text-2xl font-bold text-foreground">14</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Shield className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Assurance Level</p>
-              <p className="text-2xl font-bold text-green-600">High</p>
+              <p className="text-sm text-muted-foreground">Assurance Level</p>
+              <p className="text-2xl font-bold text-success">High</p>
             </div>
           </div>
         </Card>
@@ -205,7 +205,7 @@ export default function AuditorOverview() {
       {/* Audit Status & Findings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Audit Status Distribution</h3>
+          <h3 className="font-semibold text-foreground mb-4">Audit Status Distribution</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Doughnut
               data={{
@@ -224,7 +224,7 @@ export default function AuditorOverview() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Findings by Category</h3>
+          <h3 className="font-semibold text-foreground mb-4">Findings by Category</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Bar
               data={{
@@ -247,7 +247,7 @@ export default function AuditorOverview() {
       {/* Audit Items */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Audit Areas</h3>
+          <h3 className="font-semibold text-foreground">Audit Areas</h3>
           <Button variant="outline" size="sm" onClick={() => setIsAddFindingDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-1" />
             Add Finding
@@ -259,14 +259,14 @@ export default function AuditorOverview() {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-medium text-gray-900">{item.area}</h4>
+                    <h4 className="font-medium text-foreground">{item.area}</h4>
                     <Badge
                       className={
                         item.status === 'completed'
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-success-subtle text-success'
                           : item.status === 'in-progress'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-info-subtle text-info'
+                          : 'bg-muted text-foreground'
                       }
                     >
                       {item.status}
@@ -274,16 +274,16 @@ export default function AuditorOverview() {
                     <Badge
                       className={
                         item.priority === 'high'
-                          ? 'bg-red-100 text-red-700'
+                          ? 'bg-destructive-subtle text-destructive'
                           : item.priority === 'medium'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-warning-subtle text-warning'
+                          : 'bg-muted text-foreground'
                       }
                     >
                       {item.priority} priority
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-600">Findings: {item.findings}</p>
+                  <p className="text-sm text-muted-foreground">Findings: {item.findings}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -313,16 +313,16 @@ export default function AuditorOverview() {
             <div className="py-4">
               <div className="space-y-3">
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.status}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Priority</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.priority}</p>
+                  <Label className="text-sm text-muted-foreground">Priority</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.priority}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Findings</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.findings} issue(s) identified</p>
+                  <Label className="text-sm text-muted-foreground">Findings</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.findings} issue(s) identified</p>
                 </div>
               </div>
             </div>

@@ -397,11 +397,11 @@ export function checkAchievements(
  */
 export function getTierColor(tier: UserTier): string {
   const colors = {
-    bronze: 'bg-orange-100 text-orange-700 border-orange-300',
-    silver: 'bg-gray-100 text-gray-700 border-gray-300',
-    gold: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-    platinum: 'bg-blue-100 text-blue-700 border-blue-300',
-    diamond: 'bg-purple-100 text-purple-700 border-purple-300',
+    bronze: 'bg-warning-subtle text-warning border-warning/40',
+    silver: 'bg-muted text-foreground border-border',
+    gold: 'bg-warning-subtle text-warning border-warning/40',
+    platinum: 'bg-info-subtle text-info border-info/40',
+    diamond: 'bg-info-subtle text-info border-info/40',
   };
   return colors[tier];
 }
@@ -425,10 +425,10 @@ export function getTierIcon(tier: UserTier): string {
  */
 export function getRarityColor(rarity: Achievement['rarity']): string {
   const colors = {
-    common: 'bg-gray-100 text-gray-700',
-    rare: 'bg-blue-100 text-blue-700',
-    epic: 'bg-purple-100 text-purple-700',
-    legendary: 'bg-yellow-100 text-yellow-700',
+    common: 'bg-muted text-foreground',
+    rare: 'bg-info-subtle text-info',
+    epic: 'bg-info-subtle text-info',
+    legendary: 'bg-warning-subtle text-warning',
   };
   return colors[rarity];
 }

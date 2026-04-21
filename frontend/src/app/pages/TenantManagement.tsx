@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
+import { Switch } from '../components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from '../components/ui/table';
-import { Building2, Plus, Eye, Settings, UserCheck, Ban, CheckCircle, Trash2 } from 'lucide-react';
+import { Building2, Plus, Eye, Settings, UserCheck, Ban, Trash2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useApi, useApiMutation } from '../api';
 import { superadminApi } from '../api';
@@ -36,19 +37,22 @@ export default function TenantManagement() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
-  const [isActivateDialogOpen, setIsActivateDialogOpen] = useState(false);
+  const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
+  const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
   const [addForm, setAddForm] = useState({ name: '', slug: '', contact_name: '', contact_email: '', plan: 'starter' });
   const [editForm, setEditForm] = useState<Record<string, any>>({});
+  const [adminForm, setAdminForm] = useState({ name: '', email: '', password: '', role: 'admin', department: '' });
 
   const { data: tenantsData, loading, refetch } = useApi(() => superadminApi.getTenants());
 
-  const createMutation   = useApiMutation((data: any) => superadminApi.createTenant(data));
-  const updateMutation   = useApiMutation(({ id, data }: any) => superadminApi.updateTenant(id, data));
-  const suspendMutation  = useApiMutation((id: string) => superadminApi.suspendTenant(id));
-  const activateMutation = useApiMutation((id: string) => superadminApi.activateTenant(id));
-  const deleteMutation   = useApiMutation((id: string) => superadminApi.deleteTenant(id));
+  const createMutation      = useApiMutation((data: any) => superadminApi.createTenant(data));
+  const createAdminMutation = useApiMutation(({ tenantId, data }: any) => superadminApi.createTenantUser(tenantId, data));
+  const updateMutation      = useApiMutation(({ id, data }: any) => superadminApi.updateTenant(id, data));
+  const suspendMutation     = useApiMutation((id: string) => superadminApi.suspendTenant(id));
+  const activateMutation    = useApiMutation((id: string) => superadminApi.activateTenant(id));
+  const deleteMutation      = useApiMutation((id: string) => superadminApi.deleteTenant(id));
 
   const tenants: any[] = Array.isArray(tenantsData) ? tenantsData : [];
 
@@ -80,34 +84,63 @@ export default function TenantManagement() {
     }
   };
 
-  const handleSuspend = async () => {
+  const handleToggleStatus = (tenant: any) => {
+    setSelectedTenant(tenant);
+    setIsToggleConfirmOpen(true);
+  };
+
+  const confirmToggleStatus = async () => {
     if (!selectedTenant) return;
-    const result = await suspendMutation.execute(selectedTenant.id);
+    const isActive = selectedTenant.status === 'active' || selectedTenant.status === 'trial';
+    const result = isActive
+      ? await suspendMutation.execute(selectedTenant.id)
+      : await activateMutation.execute(selectedTenant.id);
     if (result.success) {
-      toast.success(`${selectedTenant.name} suspended`);
-      setIsSuspendDialogOpen(false);
+      toast.success(`${selectedTenant.name} ${isActive ? 'suspended' : 'activated'}`);
+      setIsToggleConfirmOpen(false);
       refetch();
     } else {
-      toast.error(result.error?.message || 'Failed to suspend tenant');
+      toast.error(result.error?.message || 'Failed to update status');
     }
   };
 
-  const handleActivate = async () => {
+  const handleAddAdmin = async () => {
     if (!selectedTenant) return;
-    const result = await activateMutation.execute(selectedTenant.id);
+    if (!adminForm.name || !adminForm.email || !adminForm.password) {
+      toast.error('Name, email, and password are required');
+      return;
+    }
+    const result = await createAdminMutation.execute({
+      tenantId: selectedTenant.id,
+      data: {
+        name: adminForm.name,
+        email: adminForm.email,
+        password: adminForm.password,
+        role: adminForm.role,
+        department: adminForm.department || undefined,
+      },
+    });
     if (result.success) {
-      toast.success(`${selectedTenant.name} activated`);
-      setIsActivateDialogOpen(false);
+      toast.success(`Admin user created for ${selectedTenant.name}`);
+      setIsAddAdminDialogOpen(false);
+      setAdminForm({ name: '', email: '', password: '', role: 'admin', department: '' });
       refetch();
     } else {
-      toast.error(result.error?.message || 'Failed to activate tenant');
+      toast.error(result.error?.message || 'Failed to create admin user');
     }
   };
 
-  const handleDelete = async (tenant: any) => {
-    const result = await deleteMutation.execute(tenant.id);
+  const handleDelete = (tenant: any) => {
+    setSelectedTenant(tenant);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedTenant) return;
+    const result = await deleteMutation.execute(selectedTenant.id);
     if (result.success) {
-      toast.success(`${tenant.name} deactivated`);
+      toast.success(`${selectedTenant.name} deactivated`);
+      setIsDeleteConfirmOpen(false);
       refetch();
     } else {
       toast.error(result.error?.message || 'Failed to deactivate tenant');
@@ -124,8 +157,8 @@ export default function TenantManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tenant Management</h1>
-          <p className="text-gray-600 mt-1">Manage multi-tenant organisations</p>
+          <h1 className="text-3xl font-bold text-foreground">Tenant Management</h1>
+          <p className="text-muted-foreground mt-1">Manage multi-tenant organisations</p>
         </div>
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -137,37 +170,37 @@ export default function TenantManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg"><Building2 className="h-5 w-5 text-blue-600" /></div>
+            <div className="p-2 bg-info-subtle rounded-lg"><Building2 className="h-5 w-5 text-info" /></div>
             <div>
-              <p className="text-sm text-gray-600">Total Tenants</p>
-              <p className="text-2xl font-bold text-gray-900">{tenants.length}</p>
+              <p className="text-sm text-muted-foreground">Total Tenants</p>
+              <p className="text-2xl font-bold text-foreground">{tenants.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg"><UserCheck className="h-5 w-5 text-green-600" /></div>
+            <div className="p-2 bg-success-subtle rounded-lg"><UserCheck className="h-5 w-5 text-success" /></div>
             <div>
-              <p className="text-sm text-gray-600">Active</p>
-              <p className="text-2xl font-bold text-green-600">{statusCounts.active}</p>
+              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-2xl font-bold text-success">{statusCounts.active}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg"><Settings className="h-5 w-5 text-yellow-600" /></div>
+            <div className="p-2 bg-warning-subtle rounded-lg"><Settings className="h-5 w-5 text-warning" /></div>
             <div>
-              <p className="text-sm text-gray-600">Trial</p>
-              <p className="text-2xl font-bold text-yellow-600">{statusCounts.trial}</p>
+              <p className="text-sm text-muted-foreground">Trial</p>
+              <p className="text-2xl font-bold text-warning">{statusCounts.trial}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg"><Ban className="h-5 w-5 text-red-600" /></div>
+            <div className="p-2 bg-destructive-subtle rounded-lg"><Ban className="h-5 w-5 text-destructive" /></div>
             <div>
-              <p className="text-sm text-gray-600">Suspended</p>
-              <p className="text-2xl font-bold text-red-600">{statusCounts.suspended}</p>
+              <p className="text-sm text-muted-foreground">Suspended</p>
+              <p className="text-2xl font-bold text-destructive">{statusCounts.suspended}</p>
             </div>
           </div>
         </Card>
@@ -175,9 +208,9 @@ export default function TenantManagement() {
 
       {/* Tenants Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">All Tenants</h3>
+        <h3 className="font-semibold text-foreground mb-4">All Tenants</h3>
         {loading ? (
-          <p className="text-sm text-gray-500 py-4 text-center">Loading tenants...</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">Loading tenants...</p>
         ) : (
           <Table>
             <TableHeader>
@@ -185,6 +218,7 @@ export default function TenantManagement() {
                 <TableHead>Organisation</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Active</TableHead>
                 <TableHead>Users</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Region</TableHead>
@@ -196,25 +230,35 @@ export default function TenantManagement() {
               {tenants.map((tenant) => (
                 <TableRow key={tenant.id}>
                   <TableCell className="font-medium">{tenant.name}</TableCell>
-                  <TableCell className="text-sm text-gray-500">{tenant.slug}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{tenant.slug}</TableCell>
                   <TableCell>
                     <Badge className={
-                      tenant.status === 'active'      ? 'bg-green-100 text-green-700' :
-                      tenant.status === 'trial'       ? 'bg-blue-100 text-blue-700' :
-                      tenant.status === 'suspended'   ? 'bg-red-100 text-red-700' :
-                                                        'bg-gray-100 text-gray-700'
+                      tenant.status === 'active'      ? 'bg-success-subtle text-success' :
+                      tenant.status === 'trial'       ? 'bg-info-subtle text-info' :
+                      tenant.status === 'suspended'   ? 'bg-destructive-subtle text-destructive' :
+                                                        'bg-muted text-foreground'
                     }>
                       {tenant.status}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={tenant.status === 'active' || tenant.status === 'trial'}
+                      disabled={tenant.status === 'deactivated' || suspendMutation.loading || activateMutation.loading}
+                      onCheckedChange={() => handleToggleStatus(tenant)}
+                    />
+                  </TableCell>
                   <TableCell>{(tenant.user_count ?? 0).toLocaleString()}</TableCell>
-                  <TableCell><Badge className="bg-purple-100 text-purple-700">{tenant.plan}</Badge></TableCell>
+                  <TableCell><Badge className="bg-info-subtle text-info">{tenant.plan}</Badge></TableCell>
                   <TableCell>{tenant.primary_region}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{tenant.contact_email}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{tenant.contact_email}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedTenant(tenant); setIsViewDialogOpen(true); }}>
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" title="Add Admin User" onClick={() => { setSelectedTenant(tenant); setIsAddAdminDialogOpen(true); }}>
+                        <UserPlus className="h-4 w-4 text-info" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => {
                         setSelectedTenant(tenant);
@@ -223,19 +267,9 @@ export default function TenantManagement() {
                       }}>
                         <Settings className="h-4 w-4" />
                       </Button>
-                      {(tenant.status === 'active' || tenant.status === 'trial') && (
-                        <Button variant="ghost" size="sm" onClick={() => { setSelectedTenant(tenant); setIsSuspendDialogOpen(true); }}>
-                          <Ban className="h-4 w-4 text-orange-500" />
-                        </Button>
-                      )}
-                      {tenant.status === 'suspended' && (
-                        <Button variant="ghost" size="sm" onClick={() => { setSelectedTenant(tenant); setIsActivateDialogOpen(true); }}>
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        </Button>
-                      )}
                       {tenant.status !== 'deactivated' && (
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(tenant)}>
-                          <Trash2 className="h-4 w-4 text-red-500" />
+                          <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       )}
                     </div>
@@ -356,8 +390,8 @@ export default function TenantManagement() {
                   ['Billing Email', selectedTenant.billing_email ?? '—'],
                 ] as [string, any][]).map(([k, v]) => (
                   <div key={k}>
-                    <Label className="text-sm text-gray-600">{k}</Label>
-                    <p className="font-medium text-gray-900 mt-1">{v}</p>
+                    <Label className="text-sm text-muted-foreground">{k}</Label>
+                    <p className="font-medium text-foreground mt-1">{v}</p>
                   </div>
                 ))}
               </div>
@@ -369,53 +403,125 @@ export default function TenantManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* Suspend Dialog */}
-      <Dialog open={isSuspendDialogOpen} onOpenChange={setIsSuspendDialogOpen}>
+      {/* Add Admin Dialog */}
+      <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Suspend Tenant</DialogTitle>
-            <DialogDescription>Suspend {selectedTenant?.name}</DialogDescription>
+            <DialogTitle>Add Admin User</DialogTitle>
+            <DialogDescription>Create a corporate admin for {selectedTenant?.name}</DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-900">
-                This will suspend access for all users in this tenant. They cannot log in until reactivated.
-              </p>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Full Name *</Label>
+              <Input value={adminForm.name} onChange={e => setAdminForm({ ...adminForm, name: e.target.value })} placeholder="Jane Smith" />
+            </div>
+            <div>
+              <Label>Email *</Label>
+              <Input type="email" value={adminForm.email} onChange={e => setAdminForm({ ...adminForm, email: e.target.value })} placeholder="admin@company.com" />
+            </div>
+            <div>
+              <Label>Password *</Label>
+              <Input type="password" value={adminForm.password} onChange={e => setAdminForm({ ...adminForm, password: e.target.value })} placeholder="Min 8 characters" />
+            </div>
+            <div>
+              <Label>Role</Label>
+              <Select value={adminForm.role} onValueChange={val => setAdminForm({ ...adminForm, role: val })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="sustainability">Sustainability Manager</SelectItem>
+                  <SelectItem value="auditor">Auditor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Department</Label>
+              <Input value={adminForm.department} onChange={e => setAdminForm({ ...adminForm, department: e.target.value })} placeholder="Operations (optional)" />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSuspendDialogOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleSuspend} disabled={suspendMutation.loading}>
-              <Ban className="h-4 w-4 mr-2" />
-              {suspendMutation.loading ? 'Suspending...' : 'Suspend Tenant'}
+            <Button variant="outline" onClick={() => setIsAddAdminDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddAdmin} disabled={createAdminMutation.loading}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              {createAdminMutation.loading ? 'Creating...' : 'Create Admin'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Activate Dialog */}
-      <Dialog open={isActivateDialogOpen} onOpenChange={setIsActivateDialogOpen}>
+      {/* Toggle Status Confirmation */}
+      <Dialog open={isToggleConfirmOpen} onOpenChange={setIsToggleConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Activate Tenant</DialogTitle>
-            <DialogDescription>Reactivate {selectedTenant?.name}</DialogDescription>
+            <DialogTitle>
+              {selectedTenant?.status === 'active' || selectedTenant?.status === 'trial'
+                ? 'Suspend Tenant'
+                : 'Activate Tenant'}
+            </DialogTitle>
+            <DialogDescription>{selectedTenant?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-900">
-                This will restore full platform access for all users in this tenant.
-              </p>
-            </div>
+            {(selectedTenant?.status === 'active' || selectedTenant?.status === 'trial') ? (
+              <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
+                <p className="text-sm text-warning">
+                  Suspending this tenant will block all users from logging in until reactivated.
+                  Are you sure you want to suspend <strong>{selectedTenant?.name}</strong>?
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+                <p className="text-sm text-success">
+                  This will restore full platform access for all users in <strong>{selectedTenant?.name}</strong>.
+                </p>
+              </div>
+            )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsActivateDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleActivate} disabled={activateMutation.loading} className="bg-green-600 hover:bg-green-700 text-white">
-              <CheckCircle className="h-4 w-4 mr-2" />
-              {activateMutation.loading ? 'Activating...' : 'Activate Tenant'}
+            <Button variant="outline" onClick={() => setIsToggleConfirmOpen(false)}>Cancel</Button>
+            <Button
+              onClick={confirmToggleStatus}
+              disabled={suspendMutation.loading || activateMutation.loading}
+              className={
+                (selectedTenant?.status === 'active' || selectedTenant?.status === 'trial')
+                  ? 'bg-warning hover:bg-warning text-white'
+                  : 'bg-success hover:bg-success text-white'
+              }
+            >
+              {suspendMutation.loading || activateMutation.loading
+                ? 'Updating...'
+                : (selectedTenant?.status === 'active' || selectedTenant?.status === 'trial')
+                  ? 'Yes, Suspend'
+                  : 'Yes, Activate'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deactivate Tenant</DialogTitle>
+            <DialogDescription>{selectedTenant?.name}</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg">
+              <p className="text-sm text-destructive">
+                This will permanently deactivate <strong>{selectedTenant?.name}</strong>.
+                All users will lose access and this action cannot be easily reversed.
+                Are you sure?
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={deleteMutation.loading}>
+              {deleteMutation.loading ? 'Deactivating...' : 'Yes, Deactivate'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

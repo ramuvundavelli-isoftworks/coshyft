@@ -70,8 +70,8 @@ export default function ModeSplit() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mode Split Analysis</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Mode Split Analysis</h1>
+          <p className="text-muted-foreground mt-1">
             Commute mode distribution and shift analytics
           </p>
         </div>
@@ -91,49 +91,49 @@ export default function ModeSplit() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Car className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Car className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">SOV Rate</p>
-              <p className="text-2xl font-bold text-gray-900">35%</p>
-              <p className="text-xs text-green-600">↓ 10% vs baseline</p>
+              <p className="text-sm text-muted-foreground">SOV Rate</p>
+              <p className="text-2xl font-bold text-foreground">35%</p>
+              <p className="text-xs text-success">↓ 10% vs baseline</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Car className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <Car className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Carpool Rate</p>
-              <p className="text-2xl font-bold text-gray-900">32%</p>
-              <p className="text-xs text-green-600">↑ 7% vs baseline</p>
+              <p className="text-sm text-muted-foreground">Carpool Rate</p>
+              <p className="text-2xl font-bold text-foreground">32%</p>
+              <p className="text-xs text-success">↑ 7% vs baseline</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Bus className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Bus className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Transit Rate</p>
-              <p className="text-2xl font-bold text-gray-900">23%</p>
-              <p className="text-xs text-green-600">↑ 3% vs baseline</p>
+              <p className="text-sm text-muted-foreground">Transit Rate</p>
+              <p className="text-2xl font-bold text-foreground">23%</p>
+              <p className="text-xs text-success">↑ 3% vs baseline</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Bike className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Bike className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Transport</p>
-              <p className="text-2xl font-bold text-gray-900">10%</p>
-              <p className="text-xs text-gray-500">No change</p>
+              <p className="text-sm text-muted-foreground">Active Transport</p>
+              <p className="text-2xl font-bold text-foreground">10%</p>
+              <p className="text-xs text-muted-foreground">No change</p>
             </div>
           </div>
         </Card>
@@ -142,7 +142,7 @@ export default function ModeSplit() {
       {/* Current Mode Distribution & Mode Shift Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Current Mode Distribution</h3>
+          <h3 className="font-semibold text-foreground mb-4">Current Mode Distribution</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Doughnut
               data={{
@@ -161,7 +161,7 @@ export default function ModeSplit() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Mode Shift Trend</h3>
+          <h3 className="font-semibold text-foreground mb-4">Mode Shift Trend</h3>
           <div style={{ height: '300px', width: '100%' }}>
             <Line
               data={{
@@ -205,7 +205,7 @@ export default function ModeSplit() {
 
       {/* Mode Details */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Mode Performance Details</h3>
+        <h3 className="font-semibold text-foreground mb-4">Mode Performance Details</h3>
         <div className="space-y-3">
           {modeDetails.map((mode, idx) => {
             const Icon = mode.icon;
@@ -214,34 +214,34 @@ export default function ModeSplit() {
               <div key={idx} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="p-3 bg-gray-100 rounded-lg">
-                      <Icon className="h-6 w-6 text-gray-600" />
+                    <div className="p-3 bg-muted rounded-lg">
+                      <Icon className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-medium text-gray-900">{mode.mode}</h4>
+                        <h4 className="font-medium text-foreground">{mode.mode}</h4>
                         {isOnTrack ? (
-                          <Badge className="bg-green-100 text-green-700">On Track</Badge>
+                          <Badge className="bg-success-subtle text-success">On Track</Badge>
                         ) : (
-                          <Badge className="bg-yellow-100 text-yellow-700">Needs Improvement</Badge>
+                          <Badge className="bg-warning-subtle text-warning">Needs Improvement</Badge>
                         )}
                       </div>
                       <div className="grid grid-cols-4 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-600">Emissions</p>
-                          <p className="font-medium text-gray-900">{mode.emissions} tCO₂e</p>
+                          <p className="text-muted-foreground">Emissions</p>
+                          <p className="font-medium text-foreground">{mode.emissions} tCO₂e</p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Total Trips</p>
-                          <p className="font-medium text-gray-900">{mode.trips}</p>
+                          <p className="text-muted-foreground">Total Trips</p>
+                          <p className="font-medium text-foreground">{mode.trips}</p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Avg per Trip</p>
-                          <p className="font-medium text-gray-900">{mode.avgPerTrip} kg</p>
+                          <p className="text-muted-foreground">Avg per Trip</p>
+                          <p className="font-medium text-foreground">{mode.avgPerTrip} kg</p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Target</p>
-                          <p className="font-medium text-gray-900">{mode.target} tCO₂e</p>
+                          <p className="text-muted-foreground">Target</p>
+                          <p className="font-medium text-foreground">{mode.target} tCO₂e</p>
                         </div>
                       </div>
                     </div>
@@ -289,20 +289,20 @@ export default function ModeSplit() {
             <div className="py-4">
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Emissions</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.emissions} tCO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Total Emissions</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedMode.emissions} tCO₂e</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Trips</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.trips}</p>
+                  <Label className="text-sm text-muted-foreground">Total Trips</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedMode.trips}</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Avg per Trip</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedMode.avgPerTrip} kg</p>
+                  <Label className="text-sm text-muted-foreground">Avg per Trip</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedMode.avgPerTrip} kg</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Target</Label>
-                  <p className="text-2xl font-bold text-blue-600 mt-1">{selectedMode.target} tCO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Target</Label>
+                  <p className="text-2xl font-bold text-info mt-1">{selectedMode.target} tCO₂e</p>
                 </Card>
               </div>
             </div>
@@ -322,21 +322,21 @@ export default function ModeSplit() {
           </DialogHeader>
           <div className="py-4">
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">Shift Scenario: 10% SOV → Carpool</h4>
-                <p className="text-sm text-blue-700">
+              <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+                <h4 className="font-semibold text-info mb-2">Shift Scenario: 10% SOV → Carpool</h4>
+                <p className="text-sm text-info">
                   <strong>Potential Reduction:</strong> 24.6 tCO₂e annually
                 </p>
-                <p className="text-sm text-blue-700">
+                <p className="text-sm text-info">
                   <strong>Impact:</strong> 10% total emissions reduction
                 </p>
               </div>
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h4 className="font-semibold text-green-900 mb-2">Shift Scenario: 5% SOV → Public Transit</h4>
-                <p className="text-sm text-green-700">
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+                <h4 className="font-semibold text-success mb-2">Shift Scenario: 5% SOV → Public Transit</h4>
+                <p className="text-sm text-success">
                   <strong>Potential Reduction:</strong> 10.8 tCO₂e annually
                 </p>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-success">
                   <strong>Impact:</strong> 4.4% total emissions reduction
                 </p>
               </div>
@@ -366,7 +366,7 @@ export default function ModeSplit() {
               onChange={(e) => setTargetValue(e.target.value)}
               placeholder="Enter target"
             />
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Current: {selectedMode?.emissions} tCO₂e
             </p>
           </div>

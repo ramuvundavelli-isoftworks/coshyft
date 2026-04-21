@@ -69,7 +69,7 @@ export function QuickJoinCarpoolModal({ isOpen, onClose, onSubmit }: QuickJoinCa
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-[#00bc7d]" />
+            <Users className="h-5 w-5 text-brand-500" />
             Quick Join Carpool
           </DialogTitle>
           <DialogDescription>
@@ -228,7 +228,7 @@ export function SendAnnouncementModal({ isOpen, onClose, onSubmit }: SendAnnounc
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-[#00bc7d]" />
+            <Send className="h-5 w-5 text-brand-500" />
             Send Announcement
           </DialogTitle>
           <DialogDescription>
@@ -289,7 +289,7 @@ export function SendAnnouncementModal({ isOpen, onClose, onSubmit }: SendAnnounc
                   />
                   <label 
                     htmlFor={`audience-${option}`} 
-                    className="text-sm text-gray-700 cursor-pointer"
+                    className="text-sm text-foreground cursor-pointer"
                   >
                     {option}
                   </label>
@@ -298,7 +298,7 @@ export function SendAnnouncementModal({ isOpen, onClose, onSubmit }: SendAnnounc
             </div>
           </div>
 
-          <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+          <div className="space-y-2 p-4 bg-background-subtle rounded-lg">
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -307,7 +307,7 @@ export function SendAnnouncementModal({ isOpen, onClose, onSubmit }: SendAnnounc
                 onChange={(e) => setFormData({ ...formData, sendEmail: e.target.checked })}
                 className="rounded"
               />
-              <label htmlFor="sendEmail" className="text-sm text-gray-700 cursor-pointer">
+              <label htmlFor="sendEmail" className="text-sm text-foreground cursor-pointer">
                 Send Email Notification
               </label>
             </div>
@@ -319,15 +319,15 @@ export function SendAnnouncementModal({ isOpen, onClose, onSubmit }: SendAnnounc
                 onChange={(e) => setFormData({ ...formData, sendPush: e.target.checked })}
                 className="rounded"
               />
-              <label htmlFor="sendPush" className="text-sm text-gray-700 cursor-pointer">
+              <label htmlFor="sendPush" className="text-sm text-foreground cursor-pointer">
                 Send Push Notification
               </label>
             </div>
           </div>
 
           {formData.audience.length > 0 && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-3 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 Will be sent to: <strong>{formData.audience.join(', ')}</strong>
               </p>
             </div>
@@ -398,7 +398,7 @@ export function QuickAddLocationModal({ isOpen, onClose, onSubmit }: QuickAddLoc
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-[#00bc7d]" />
+            <MapPin className="h-5 w-5 text-brand-500" />
             Quick Add Location
           </DialogTitle>
           <DialogDescription>

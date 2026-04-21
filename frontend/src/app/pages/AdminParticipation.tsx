@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -6,392 +6,247 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription,
+  DialogFooter, DialogHeader, DialogTitle,
 } from '../components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
-import { Users, TrendingUp, TrendingDown, AlertTriangle, Download, Filter, Search, Target, Building2, Mail, Eye, MessageCircle } from 'lucide-react';
-import { Line } from 'react-chartjs-2';
-import { lineChartOptions, colors } from '../utils/chartConfig';
+  Users, TrendingUp, AlertTriangle, Download, Search,
+  Target, Building2, Mail, Eye, RefreshCw,
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { useApi, useApiMutation } from '../api';
-import { adminApi } from '../api';
+import { useApi, useApiMutation, adminApi } from '../api';
 
-interface Department {
-  id: string;
-  name: string;
-  employees: number;
-  enrolled: number;
-  active: number;
-  participation: number;
-  target: number;
-  trend: string;
-  avgTripsPerWeek: number;
-}
-
-const mockDepartments: Department[] = [
-  { id: 'dept1', name: 'Engineering', employees: 580, enrolled: 485, active: 412, participation: 71, target: 75, trend: '+5%', avgTripsPerWeek: 3.8 },
-  { id: 'dept2', name: 'Sales', employees: 320, enrolled: 298, active: 276, participation: 86, target: 75, trend: '+8%', avgTripsPerWeek: 4.2 },
-  { id: 'dept3', name: 'Marketing', employees: 180, enrolled: 162, active: 135, participation: 75, target: 75, trend: '+3%', avgTripsPerWeek: 3.5 },
-  { id: 'dept4', name: 'Operations', employees: 420, enrolled: 357, active: 298, participation: 71, target: 75, trend: '+2%', avgTripsPerWeek: 3.9 },
-  { id: 'dept5', name: 'Finance', employees: 140, enrolled: 126, active: 98, participation: 70, target: 75, trend: '-1%', avgTripsPerWeek: 3.2 },
-  { id: 'dept6', name: 'HR', employees: 95, enrolled: 89, active: 82, participation: 86, target: 75, trend: '+4%', avgTripsPerWeek: 4.5 },
-];
-
-const trendData = [
-  { month: 'Aug', participation: 62 },
-  { month: 'Sep', participation: 65 },
-  { month: 'Oct', participation: 68 },
-  { month: 'Nov', participation: 71 },
-  { month: 'Dec', participation: 73 },
-  { month: 'Jan', participation: 75 },
-  { month: 'Feb', participation: 76 },
-];
+const DEFAULT_TARGET = 75;
 
 export default function AdminParticipation() {
-  const [departments] = useState<Department[]>(mockDepartments);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
-  const [isSetTargetDialogOpen, setIsSetTargetDialogOpen] = useState(false);
-  const [isSendReminderDialogOpen, setIsSendReminderDialogOpen] = useState(false);
-  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const [selectedDept, setSelectedDept] = useState<Department | null>(null);
-  const [targetValue, setTargetValue] = useState('75');
-  const [reminderMessage, setReminderMessage] = useState('');
+  const { data, loading, refetch } = useApi(() => adminApi.getParticipation());
 
-  const filteredDepts = departments.filter(dept =>
-    dept.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const [searchTerm, setSearchTerm]                       = useState('');
+  const [selectedDept, setSelectedDept]                   = useState<any>(null);
+  const [isViewOpen, setIsViewOpen]                       = useState(false);
+  const [isTargetOpen, setIsTargetOpen]                   = useState(false);
+  const [isReminderOpen, setIsReminderOpen]               = useState(false);
+  const [isExportOpen, setIsExportOpen]                   = useState(false);
+  const [targetValue, setTargetValue]                     = useState(String(DEFAULT_TARGET));
+  const [reminderMessage, setReminderMessage]             = useState('');
+
+  const setTargetMutation   = useApiMutation((d: any) => adminApi.setParticipationTarget(d.department, d.targetPercent));
+  const sendReminderMutation = useApiMutation((d: any) => adminApi.sendParticipationReminder(d.department, d.message));
+
+  const depts: any[] = (Array.isArray(data) ? data : []).filter((d: any) =>
+    d.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalEmployees = departments.reduce((sum, d) => sum + d.employees, 0);
-  const totalEnrolled = departments.reduce((sum, d) => sum + d.enrolled, 0);
-  const totalActive = departments.reduce((sum, d) => sum + d.active, 0);
-  const avgParticipation = Math.round(departments.reduce((sum, d) => sum + d.participation, 0) / departments.length);
-
-  const setTargetMutation = useApiMutation((data: { department: string; targetPercent: number }) =>
-    adminApi.setParticipationTarget(data.department, data.targetPercent)
-  );
-  const sendReminderMutation = useApiMutation((data: { department: string; message: string }) =>
-    adminApi.sendParticipationReminder(data.department, data.message)
-  );
+  const totalEmployees   = depts.reduce((s, d) => s + (d.total_employees ?? 0), 0);
+  const totalActive      = depts.reduce((s, d) => s + (d.active_employees ?? 0), 0);
+  const avgParticipation = depts.length
+    ? Math.round(depts.reduce((s, d) => s + (d.participation_rate ?? 0), 0) / depts.length)
+    : 0;
+  const belowTarget      = depts.filter(d => d.participation_rate < DEFAULT_TARGET).length;
 
   const handleSetTarget = async () => {
-    if (selectedDept) {
-      const result = await setTargetMutation.execute({
-        department: selectedDept.name,
-        targetPercent: parseInt(targetValue),
-      });
-
-      if (result.success) {
-        toast.success(`Target set to ${targetValue}% for ${selectedDept.name}`);
-      } else {
-        toast.error(result.error?.message || 'Failed to set target');
-      }
-    }
-    setIsSetTargetDialogOpen(false);
+    const r = await setTargetMutation.execute({
+      department: selectedDept.department,
+      targetPercent: parseInt(targetValue),
+    });
+    if (r.success) toast.success(`Target set to ${targetValue}% for ${selectedDept.department}`);
+    else toast.error(r.error?.message ?? 'Failed to set target');
+    setIsTargetOpen(false);
   };
 
   const handleSendReminder = async () => {
-    if (selectedDept) {
-      const result = await sendReminderMutation.execute({
-        department: selectedDept.name,
-        message: reminderMessage,
-      });
-
-      if (result.success) {
-        toast.success(`Reminder sent to ${selectedDept.name} department`);
-      } else {
-        toast.error(result.error?.message || 'Failed to send reminder');
-      }
-    }
-    setIsSendReminderDialogOpen(false);
+    const r = await sendReminderMutation.execute({
+      department: selectedDept.department,
+      message: reminderMessage,
+    });
+    if (r.success) toast.success(`Reminder queued for ${selectedDept.department}`);
+    else toast.error(r.error?.message ?? 'Failed to send reminder');
+    setIsReminderOpen(false);
     setReminderMessage('');
-  };
-
-  const handleExport = () => {
-    toast.success('Exporting participation data...');
-    setIsExportDialogOpen(false);
   };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Participation Tracking</h1>
-          <p className="text-gray-600 mt-1">
-            Monitor employee engagement and department participation
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">Participation Tracking</h1>
+          <p className="text-muted-foreground mt-1">Monitor employee engagement by department</p>
         </div>
-        <Button onClick={() => setIsExportDialogOpen(true)}>
-          <Download className="h-4 w-4 mr-2" />
-          Export Report
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => refetch()} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setIsExportOpen(true)}>
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total Employees</p>
-              <p className="text-2xl font-bold text-gray-900">{totalEmployees}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Users className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Enrolled</p>
-              <p className="text-2xl font-bold text-gray-900">{totalEnrolled}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Active This Month</p>
-              <p className="text-2xl font-bold text-gray-900">{totalActive}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Target className="h-5 w-5 text-yellow-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Avg Participation</p>
-              <p className="text-2xl font-bold text-gray-900">{avgParticipation}%</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Trend Chart */}
-      <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Participation Trend</h3>
-        <div style={{ height: '250px', width: '100%' }}>
-          <Line
-            data={{
-              labels: trendData.map(data => data.month),
-              datasets: [
-                {
-                  label: 'Participation %',
-                  data: trendData.map(data => data.participation),
-                  borderColor: colors.chart.green,
-                  backgroundColor: 'rgba(0, 188, 125, 0.1)',
-                  borderWidth: 2,
-                  fill: true,
-                },
-              ],
-            }}
-            options={lineChartOptions}
-          />
-        </div>
-      </Card>
-
-      {/* Search */}
-      <Card className="p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search departments..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </Card>
-
-      {/* Department List */}
-      <div className="space-y-3">
-        {filteredDepts.map((dept) => (
-          <Card key={dept.id} className="p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Building2 className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-900">{dept.name}</h3>
-                    {dept.participation >= dept.target ? (
-                      <Badge className="bg-green-100 text-green-700">
-                        <TrendingUp className="h-3 w-3 mr-1" />
-                        On Target
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-yellow-100 text-yellow-700">
-                        <AlertTriangle className="h-3 w-3 mr-1" />
-                        Below Target
-                      </Badge>
-                    )}
-                    <span className="text-sm text-gray-600">{dept.trend} this month</span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-600">Employees</p>
-                      <p className="font-medium text-gray-900">{dept.employees}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Enrolled</p>
-                      <p className="font-medium text-gray-900">{dept.enrolled}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Active</p>
-                      <p className="font-medium text-gray-900">{dept.active}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Participation</p>
-                      <p className="font-medium text-green-600">{dept.participation}%</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedDept(dept);
-                    setIsViewDetailsDialogOpen(true);
-                  }}
-                >
-                  <Eye className="h-4 w-4 mr-1" />
-                  View
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedDept(dept);
-                    setTargetValue(dept.target.toString());
-                    setIsSetTargetDialogOpen(true);
-                  }}
-                >
-                  <Target className="h-4 w-4 mr-1" />
-                  Set Target
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedDept(dept);
-                    setIsSendReminderDialogOpen(true);
-                  }}
-                >
-                  <Mail className="h-4 w-4 mr-1" />
-                  Remind
-                </Button>
+        {([
+          ['Total Employees',   loading ? '—' : totalEmployees.toLocaleString(), 'bg-info-subtle',   Users,       'text-info'],
+          ['Active This Month', loading ? '—' : totalActive.toLocaleString(),    'bg-success-subtle',  TrendingUp,  'text-success'],
+          ['Avg Participation', loading ? '—' : `${avgParticipation}%`,          'bg-info-subtle', Target,      'text-info'],
+          ['Below Target',      loading ? '—' : belowTarget,                     'bg-warning-subtle', AlertTriangle,'text-warning'],
+        ] as any[]).map(([label, val, bg, Icon, ic]) => (
+          <Card key={label} className="p-6">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 ${bg} rounded-lg`}><Icon className={`h-5 w-5 ${ic}`} /></div>
+              <div>
+                <p className="text-sm text-muted-foreground">{label}</p>
+                <p className="text-2xl font-bold text-foreground">{val}</p>
               </div>
             </div>
           </Card>
         ))}
       </div>
 
+      {/* Search */}
+      <Card className="p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search departments..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      </Card>
+
+      {/* Department List */}
+      {loading ? (
+        <p className="text-sm text-muted-foreground text-center py-12">Loading departments...</p>
+      ) : depts.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Users className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No department data yet. Users need to have commutes logged.</p>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {depts.map((dept: any) => {
+            const rate       = dept.participation_rate ?? 0;
+            const onTarget   = rate >= DEFAULT_TARGET;
+            const pct        = Math.min(rate, 100);
+            return (
+              <Card key={dept.department} className="p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="p-3 bg-info-subtle rounded-lg shrink-0">
+                      <Building2 className="h-6 w-6 text-info" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <h3 className="font-semibold text-foreground">{dept.department}</h3>
+                        {onTarget ? (
+                          <Badge className="bg-success-subtle text-success">
+                            <TrendingUp className="h-3 w-3 mr-1" />On Target
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-warning-subtle text-warning">
+                            <AlertTriangle className="h-3 w-3 mr-1" />Below Target
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm mb-3">
+                        <div>
+                          <p className="text-muted-foreground">Total</p>
+                          <p className="font-semibold text-foreground">{(dept.total_employees ?? 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Active</p>
+                          <p className="font-semibold text-foreground">{(dept.active_employees ?? 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Rate</p>
+                          <p className={`font-semibold ${onTarget ? 'text-success' : 'text-warning'}`}>{rate}%</p>
+                        </div>
+                      </div>
+                      {/* Progress bar */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-muted rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${onTarget ? 'bg-success' : 'bg-warning'}`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">Target {DEFAULT_TARGET}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedDept(dept); setIsViewOpen(true); }}>
+                      <Eye className="h-4 w-4 mr-1" />View
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedDept(dept); setTargetValue(String(DEFAULT_TARGET)); setIsTargetOpen(true); }}>
+                      <Target className="h-4 w-4 mr-1" />Set Target
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedDept(dept); setIsReminderOpen(true); }}>
+                      <Mail className="h-4 w-4 mr-1" />Remind
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+
       {/* View Details Dialog */}
-      <Dialog open={isViewDetailsDialogOpen} onOpenChange={setIsViewDetailsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{selectedDept?.name} Department</DialogTitle>
-            <DialogDescription>
-              Detailed participation metrics
-            </DialogDescription>
+            <DialogTitle>{selectedDept?.department} Department</DialogTitle>
+            <DialogDescription>Participation breakdown</DialogDescription>
           </DialogHeader>
           {selectedDept && (
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Employees</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedDept.employees}</p>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              {([
+                ['Total Employees', (selectedDept.total_employees ?? 0).toLocaleString(), 'text-foreground'],
+                ['Active Users',    (selectedDept.active_employees ?? 0).toLocaleString(), 'text-success'],
+                ['Participation',   `${selectedDept.participation_rate ?? 0}%`,             'text-info'],
+                ['Target',          `${DEFAULT_TARGET}%`,                                   'text-info'],
+              ] as [string, string, string][]).map(([label, val, col]) => (
+                <Card key={label} className="p-4">
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className={`text-2xl font-bold mt-1 ${col}`}>{val}</p>
                 </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Enrolled</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedDept.enrolled}</p>
-                </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Active This Month</Label>
-                  <p className="text-2xl font-bold text-green-600 mt-1">{selectedDept.active}</p>
-                </Card>
-                <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Participation Rate</Label>
-                  <p className="text-2xl font-bold text-blue-600 mt-1">{selectedDept.participation}%</p>
-                </Card>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm text-gray-600">Target</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedDept.target}%</p>
-                </div>
-                <div>
-                  <Label className="text-sm text-gray-600">Trend</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedDept.trend}</p>
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm text-gray-600">Avg Trips Per Week</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedDept.avgTripsPerWeek} trips</p>
-              </div>
+              ))}
             </div>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewDetailsDialogOpen(false)}>Close</Button>
+            <Button onClick={() => setIsViewOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Set Target Dialog */}
-      <Dialog open={isSetTargetDialogOpen} onOpenChange={setIsSetTargetDialogOpen}>
+      <Dialog open={isTargetOpen} onOpenChange={setIsTargetOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Set Participation Target</DialogTitle>
-            <DialogDescription>
-              Update target for {selectedDept?.name} department
-            </DialogDescription>
+            <DialogDescription>Update target for {selectedDept?.department}</DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <p className="text-sm text-blue-900">
-                <strong>Current:</strong> {selectedDept?.participation}%
-              </p>
-              <p className="text-sm text-blue-900 mt-1">
-                <strong>Current Target:</strong> {selectedDept?.target}%
-              </p>
+          <div className="py-4 space-y-4">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg text-sm space-y-1">
+              <p><strong>Current rate:</strong> {selectedDept?.participation_rate ?? 0}%</p>
+              <p><strong>Platform default target:</strong> {DEFAULT_TARGET}%</p>
             </div>
-            <Label htmlFor="target">New Target (%) *</Label>
-            <Input
-              id="target"
-              type="number"
-              min="0"
-              max="100"
-              value={targetValue}
-              onChange={(e) => setTargetValue(e.target.value)}
-              placeholder="75"
-            />
+            <div>
+              <Label>New Target (%)</Label>
+              <Input
+                type="number" min="0" max="100"
+                value={targetValue}
+                onChange={e => setTargetValue(e.target.value)}
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSetTargetDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsTargetOpen(false)}>Cancel</Button>
             <Button onClick={handleSetTarget} disabled={setTargetMutation.loading}>
               {setTargetMutation.loading ? 'Setting...' : 'Set Target'}
             </Button>
@@ -400,31 +255,27 @@ export default function AdminParticipation() {
       </Dialog>
 
       {/* Send Reminder Dialog */}
-      <Dialog open={isSendReminderDialogOpen} onOpenChange={setIsSendReminderDialogOpen}>
+      <Dialog open={isReminderOpen} onOpenChange={setIsReminderOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Send Participation Reminder</DialogTitle>
-            <DialogDescription>
-              Encourage {selectedDept?.name} employees to log commutes
-            </DialogDescription>
+            <DialogDescription>Encourage {selectedDept?.department} employees to log commutes</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label htmlFor="message">Reminder Message (optional)</Label>
+            <Label>Message (optional)</Label>
             <Textarea
-              id="message"
               value={reminderMessage}
-              onChange={(e) => setReminderMessage(e.target.value)}
+              onChange={e => setReminderMessage(e.target.value)}
               placeholder="Custom message to include in the reminder email..."
               rows={4}
+              className="mt-1"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              A standard reminder will be sent if no custom message is provided
+            <p className="text-xs text-muted-foreground mt-2">
+              A standard reminder will be sent if no message is provided.
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSendReminderDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsReminderOpen(false)}>Cancel</Button>
             <Button onClick={handleSendReminder} disabled={sendReminderMutation.loading}>
               <Mail className="h-4 w-4 mr-2" />
               {sendReminderMutation.loading ? 'Sending...' : 'Send Reminder'}
@@ -434,32 +285,26 @@ export default function AdminParticipation() {
       </Dialog>
 
       {/* Export Dialog */}
-      <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+      <Dialog open={isExportOpen} onOpenChange={setIsExportOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Export Participation Report</DialogTitle>
-            <DialogDescription>
-              Download comprehensive participation data
-            </DialogDescription>
+            <DialogDescription>Download department participation data</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Report Includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
-                <li>Department-level participation metrics</li>
-                <li>Enrollment and active user counts</li>
-                <li>Trend analysis</li>
+            <div className="p-4 bg-background-subtle border rounded-lg text-sm">
+              <p className="font-medium text-foreground mb-2">Report includes:</p>
+              <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+                <li>Department participation rates</li>
+                <li>Total and active employee counts</li>
                 <li>Target achievement status</li>
               </ul>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Report
+            <Button variant="outline" onClick={() => setIsExportOpen(false)}>Cancel</Button>
+            <Button onClick={() => { toast.success('Exporting participation data...'); setIsExportOpen(false); }}>
+              <Download className="h-4 w-4 mr-2" />Export
             </Button>
           </DialogFooter>
         </DialogContent>

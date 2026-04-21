@@ -168,9 +168,9 @@ export default function EmissionFactors() {
   };
 
   const approvalColors = {
-    pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    approved: 'bg-green-100 text-green-700 border-green-200',
-    draft: 'bg-gray-100 text-gray-700 border-gray-200',
+    pending: 'bg-warning-subtle text-warning border-warning/25',
+    approved: 'bg-success-subtle text-success border-success/25',
+    draft: 'bg-muted text-foreground border-border',
   };
 
   return (
@@ -178,8 +178,8 @@ export default function EmissionFactors() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Emission Factor Governance</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Emission Factor Governance</h1>
+          <p className="text-muted-foreground mt-1">
             Manage and approve emission factors with full version control
           </p>
         </div>
@@ -193,48 +193,48 @@ export default function EmissionFactors() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Factors</p>
-              <p className="text-2xl font-bold text-gray-900">{activeFactors.length}</p>
+              <p className="text-sm text-muted-foreground">Active Factors</p>
+              <p className="text-2xl font-bold text-foreground">{activeFactors.length}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Pending Approval</p>
-              <p className="text-2xl font-bold text-yellow-600">{pendingFactors.length}</p>
+              <p className="text-sm text-muted-foreground">Pending Approval</p>
+              <p className="text-2xl font-bold text-warning">{pendingFactors.length}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Versions</p>
-              <p className="text-2xl font-bold text-gray-900">{factors.length}</p>
+              <p className="text-sm text-muted-foreground">Total Versions</p>
+              <p className="text-2xl font-bold text-foreground">{factors.length}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <TrendingUp className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Recent Updates</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Recent Updates</p>
+              <p className="text-2xl font-bold text-foreground">
                 {factors.filter(f => {
                   const effectiveDate = new Date(f.effectiveDate);
                   const diff = Date.now() - effectiveDate.getTime();
@@ -248,19 +248,19 @@ export default function EmissionFactors() {
 
       {/* Pending Approvals Alert */}
       {pendingFactors.length > 0 && (
-        <Card className="p-6 bg-yellow-50 border-yellow-200">
+        <Card className="p-6 bg-warning-subtle border-warning/25">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900 mb-2">
+              <h3 className="font-semibold text-warning mb-2">
                 {pendingFactors.length} Factor{pendingFactors.length > 1 ? 's' : ''} Awaiting Approval
               </h3>
               <div className="space-y-2">
                 {pendingFactors.map(factor => (
-                  <div key={factor.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                  <div key={factor.id} className="flex items-center justify-between p-3 bg-card backdrop-blur-md rounded-[14px] border border-border-subtle/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                     <div>
-                      <p className="font-medium text-gray-900">{factor.mode}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-medium text-foreground">{factor.mode}</p>
+                      <p className="text-sm text-muted-foreground">
                         {factor.kgCO2perKm} kgCO₂/km • Version {factor.version} • {factor.source}
                       </p>
                     </div>
@@ -298,7 +298,7 @@ export default function EmissionFactors() {
       {/* Factors Table */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">All Emission Factors</h2>
+          <h2 className="text-lg font-semibold text-foreground">All Emission Factors</h2>
           <div className="flex items-center gap-2">
             <Select defaultValue="all">
               <SelectTrigger className="w-40">
@@ -331,17 +331,17 @@ export default function EmissionFactors() {
           </TableHeader>
           <TableBody>
             {factors.map((factor) => (
-              <TableRow key={factor.id} className="hover:bg-gray-50">
+              <TableRow key={factor.id} className="hover:bg-background-subtle">
                 <TableCell className="font-medium">{factor.mode}</TableCell>
                 <TableCell className="text-right font-semibold">{factor.kgCO2perKm.toFixed(3)}</TableCell>
-                <TableCell className="text-sm text-gray-600">{factor.source}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{factor.source}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="font-mono">{factor.version}</Badge>
                 </TableCell>
                 <TableCell className="text-sm">
                   {new Date(factor.effectiveDate).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="text-sm text-gray-600">
+                <TableCell className="text-sm text-muted-foreground">
                   {new Date(factor.effectiveDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
@@ -546,8 +546,8 @@ export default function EmissionFactors() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 <strong>Current:</strong> {selectedFactor?.mode} • {selectedFactor?.kgCO2perKm} kgCO₂/km • Version {selectedFactor?.version}
               </p>
             </div>
@@ -634,15 +634,15 @@ export default function EmissionFactors() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+            <div className="space-y-2 p-4 bg-background-subtle rounded-lg">
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <span className="text-gray-600">Mode:</span>
+                <span className="text-muted-foreground">Mode:</span>
                 <span className="font-medium">{selectedFactor?.mode}</span>
-                <span className="text-gray-600">Factor:</span>
+                <span className="text-muted-foreground">Factor:</span>
                 <span className="font-medium">{selectedFactor?.kgCO2perKm} kgCO₂/km</span>
-                <span className="text-gray-600">Source:</span>
+                <span className="text-muted-foreground">Source:</span>
                 <span className="font-medium">{selectedFactor?.source}</span>
-                <span className="text-gray-600">Version:</span>
+                <span className="text-muted-foreground">Version:</span>
                 <span className="font-medium">{selectedFactor?.version}</span>
               </div>
             </div>

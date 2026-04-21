@@ -58,8 +58,8 @@ export default function Methodology() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Methodology</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Methodology</h1>
+          <p className="text-muted-foreground mt-1">
             Emissions calculation methodology and standards
           </p>
         </div>
@@ -75,45 +75,45 @@ export default function Methodology() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BookOpen className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <BookOpen className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Standards</p>
-              <p className="text-2xl font-bold text-gray-900">3</p>
+              <p className="text-sm text-muted-foreground">Active Standards</p>
+              <p className="text-2xl font-bold text-foreground">3</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Sections Complete</p>
-              <p className="text-2xl font-bold text-gray-900">4/5</p>
+              <p className="text-sm text-muted-foreground">Sections Complete</p>
+              <p className="text-2xl font-bold text-foreground">4/5</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <BookOpen className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <BookOpen className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Primary Standard</p>
-              <p className="text-lg font-bold text-gray-900">GHG Protocol</p>
+              <p className="text-sm text-muted-foreground">Primary Standard</p>
+              <p className="text-lg font-bold text-foreground">GHG Protocol</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <BookOpen className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <BookOpen className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Last Updated</p>
-              <p className="text-lg font-bold text-gray-900">Feb 18, 2026</p>
+              <p className="text-sm text-muted-foreground">Last Updated</p>
+              <p className="text-lg font-bold text-foreground">Feb 18, 2026</p>
             </div>
           </div>
         </Card>
@@ -121,22 +121,22 @@ export default function Methodology() {
 
       {/* Applied Methodologies */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Applied Methodologies</h3>
+        <h3 className="font-semibold text-foreground mb-4">Applied Methodologies</h3>
         <div className="space-y-3">
           {methodologies.map((method) => (
             <div key={method.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-medium text-gray-900">{method.name}</h4>
+                    <h4 className="font-medium text-foreground">{method.name}</h4>
                     <Badge className={
-                      method.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                      method.status === 'active' ? 'bg-success-subtle text-success' : 'bg-muted text-foreground'
                     }>
                       {method.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{method.description}</p>
-                  <p className="text-xs text-gray-500">Version: {method.version}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
+                  <p className="text-xs text-muted-foreground">Version: {method.version}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -157,21 +157,21 @@ export default function Methodology() {
 
       {/* Documentation Sections */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Documentation Sections</h3>
+        <h3 className="font-semibold text-foreground mb-4">Documentation Sections</h3>
         <div className="space-y-3">
           {sections.map((section) => (
             <div key={section.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-medium text-gray-900">{section.title}</h4>
+                    <h4 className="font-medium text-foreground">{section.title}</h4>
                     <Badge className={
-                      section.status === 'complete' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                      section.status === 'complete' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'
                     }>
                       {section.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500">Last updated: {section.lastUpdated}</p>
+                  <p className="text-xs text-muted-foreground">Last updated: {section.lastUpdated}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -194,35 +194,35 @@ export default function Methodology() {
 
       {/* Key Principles */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Key Accounting Principles</h3>
+        <h3 className="font-semibold text-foreground mb-4">Key Accounting Principles</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Relevance</h4>
-            <p className="text-sm text-blue-700">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+            <h4 className="font-medium text-info mb-2">Relevance</h4>
+            <p className="text-sm text-info">
               Ensure the GHG inventory appropriately reflects emissions and serves decision-making needs
             </p>
           </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <h4 className="font-medium text-green-900 mb-2">Completeness</h4>
-            <p className="text-sm text-green-700">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+            <h4 className="font-medium text-success mb-2">Completeness</h4>
+            <p className="text-sm text-success">
               Account for and report all GHG emission sources within the chosen boundaries
             </p>
           </div>
-          <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-            <h4 className="font-medium text-purple-900 mb-2">Consistency</h4>
-            <p className="text-sm text-purple-700">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+            <h4 className="font-medium text-foreground mb-2">Consistency</h4>
+            <p className="text-sm text-info">
               Use consistent methodologies to allow meaningful comparisons over time
             </p>
           </div>
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <h4 className="font-medium text-yellow-900 mb-2">Transparency</h4>
-            <p className="text-sm text-yellow-700">
+          <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
+            <h4 className="font-medium text-warning mb-2">Transparency</h4>
+            <p className="text-sm text-warning">
               Address all relevant issues factually and coherently based on clear audit trail
             </p>
           </div>
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <h4 className="font-medium text-red-900 mb-2">Accuracy</h4>
-            <p className="text-sm text-red-700">
+          <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg">
+            <h4 className="font-medium text-destructive mb-2">Accuracy</h4>
+            <p className="text-sm text-destructive">
               Ensure emissions quantifications are systematically neither over nor under actual emissions
             </p>
           </div>
@@ -239,20 +239,20 @@ export default function Methodology() {
           {selectedMethod && (
             <div className="py-4 space-y-3">
               <div>
-                <Label className="text-sm text-gray-600">Version</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedMethod.version}</p>
+                <Label className="text-sm text-muted-foreground">Version</Label>
+                <p className="font-medium text-foreground mt-1">{selectedMethod.version}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Status</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedMethod.status}</p>
+                <Label className="text-sm text-muted-foreground">Status</Label>
+                <p className="font-medium text-foreground mt-1">{selectedMethod.status}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Description</Label>
-                <p className="text-gray-900 mt-1">{selectedMethod.description}</p>
+                <Label className="text-sm text-muted-foreground">Description</Label>
+                <p className="text-foreground mt-1">{selectedMethod.description}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Application</Label>
-                <p className="text-sm text-gray-600 mt-1">
+                <Label className="text-sm text-muted-foreground">Application</Label>
+                <p className="text-sm text-muted-foreground mt-1">
                   This methodology is applied to all Scope 3 Category 7 employee commuting calculations
                 </p>
               </div>
@@ -308,9 +308,9 @@ export default function Methodology() {
                 <SelectItem value="html">HTML</SelectItem>
               </SelectContent>
             </Select>
-            <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Export includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="mt-4 p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Applied methodologies</li>
                 <li>All documentation sections</li>
                 <li>Accounting principles</li>

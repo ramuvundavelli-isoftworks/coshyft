@@ -115,11 +115,11 @@ export default function PreferenceProfileModal({
           {/* Music & Conversation Preferences */}
           {preferenceCategories.map((category) => (
             <div key={category.field} className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
                 <category.icon className="h-4 w-4" />
                 {category.title}
               </div>
-              <p className="text-sm text-gray-600">{category.description}</p>
+              <p className="text-sm text-muted-foreground">{category.description}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {category.options.map((option) => (
@@ -127,8 +127,8 @@ export default function PreferenceProfileModal({
                     key={option.value}
                     className={`p-4 cursor-pointer transition-all border-2 ${
                       preferences[category.field] === option.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-info bg-info-subtle'
+                        : 'border-border hover:border-border'
                     }`}
                     onClick={() =>
                       setPreferences({
@@ -139,11 +139,11 @@ export default function PreferenceProfileModal({
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <div className="font-medium text-gray-900 mb-1">{option.label}</div>
-                        <div className="text-xs text-gray-600">{option.description}</div>
+                        <div className="font-medium text-foreground mb-1">{option.label}</div>
+                        <div className="text-xs text-muted-foreground">{option.description}</div>
                       </div>
                       {preferences[category.field] === option.value && (
-                        <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-info flex-shrink-0" />
                       )}
                     </div>
                   </Card>
@@ -155,11 +155,11 @@ export default function PreferenceProfileModal({
           {/* Vehicle Type */}
           {!isDriverMode && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
                 <Car className="h-4 w-4" />
                 Vehicle Type Preference
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Do you have a preference for the type of vehicle?
               </p>
 
@@ -185,7 +185,7 @@ export default function PreferenceProfileModal({
 
           {/* Binary Preferences */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               Additional Preferences
             </div>
 
@@ -209,7 +209,7 @@ export default function PreferenceProfileModal({
                       <PawPrint className="h-4 w-4" />
                       {isDriverMode ? 'Pets Allowed' : 'Comfortable with Pets'}
                     </Label>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {isDriverMode
                         ? 'I allow passengers to bring pets'
                         : 'Comfortable riding with service animals or pets'}
@@ -237,7 +237,7 @@ export default function PreferenceProfileModal({
                       <Cigarette className="h-4 w-4" />
                       {isDriverMode ? 'Smoking Allowed' : 'Smoker-Friendly'}
                     </Label>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {isDriverMode
                         ? 'Smoking permitted in vehicle'
                         : 'Comfortable with smoking during rides'}
@@ -250,7 +250,7 @@ export default function PreferenceProfileModal({
 
           {/* Temperature Preference */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <Thermometer className="h-4 w-4" />
               Temperature Preference
             </div>
@@ -274,7 +274,7 @@ export default function PreferenceProfileModal({
 
           {/* Flexibility Settings */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 pb-2 border-b">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground pb-2 border-b">
               <Clock className="h-4 w-4" />
               Flexibility & Matching
             </div>
@@ -290,7 +290,7 @@ export default function PreferenceProfileModal({
                 />
                 <Label htmlFor="flexibleTiming" className="cursor-pointer">
                   <div className="font-medium">Flexible with departure time</div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-muted-foreground">
                     I can adjust my schedule by ±30 minutes for better matches
                   </div>
                 </Label>
@@ -302,7 +302,7 @@ export default function PreferenceProfileModal({
                     <MapPin className="h-4 w-4" />
                     Pickup/Dropoff Radius
                   </Label>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-foreground">
                     {preferences.flexibleRadius} km
                   </span>
                 </div>
@@ -316,11 +316,11 @@ export default function PreferenceProfileModal({
                   step={1}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>1 km (Very close)</span>
                   <span>20 km (Flexible)</span>
                 </div>
-                <p className="text-xs text-gray-600 mt-2">
+                <p className="text-xs text-muted-foreground mt-2">
                   Maximum distance from your route for pickup/dropoff points
                 </p>
               </div>
@@ -328,12 +328,12 @@ export default function PreferenceProfileModal({
           </div>
 
           {/* Preview */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-info mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900 mb-1">Preference Summary</p>
-                <div className="text-xs text-blue-700 space-y-1">
+                <p className="text-sm font-medium text-info mb-1">Preference Summary</p>
+                <div className="text-xs text-info space-y-1">
                   <p>
                     • Music: <strong>{preferences.musicPreference.replace('-', ' ')}</strong>
                   </p>

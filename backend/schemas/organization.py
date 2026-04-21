@@ -32,6 +32,19 @@ class OfficeRead(BaseModel):
         from_attributes = True
 
 
+class OfficeCreate(BaseModel):
+    name: str
+    city: str
+    country: str = "Ireland"
+    region: str = "IE"
+    address: Optional[str] = None
+    employee_count: int = 0
+    parking_spaces: int = 0
+    bike_parking: int = 0
+    ev_chargers: int = 0
+    public_transport_access: Optional[str] = None
+
+
 class OfficeUpdate(BaseModel):
     name: Optional[str] = None
     employee_count: Optional[int] = None

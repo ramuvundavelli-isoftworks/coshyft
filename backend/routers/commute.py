@@ -55,7 +55,7 @@ async def log_commute(
 
     commute = CommuteEntry(
         user_id=user.id,
-        date=entry.date,
+        commute_date=entry.date,
         transport_mode_id=entry.transport_mode_id,
         transport_mode_label=mode_label,
         distance_km=entry.distance_km,
@@ -104,9 +104,9 @@ async def get_commute_history(
     statement = select(CommuteEntry).where(CommuteEntry.user_id == user.id)
 
     if start_date:
-        statement = statement.where(CommuteEntry.date >= start_date)
+        statement = statement.where(CommuteEntry.commute_date >= start_date)
     if end_date:
-        statement = statement.where(CommuteEntry.date <= end_date)
+        statement = statement.where(CommuteEntry.commute_date <= end_date)
     if transport_mode_id:
         statement = statement.where(CommuteEntry.transport_mode_id == transport_mode_id)
 
@@ -115,7 +115,7 @@ async def get_commute_history(
     total = (await session.execute(count_stmt)).scalar_one()
 
     # Fetch
-    statement = statement.order_by(CommuteEntry.date.desc()).offset((page - 1) * page_size).limit(page_size)
+    statement = statement.order_by(CommuteEntry.commute_date.desc()).offset((page - 1) * page_size).limit(page_size)
     result = await session.execute(statement)
     entries = result.scalars().all()
 
@@ -154,7 +154,7 @@ async def get_commute_stats(
     total_distance = sum(e.distance_km for e in entries)
     total_emissions = sum(e.emissions_kg_co2 for e in entries)
     total_oxypoints = sum(e.oxypoints_earned for e in entries)
-    unique_days = len(set(e.date for e in entries))
+    unique_days = len(set(e.commute_date for e in entries))
 
     # Modal split
     mode_counts = {}

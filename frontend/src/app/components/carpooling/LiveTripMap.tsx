@@ -64,14 +64,14 @@ export default function LiveTripMap({
   return (
     <Card className="overflow-hidden">
       {/* Map Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b bg-background-subtle">
         <div className="flex items-center gap-2">
-          <Navigation className="h-5 w-5 text-blue-600" />
-          <h3 className="font-semibold text-gray-900">Live Trip Tracking</h3>
+          <Navigation className="h-5 w-5 text-info" />
+          <h3 className="font-semibold text-foreground">Live Trip Tracking</h3>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-            <Circle className="h-3 w-3 mr-1 fill-green-600 animate-pulse" />
+          <Badge variant="outline" className="bg-success-subtle text-success border-success/25">
+            <Circle className="h-3 w-3 mr-1 fill-success animate-pulse" />
             Live
           </Badge>
           <Button
@@ -88,8 +88,8 @@ export default function LiveTripMap({
       <div
         className={`relative h-96 ${
           mapStyle === 'satellite'
-            ? 'bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100'
-            : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+            ? 'bg-gradient-to-br from-success-subtle via-success-subtle to-success-subtle'
+            : 'bg-gradient-to-br from-info-subtle via-info-subtle to-info-subtle'
         }`}
       >
         {/* Grid overlay for more realistic map look */}
@@ -135,11 +135,11 @@ export default function LiveTripMap({
           style={originPosition}
         >
           <div className="relative">
-            <div className="w-12 h-12 bg-blue-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-info rounded-full border-4 border-white shadow-lg flex items-center justify-center">
               <Home className="h-6 w-6 text-white" />
             </div>
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className="bg-white px-2 py-1 rounded shadow-md text-xs font-medium border">
+              <div className="bg-card px-2 py-1 rounded shadow-md text-xs font-medium border">
                 {origin.address}
               </div>
             </div>
@@ -152,11 +152,11 @@ export default function LiveTripMap({
           style={destinationPosition}
         >
           <div className="relative">
-            <div className="w-12 h-12 bg-green-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-success rounded-full border-4 border-white shadow-lg flex items-center justify-center">
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-              <div className="bg-white px-2 py-1 rounded shadow-md text-xs font-medium border">
+              <div className="bg-card px-2 py-1 rounded shadow-md text-xs font-medium border">
                 {destination.address}
               </div>
             </div>
@@ -176,17 +176,17 @@ export default function LiveTripMap({
                 <div
                   className={`w-8 h-8 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-xs font-semibold ${
                     waypoint.status === 'completed'
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-success text-white'
                       : waypoint.status === 'arrived'
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-purple-500 text-white'
+                      ? 'bg-warning text-white'
+                      : 'bg-info text-white'
                   }`}
                 >
                   {waypoint.type === 'pickup' ? '📍' : '📍'}
                 </div>
                 {waypoint.passengerName && (
                   <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                    <div className="bg-white px-2 py-0.5 rounded shadow text-xs border">
+                    <div className="bg-card px-2 py-0.5 rounded shadow text-xs border">
                       {waypoint.passengerName}
                     </div>
                   </div>
@@ -203,17 +203,17 @@ export default function LiveTripMap({
         >
           <div className="relative">
             {/* Pulsing ring effect */}
-            <div className="absolute inset-0 w-16 h-16 -top-2 -left-2 bg-blue-400 rounded-full animate-ping opacity-20"></div>
+            <div className="absolute inset-0 w-16 h-16 -top-2 -left-2 bg-info rounded-full animate-ping opacity-20"></div>
             
             {/* Vehicle icon */}
-            <div className="relative w-12 h-12 bg-blue-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center">
+            <div className="relative w-12 h-12 bg-info rounded-full border-4 border-white shadow-xl flex items-center justify-center">
               <Car className="h-6 w-6 text-white" />
             </div>
             
             {/* Speed indicator */}
             {currentLocation.speed && (
               <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                <div className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-lg">
+                <div className="bg-info text-white px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-lg">
                   <Zap className="h-3 w-3 inline mr-1" />
                   {Math.round(currentLocation.speed)} km/h
                 </div>
@@ -225,27 +225,27 @@ export default function LiveTripMap({
         {/* Progress Overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white to-transparent p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-gray-700">Trip Progress</span>
-            <span className="text-sm font-semibold text-blue-600">{Math.round(progress)}%</span>
+            <span className="text-sm font-medium text-foreground">Trip Progress</span>
+            <span className="text-sm font-semibold text-info">{Math.round(progress)}%</span>
           </div>
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-1000 ease-out"
+              className="h-full bg-gradient-to-r from-info to-success transition-all duration-1000 ease-out"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
 
         {/* Coordinates Display (for demo) */}
-        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-3 py-2 rounded-lg shadow text-xs font-mono border">
-          <div className="flex items-center gap-1 text-gray-600">
+        <div className="absolute top-2 left-2 bg-card/90 backdrop-blur px-3 py-2 rounded-lg shadow text-xs font-mono border">
+          <div className="flex items-center gap-1 text-muted-foreground">
             <MapPin className="h-3 w-3" />
             <span>
               {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
             </span>
           </div>
           {currentLocation.heading !== undefined && (
-            <div className="flex items-center gap-1 text-gray-600 mt-1">
+            <div className="flex items-center gap-1 text-muted-foreground mt-1">
               <Navigation className="h-3 w-3" />
               <span>Heading: {Math.round(currentLocation.heading)}°</span>
             </div>
@@ -254,32 +254,32 @@ export default function LiveTripMap({
       </div>
 
       {/* Map Legend */}
-      <div className="p-4 border-t bg-gray-50">
+      <div className="p-4 border-t bg-background-subtle">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-            <span className="text-gray-600">Origin</span>
+            <div className="w-4 h-4 bg-info rounded-full"></div>
+            <span className="text-muted-foreground">Origin</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-            <span className="text-gray-600">Destination</span>
+            <div className="w-4 h-4 bg-success rounded-full"></div>
+            <span className="text-muted-foreground">Destination</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-4 h-4 bg-info rounded-full flex items-center justify-center">
               <Car className="h-2.5 w-2.5 text-white" />
             </div>
-            <span className="text-gray-600">Your Vehicle</span>
+            <span className="text-muted-foreground">Your Vehicle</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
-            <span className="text-gray-600">Waypoints</span>
+            <div className="w-4 h-4 bg-info rounded-full"></div>
+            <span className="text-muted-foreground">Waypoints</span>
           </div>
         </div>
       </div>
 
       {/* Production Note */}
       <div className="px-4 pb-4">
-        <div className="p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 text-center">
+        <div className="p-2 bg-info-subtle border border-info/25 rounded text-xs text-info text-center">
           🗺️ Production: Google Maps / Mapbox integration with real GPS tracking
         </div>
       </div>

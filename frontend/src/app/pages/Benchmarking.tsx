@@ -212,11 +212,11 @@ export default function Benchmarking() {
   const getPerformanceIndicator = (peerEmissions: number) => {
     const diff = ((peerEmissions - ourEmissionsPerEmployee) / ourEmissionsPerEmployee) * 100;
     if (Math.abs(diff) < 5) {
-      return { icon: '=', color: 'text-gray-600', text: 'Similar' };
+      return { icon: '=', color: 'text-muted-foreground', text: 'Similar' };
     } else if (diff > 0) {
-      return { icon: <TrendingUp className="h-4 w-4" />, color: 'text-green-600', text: 'Better' };
+      return { icon: <TrendingUp className="h-4 w-4" />, color: 'text-success', text: 'Better' };
     } else {
-      return { icon: <TrendingDown className="h-4 w-4" />, color: 'text-red-600', text: 'Worse' };
+      return { icon: <TrendingDown className="h-4 w-4" />, color: 'text-destructive', text: 'Worse' };
     }
   };
 
@@ -225,8 +225,8 @@ export default function Benchmarking() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Peer Benchmarking</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Peer Benchmarking</h1>
+          <p className="text-muted-foreground mt-1">
             Compare performance against industry peers
           </p>
         </div>
@@ -246,12 +246,12 @@ export default function Benchmarking() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Our Performance</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Our Performance</p>
+              <p className="text-2xl font-bold text-foreground">
                 {ourEmissionsPerEmployee.toFixed(2)} <span className="text-sm font-normal">tCO₂e/emp</span>
               </p>
             </div>
@@ -260,12 +260,12 @@ export default function Benchmarking() {
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <TrendingUp className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Peer Average</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Peer Average</p>
+              <p className="text-2xl font-bold text-foreground">
                 {avgPeerEmissions.toFixed(2)} <span className="text-sm font-normal">tCO₂e/emp</span>
               </p>
             </div>
@@ -274,12 +274,12 @@ export default function Benchmarking() {
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">vs Peer Avg</p>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-sm text-muted-foreground">vs Peer Avg</p>
+              <p className="text-2xl font-bold text-success">
                 {(((avgPeerEmissions - ourEmissionsPerEmployee) / avgPeerEmissions) * 100).toFixed(1)}% better
               </p>
             </div>
@@ -288,12 +288,12 @@ export default function Benchmarking() {
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Ranking</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Ranking</p>
+              <p className="text-2xl font-bold text-foreground">
                 #{ourRanking} <span className="text-sm font-normal">of {peers.length + 1}</span>
               </p>
             </div>
@@ -303,15 +303,15 @@ export default function Benchmarking() {
 
       {/* Comparison Chart */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Emissions per Employee Comparison</h3>
+        <h3 className="font-semibold text-foreground mb-4">Emissions per Employee Comparison</h3>
         <div className="space-y-3">
           {/* Our Company */}
           <div className="flex items-center gap-4">
             <div className="w-48 flex items-center gap-2">
               <Badge variant="default">Our Company</Badge>
             </div>
-            <div className="flex-1 bg-blue-100 h-10 rounded-lg relative" style={{ width: `${(ourEmissionsPerEmployee / 1) * 100}%` }}>
-              <div className="absolute right-2 top-2 text-sm font-medium text-blue-900">
+            <div className="flex-1 bg-info-subtle h-10 rounded-lg relative" style={{ width: `${(ourEmissionsPerEmployee / 1) * 100}%` }}>
+              <div className="absolute right-2 top-2 text-sm font-medium text-info">
                 {ourEmissionsPerEmployee.toFixed(2)} tCO₂e/emp
               </div>
             </div>
@@ -320,9 +320,9 @@ export default function Benchmarking() {
           {/* Peer Companies */}
           {peers.map((peer) => (
             <div key={peer.id} className="flex items-center gap-4">
-              <div className="w-48 truncate text-sm text-gray-700">{peer.name}</div>
-              <div className="flex-1 bg-gray-100 h-10 rounded-lg relative" style={{ width: `${(peer.emissionsPerEmployee / 1) * 100}%` }}>
-                <div className="absolute right-2 top-2 text-sm font-medium text-gray-700">
+              <div className="w-48 truncate text-sm text-foreground">{peer.name}</div>
+              <div className="flex-1 bg-muted h-10 rounded-lg relative" style={{ width: `${(peer.emissionsPerEmployee / 1) * 100}%` }}>
+                <div className="absolute right-2 top-2 text-sm font-medium text-foreground">
                   {peer.emissionsPerEmployee.toFixed(2)} tCO₂e/emp
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function Benchmarking() {
       {/* Peer Companies Table */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-semibold text-gray-900">Peer Companies</h3>
+          <h3 className="font-semibold text-foreground">Peer Companies</h3>
           <Select defaultValue="all">
             <SelectTrigger className="w-48">
               <SelectValue />
@@ -365,7 +365,7 @@ export default function Benchmarking() {
             {peers.map((peer) => {
               const indicator = getPerformanceIndicator(peer.emissionsPerEmployee);
               return (
-                <TableRow key={peer.id} className="hover:bg-gray-50">
+                <TableRow key={peer.id} className="hover:bg-background-subtle">
                   <TableCell className="font-medium">{peer.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{peer.industry}</Badge>
@@ -380,8 +380,8 @@ export default function Benchmarking() {
                       <span className="text-sm font-medium">{indicator.text}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">{peer.dataSource}</TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-muted-foreground">{peer.dataSource}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
                     {new Date(peer.lastUpdated).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
@@ -611,12 +611,12 @@ export default function Benchmarking() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+              <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm text-muted-foreground mb-2">
                 Drag and drop your file here, or click to browse
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Supported formats: CSV, Excel (.xlsx)
               </p>
               <Button className="mt-4" variant="outline">

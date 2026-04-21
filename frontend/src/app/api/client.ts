@@ -1,14 +1,9 @@
 /**
  * CoShift API Client
- * Base configuration, token management, and mock fallback.
- *
- * Set USE_MOCK=true to use frontend mock data instead of hitting the backend.
- * When the FastAPI backend is running, set USE_MOCK=false.
+ * Base configuration and token management.
  */
 
-// Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'; // Default: true (mock mode)
 
 // Types
 export interface ApiResponse<T = any> {
@@ -54,12 +49,6 @@ export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_KEY);
 }
 
-// Simulated delay for mock mode
-export function simulateDelay(minMs = 100, maxMs = 400): Promise<void> {
-  const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 // Build query string from params
 function buildQueryString(params?: Record<string, any>): string {
   if (!params) return '';
@@ -102,7 +91,6 @@ async function apiFetch<T>(
       if (response.status === 401) {
         const refreshed = await attemptTokenRefresh();
         if (refreshed) {
-          // Retry original request
           headers['Authorization'] = `Bearer ${getToken()}`;
           const retryResponse = await fetch(url, {
             method,
@@ -173,6 +161,3 @@ export const api = {
   delete: <T>(path: string, config?: RequestConfig) =>
     apiFetch<T>('DELETE', path, undefined, config),
 };
-
-// Export mock mode flag
-export const isMockMode = (): boolean => USE_MOCK;

@@ -1,0 +1,127 @@
+/**
+ * PRIMITIVE DESIGN TOKENS
+ *
+ * These are raw values — the single source of truth for every design decision.
+ * NEVER reference these directly in components. Use the semantic aliases in
+ * theme.css (--background, --primary, etc.) which automatically switch between
+ * light and dark themes.
+ *
+ * Naming convention: --ds-<category>-<scale>
+ */
+
+:root {
+  /* ------------------------------------------------------------------ */
+  /* Brand palette                                                        */
+  /* ------------------------------------------------------------------ */
+  --ds-brand-50:   #e6faf4;
+  --ds-brand-100:  #b3f0dd;
+  --ds-brand-200:  #80e6c6;
+  --ds-brand-300:  #4ddcaf;
+  --ds-brand-400:  #26d49e;
+  --ds-brand-500:  #00bc7d;   /* primary brand green */
+  --ds-brand-600:  #009689;
+  --ds-brand-700:  #007a6f;
+  --ds-brand-800:  #005c53;
+  --ds-brand-900:  #003d37;
+
+  /* ------------------------------------------------------------------ */
+  /* Neutral palette                                                      */
+  /* ------------------------------------------------------------------ */
+  --ds-neutral-0:   #ffffff;
+  --ds-neutral-50:  #f8f9fa;
+  --ds-neutral-100: #f3f3f5;
+  --ds-neutral-150: #ececf0;
+  --ds-neutral-200: #e2e4e9;
+  --ds-neutral-300: #cbced4;
+  --ds-neutral-400: #9ca0aa;
+  --ds-neutral-500: #717182;
+  --ds-neutral-600: #4b4b60;
+  --ds-neutral-700: #2f2f43;
+  --ds-neutral-800: #1a1a2e;
+  --ds-neutral-900: #030213;
+
+  /* ------------------------------------------------------------------ */
+  /* Status: Success                                                      */
+  /* ------------------------------------------------------------------ */
+  --ds-success-50:  #f0fdf4;
+  --ds-success-100: #dcfce7;
+  --ds-success-200: #bbf7d0;
+  --ds-success-500: #22c55e;
+  --ds-success-600: #16a34a;
+  --ds-success-700: #15803d;
+
+  /* ------------------------------------------------------------------ */
+  /* Status: Warning                                                      */
+  /* ------------------------------------------------------------------ */
+  --ds-warning-50:  #fffbeb;
+  --ds-warning-100: #fef3c7;
+  --ds-warning-200: #fde68a;
+  --ds-warning-500: #f59e0b;
+  --ds-warning-600: #d97706;
+  --ds-warning-700: #b45309;
+
+  /* ------------------------------------------------------------------ */
+  /* Status: Error / Destructive                                         */
+  /* ------------------------------------------------------------------ */
+  --ds-error-50:  #fff1f2;
+  --ds-error-100: #ffe4e6;
+  --ds-error-200: #fecdd3;
+  --ds-error-500: #d4183d;
+  --ds-error-600: #b91c1c;
+  --ds-error-700: #991b1b;
+
+  /* ------------------------------------------------------------------ */
+  /* Status: Info                                                         */
+  /* ------------------------------------------------------------------ */
+  --ds-info-50:  #eff6ff;
+  --ds-info-100: #dbeafe;
+  --ds-info-200: #bfdbfe;
+  --ds-info-500: #3b82f6;
+  --ds-info-600: #2563eb;
+  --ds-info-700: #1d4ed8;
+
+  /* ------------------------------------------------------------------ */
+  /* Shadows                                                             */
+  /* ------------------------------------------------------------------ */
+  --ds-shadow-xs:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ds-shadow-sm:  0 1px 3px 0 rgb(0 0 0 / 0.10), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --ds-shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --ds-shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --ds-shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.10), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --ds-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ------------------------------------------------------------------ */
+  /* Z-index scale                                                        */
+  /* ------------------------------------------------------------------ */
+  --ds-z-base:    0;
+  --ds-z-raised:  10;
+  --ds-z-overlay: 20;
+  --ds-z-modal:   50;
+  --ds-z-popover: 100;
+  --ds-z-toast:   200;
+  --ds-z-topnav:  500;
+
+  /* ------------------------------------------------------------------ */
+  /* Overlay backdrop (always dark regardless of theme)                  */
+  /* ------------------------------------------------------------------ */
+  --ds-overlay-bg: rgb(0 0 0 / 0.5);
+
+  /* ------------------------------------------------------------------ */
+  /* Motion / Transition                                                  */
+  /* ------------------------------------------------------------------ */
+  --ds-duration-fast:   100ms;
+  --ds-duration-base:   200ms;
+  --ds-duration-slow:   300ms;
+  --ds-ease:            cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ------------------------------------------------------------------ */
+  /* Layout dimensions                                                    */
+  /* Reference these in AppShell and layout components instead of        */
+  /* hardcoded Tailwind values (ml-72, mt-14, etc.)                      */
+  /* ------------------------------------------------------------------ */
+  --ds-topnav-height:          4rem;     /* h-16 = 64px */
+  --ds-sidebar-width:          18rem;    /* w-72 = 288px */
+  --ds-sidebar-width-collapsed: 4rem;   /* w-16 = 64px */
+  --ds-page-pad-x:             4rem;    /* px-16 = 64px */
+  --ds-page-pad-y:             4rem;    /* py-16 = 64px */
+}

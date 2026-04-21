@@ -60,11 +60,11 @@ export default function InitiativeTracker() {
   const totalActualReduction = initiatives.reduce((sum, i) => sum + i.actualReduction, 0);
 
   const statusColors = {
-    draft: 'bg-gray-100 text-gray-700 border-gray-200',
-    pending: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    approved: 'bg-blue-50 text-blue-700 border-blue-200',
-    active: 'bg-green-50 text-green-700 border-green-200',
-    completed: 'bg-purple-50 text-purple-700 border-purple-200',
+    draft: 'bg-muted text-foreground border-border',
+    pending: 'bg-warning-subtle text-warning border-warning/25',
+    approved: 'bg-info-subtle text-info border-info/25',
+    active: 'bg-success-subtle text-success border-success/25',
+    completed: 'bg-info-subtle text-info border-info/25',
   };
 
   const handleCreateInitiative = () => {
@@ -150,8 +150,8 @@ export default function InitiativeTracker() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Initiative Tracker</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Initiative Tracker</h1>
+          <p className="text-muted-foreground mt-1">
             Track reduction initiatives with budget and approval workflow
           </p>
         </div>
@@ -235,45 +235,45 @@ export default function InitiativeTracker() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Initiatives</p>
-              <p className="text-2xl font-bold text-gray-900">{activeInitiatives.length}</p>
+              <p className="text-sm text-muted-foreground">Active Initiatives</p>
+              <p className="text-2xl font-bold text-foreground">{activeInitiatives.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <DollarSign className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <DollarSign className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Budget</p>
-              <p className="text-2xl font-bold text-gray-900">${(totalBudget / 1000).toFixed(0)}K</p>
+              <p className="text-sm text-muted-foreground">Total Budget</p>
+              <p className="text-2xl font-bold text-foreground">${(totalBudget / 1000).toFixed(0)}K</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Expected Reduction</p>
-              <p className="text-2xl font-bold text-gray-900">{totalExpectedReduction} tCO₂e</p>
+              <p className="text-sm text-muted-foreground">Expected Reduction</p>
+              <p className="text-2xl font-bold text-foreground">{totalExpectedReduction} tCO₂e</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertCircle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Actual vs Expected</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Actual vs Expected</p>
+              <p className="text-2xl font-bold text-foreground">
                 {((totalActualReduction / totalExpectedReduction) * 100).toFixed(0)}%
               </p>
             </div>
@@ -284,7 +284,7 @@ export default function InitiativeTracker() {
       {/* Initiatives Table */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">All Initiatives</h2>
+          <h2 className="text-lg font-semibold text-foreground">All Initiatives</h2>
           <div className="flex items-center gap-2">
             <Select defaultValue="all">
               <SelectTrigger className="w-40">
@@ -324,11 +324,11 @@ export default function InitiativeTracker() {
               const gap = initiative.expectedReduction - initiative.actualReduction;
 
               return (
-                <TableRow key={initiative.id} className="hover:bg-gray-50">
+                <TableRow key={initiative.id} className="hover:bg-background-subtle">
                   <TableCell className="font-medium">{initiative.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-gray-400" />
+                      <User className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">{initiative.owner}</span>
                     </div>
                   </TableCell>
@@ -336,7 +336,7 @@ export default function InitiativeTracker() {
                     ${(initiative.budget / 1000).toFixed(0)}K
                   </TableCell>
                   <TableCell className="text-right">{initiative.expectedReduction}</TableCell>
-                  <TableCell className="text-right font-medium text-green-600">
+                  <TableCell className="text-right font-medium text-success">
                     {initiative.actualReduction}
                   </TableCell>
                   <TableCell className="text-right">
@@ -345,7 +345,7 @@ export default function InitiativeTracker() {
                         <span className="text-sm font-medium">{progressPercent.toFixed(0)}%</span>
                         <Badge
                           variant={isOnTrack ? 'outline' : 'secondary'}
-                          className={isOnTrack ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}
+                          className={isOnTrack ? 'bg-success-subtle text-success border-success/25' : 'bg-destructive-subtle text-destructive border-destructive/25'}
                         >
                           {isOnTrack ? 'On Track' : `Gap: ${gap}`}
                         </Badge>
@@ -354,7 +354,7 @@ export default function InitiativeTracker() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       <span>{new Date(initiative.startDate).toLocaleDateString()} - {new Date(initiative.endDate).toLocaleDateString()}</span>
                     </div>
@@ -409,19 +409,19 @@ export default function InitiativeTracker() {
 
       {/* At-Risk Initiatives */}
       {initiatives.filter(i => i.actualReduction / i.expectedReduction < 0.8 && i.status === 'active').length > 0 && (
-        <Card className="p-6 bg-yellow-50 border-yellow-200">
+        <Card className="p-6 bg-warning-subtle border-warning/25">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900 mb-2">At-Risk Initiatives Require Attention</h3>
+              <h3 className="font-semibold text-warning mb-2">At-Risk Initiatives Require Attention</h3>
               <div className="space-y-2">
                 {initiatives
                   .filter(i => i.actualReduction / i.expectedReduction < 0.8 && i.status === 'active')
                   .map(initiative => (
-                    <div key={initiative.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <div key={initiative.id} className="flex items-center justify-between p-3 bg-card backdrop-blur-md rounded-[14px] border border-border-subtle/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                       <div>
-                        <p className="font-medium text-gray-900">{initiative.name}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="font-medium text-foreground">{initiative.name}</p>
+                        <p className="text-sm text-muted-foreground">
                           {initiative.actualReduction} / {initiative.expectedReduction} tCO₂e achieved
                         </p>
                       </div>

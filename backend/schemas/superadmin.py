@@ -97,6 +97,14 @@ class UserSummaryRead(BaseModel):
         from_attributes = True
 
 
+class TenantUserCreate(BaseModel):
+    email: EmailStr
+    name: str
+    password: str
+    role: str = "admin"
+    department: Optional[str] = None
+
+
 class UserRoleUpdate(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None

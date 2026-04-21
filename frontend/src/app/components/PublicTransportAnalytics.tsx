@@ -194,8 +194,8 @@ export default function PublicTransportAnalytics() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Public Transport Analytics</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Public Transport Analytics</h1>
+          <p className="text-muted-foreground mt-1">
             Employee commuting patterns across public transport networks
           </p>
         </div>
@@ -203,48 +203,48 @@ export default function PublicTransportAnalytics() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Users className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{formatNumber(totalUsers)}</span>
+            <span className="text-2xl font-semibold text-foreground">{formatNumber(totalUsers)}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Active Users</p>
-          <p className="text-xs text-green-600 mt-1">+14.2% vs last month</p>
+          <p className="text-sm text-muted-foreground">Active Users</p>
+          <p className="text-xs text-success mt-1">+14.2% vs last month</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <MapPin className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <MapPin className="h-5 w-5 text-success" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{formatNumber(totalTrips)}</span>
+            <span className="text-2xl font-semibold text-foreground">{formatNumber(totalTrips)}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Total Trips</p>
-          <p className="text-xs text-green-600 mt-1">Jan 2026</p>
+          <p className="text-sm text-muted-foreground">Total Trips</p>
+          <p className="text-xs text-success mt-1">Jan 2026</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-warning" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{formatEmissions(totalEmissions)}</span>
+            <span className="text-2xl font-semibold text-foreground">{formatEmissions(totalEmissions)}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Total Emissions</p>
-          <p className="text-xs text-green-600 mt-1">68% below car alternative</p>
+          <p className="text-sm text-muted-foreground">Total Emissions</p>
+          <p className="text-xs text-success mt-1">68% below car alternative</p>
         </Card>
 
-        <Card className="p-4 border border-gray-200">
+        <Card className="p-4 border border-border">
           <div className="flex items-center justify-between mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Euro className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Euro className="h-5 w-5 text-info" />
             </div>
-            <span className="text-2xl font-semibold text-[#101828]">{formatCurrency(totalSavings, 'EUR')}</span>
+            <span className="text-2xl font-semibold text-foreground">{formatCurrency(totalSavings, 'EUR')}</span>
           </div>
-          <p className="text-sm text-[#6a7282]">Cost Savings</p>
-          <p className="text-xs text-[#4a5565] mt-1">Through transit benefits</p>
+          <p className="text-sm text-muted-foreground">Cost Savings</p>
+          <p className="text-xs text-muted-foreground mt-1">Through transit benefits</p>
         </Card>
       </div>
 
@@ -267,36 +267,36 @@ export default function PublicTransportAnalytics() {
 
         {/* Transport Modes Tab */}
         <TabsContent value="modes" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">Public Transport Usage</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Public Transport Usage</h3>
             <div className="space-y-3">
               {transportData.map((mode) => {
                 const ModeIcon = getModeIcon(mode.mode);
                 return (
                   <div
                     key={mode.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#00bc7d] transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:border-brand-500 transition-colors cursor-pointer"
                     onClick={() => handleViewDetails(mode)}
                   >
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="p-3 bg-gray-100 rounded-lg">
-                        <ModeIcon className="h-6 w-6 text-[#4a5565]" />
+                      <div className="p-3 bg-muted rounded-lg">
+                        <ModeIcon className="h-6 w-6 text-muted-foreground" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-[#101828]">{mode.mode}</span>
+                          <span className="font-semibold text-foreground">{mode.mode}</span>
                           <Badge variant="outline" className="text-xs">{mode.operator}</Badge>
                         </div>
-                        <p className="text-sm text-[#6a7282]">{mode.coverage.join(' • ')}</p>
+                        <p className="text-sm text-muted-foreground">{mode.coverage.join(' • ')}</p>
                         <div className="flex items-center gap-4 mt-2">
-                          <span className="text-xs text-[#4a5565]">
+                          <span className="text-xs text-muted-foreground">
                             <Users className="h-3 w-3 inline mr-1" />
                             {mode.users} users
                           </span>
-                          <span className="text-xs text-[#4a5565]">
+                          <span className="text-xs text-muted-foreground">
                             {formatNumber(mode.trips)} trips
                           </span>
-                          <span className="text-xs text-[#4a5565]">
+                          <span className="text-xs text-muted-foreground">
                             {formatEmissions(mode.emissions)}
                           </span>
                         </div>
@@ -304,16 +304,16 @@ export default function PublicTransportAnalytics() {
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <p className="text-sm font-medium text-[#101828]">{formatCurrency(mode.costSavings, 'EUR')}</p>
-                        <p className="text-xs text-[#6a7282]">Cost savings</p>
+                        <p className="text-sm font-medium text-foreground">{formatCurrency(mode.costSavings, 'EUR')}</p>
+                        <p className="text-xs text-muted-foreground">Cost savings</p>
                       </div>
                       {mode.trend > 0 && (
-                        <Badge className="bg-green-100 text-green-700 border-green-200">
+                        <Badge className="bg-success-subtle text-success border-success/25">
                           <TrendingUp className="h-3 w-3 mr-1" />
                           {formatPercentage(mode.trend)}
                         </Badge>
                       )}
-                      <ChevronRight className="h-5 w-5 text-[#6a7282]" />
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </div>
                   </div>
                 );
@@ -325,8 +325,8 @@ export default function PublicTransportAnalytics() {
         {/* Mode Split Tab */}
         <TabsContent value="split" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Transport Mode Distribution</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Transport Mode Distribution</h3>
               <div style={{ height: '300px', width: '100%' }}>
                 <Doughnut
                   data={{
@@ -344,8 +344,8 @@ export default function PublicTransportAnalytics() {
               </div>
             </Card>
 
-            <Card className="p-6 border border-gray-200">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Mode Statistics</h3>
+            <Card className="p-6 border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Mode Statistics</h3>
               <div className="space-y-3">
                 {modeSplitData.map((mode, index) => (
                   <div key={index} className="flex items-center justify-between">
@@ -354,12 +354,12 @@ export default function PublicTransportAnalytics() {
                         className="w-4 h-4 rounded"
                         style={{ backgroundColor: mode.color }}
                       />
-                      <span className="text-sm text-[#101828]">{mode.mode}</span>
+                      <span className="text-sm text-foreground">{mode.mode}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-medium text-[#101828]">{mode.value} users</span>
+                      <span className="text-sm font-medium text-foreground">{mode.value} users</span>
                       <div className="w-24">
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div
                             className="h-full"
                             style={{
@@ -369,7 +369,7 @@ export default function PublicTransportAnalytics() {
                           />
                         </div>
                       </div>
-                      <span className="text-xs text-[#6a7282] w-12 text-right">
+                      <span className="text-xs text-muted-foreground w-12 text-right">
                         {formatPercentage((mode.value / totalUsers) * 100)}
                       </span>
                     </div>
@@ -382,8 +382,8 @@ export default function PublicTransportAnalytics() {
 
         {/* Trends Tab */}
         <TabsContent value="trends" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-[#101828] mb-4">6-Month Usage Trends</h3>
+          <Card className="p-6 border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-4">6-Month Usage Trends</h3>
             <div style={{ height: '400px', width: '100%' }}>
               <Line
                 data={{
@@ -434,9 +434,9 @@ export default function PublicTransportAnalytics() {
 
         {/* Emissions Comparison Tab */}
         <TabsContent value="comparison" className="space-y-4 mt-6">
-          <Card className="p-6 border border-gray-200">
+          <Card className="p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#101828]">
+              <h3 className="text-lg font-semibold text-foreground">
                 Emission Factors Comparison (g CO₂e/km)
               </h3>
             </div>
@@ -460,12 +460,12 @@ export default function PublicTransportAnalytics() {
               />
             </div>
 
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="mt-6 p-4 bg-success-subtle border border-success/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Info className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-green-900">Public Transport Advantage</p>
-                  <p className="text-sm text-green-700 mt-1">
+                  <p className="text-sm font-medium text-success">Public Transport Advantage</p>
+                  <p className="text-sm text-success mt-1">
                     Employees using public transport modes generate{' '}
                     <strong>68-80% lower emissions</strong> compared to private petrol cars, representing significant environmental benefits and cost savings.
                   </p>
@@ -483,7 +483,7 @@ export default function PublicTransportAnalytics() {
             <DialogTitle className="text-xl flex items-center gap-2">
               {selectedMode && (
                 <>
-                  {React.createElement(getModeIcon(selectedMode.mode), { className: 'h-6 w-6 text-[#00bc7d]' })}
+                  {React.createElement(getModeIcon(selectedMode.mode), { className: 'h-6 w-6 text-brand-500' })}
                   {selectedMode.mode}
                 </>
               )}
@@ -493,33 +493,33 @@ export default function PublicTransportAnalytics() {
           {selectedMode && (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Active Users</p>
-                  <p className="text-2xl font-semibold text-[#101828]">{selectedMode.users}</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Active Users</p>
+                  <p className="text-2xl font-semibold text-foreground">{selectedMode.users}</p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Total Trips</p>
-                  <p className="text-2xl font-semibold text-[#101828]">{formatNumber(selectedMode.trips)}</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Total Trips</p>
+                  <p className="text-2xl font-semibold text-foreground">{formatNumber(selectedMode.trips)}</p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Total Distance</p>
-                  <p className="text-2xl font-semibold text-[#101828]">{formatNumber(selectedMode.totalKm)} km</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Total Distance</p>
+                  <p className="text-2xl font-semibold text-foreground">{formatNumber(selectedMode.totalKm)} km</p>
                 </Card>
-                <Card className="p-4 border border-gray-200">
-                  <p className="text-sm text-[#6a7282] mb-1">Total Emissions</p>
-                  <p className="text-2xl font-semibold text-[#101828]">{formatEmissions(selectedMode.emissions)}</p>
+                <Card className="p-4 border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">Total Emissions</p>
+                  <p className="text-2xl font-semibold text-foreground">{formatEmissions(selectedMode.emissions)}</p>
                 </Card>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-[#101828] mb-2">Emission Factor</p>
-                <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                <p className="text-sm font-medium text-foreground mb-2">Emission Factor</p>
+                <Badge className="bg-info-subtle text-info border-info/25">
                   {selectedMode.emissionFactor} kg CO₂e/km
                 </Badge>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-[#101828] mb-2">Coverage Area</p>
+                <p className="text-sm font-medium text-foreground mb-2">Coverage Area</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedMode.coverage.map((area, index) => (
                     <Badge key={index} variant="outline">
@@ -530,12 +530,12 @@ export default function PublicTransportAnalytics() {
                 </div>
               </div>
 
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Euro className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <Euro className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-green-900">Transit Benefit Savings</p>
-                    <p className="text-sm text-green-700 mt-1">
+                    <p className="text-sm font-medium text-success">Transit Benefit Savings</p>
+                    <p className="text-sm text-success mt-1">
                       Total employee savings through transit benefits: <strong>{formatCurrency(selectedMode.costSavings, 'EUR')}</strong>
                     </p>
                   </div>
@@ -543,12 +543,12 @@ export default function PublicTransportAnalytics() {
               </div>
 
               {selectedMode.trend > 0 && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <TrendingUp className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <TrendingUp className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-blue-900">Growth Trend</p>
-                      <p className="text-sm text-blue-700 mt-1">
+                      <p className="text-sm font-medium text-info">Growth Trend</p>
+                      <p className="text-sm text-info mt-1">
                         Usage has increased by <strong>{formatPercentage(selectedMode.trend)}</strong> compared to the
                         previous month, indicating strong employee adoption.
                       </p>
@@ -573,18 +573,18 @@ export default function PublicTransportAnalytics() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-2">
-              <CreditCard className="h-6 w-6 text-[#00bc7d]" />
+              <CreditCard className="h-6 w-6 text-brand-500" />
               Leap Card Connected
             </DialogTitle>
             <DialogDescription>Your Leap Card is now connected and tracking your journeys.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <Card className="p-4 border border-gray-200">
-              <p className="text-sm text-[#6a7282] mb-1">Total Journeys</p>
-              <p className="text-2xl font-semibold text-[#101828]">{leapCardJourneys}</p>
+            <Card className="p-4 border border-border">
+              <p className="text-sm text-muted-foreground mb-1">Total Journeys</p>
+              <p className="text-2xl font-semibold text-foreground">{leapCardJourneys}</p>
             </Card>
             <Button
-              className="w-full bg-[#00bc7d] text-white"
+              className="w-full bg-brand-500 text-white"
               onClick={() => setIsLeapCardConnected(false)}
             >
               Disconnect Leap Card

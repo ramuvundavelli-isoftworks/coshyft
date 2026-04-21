@@ -146,8 +146,8 @@ export default function BaselineSetup() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Baseline Setup</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Baseline Setup</h1>
+          <p className="text-muted-foreground mt-1">
             Define and lock organizational baseline for compliance reporting
           </p>
         </div>
@@ -175,18 +175,18 @@ export default function BaselineSetup() {
       </div>
 
       {/* Status Card */}
-      <Card className={`p-6 ${currentBaseline.locked ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+      <Card className={`p-6 ${currentBaseline.locked ? 'bg-success-subtle border-success/25' : 'bg-warning-subtle border-warning/25'}`}>
         <div className="flex items-start gap-3">
           {currentBaseline.locked ? (
-            <Lock className="h-5 w-5 text-green-600 mt-0.5" />
+            <Lock className="h-5 w-5 text-success mt-0.5" />
           ) : (
-            <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
           )}
           <div className="flex-1">
-            <h3 className={`font-semibold mb-1 ${currentBaseline.locked ? 'text-green-900' : 'text-yellow-900'}`}>
+            <h3 className={`font-semibold mb-1 ${currentBaseline.locked ? 'text-success' : 'text-warning'}`}>
               {currentBaseline.locked ? 'Baseline is Locked' : 'Baseline is Unlocked'}
             </h3>
-            <p className={`text-sm ${currentBaseline.locked ? 'text-green-700' : 'text-yellow-700'}`}>
+            <p className={`text-sm ${currentBaseline.locked ? 'text-success' : 'text-warning'}`}>
               {currentBaseline.locked
                 ? `This baseline was approved and locked on ${currentBaseline.approvedDate} by ${currentBaseline.approvedBy}. Changes require unlocking first.`
                 : 'This baseline is still being edited and has not been locked for reporting yet.'}
@@ -199,12 +199,12 @@ export default function BaselineSetup() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Basic Info */}
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Basic Information</h3>
+          <h3 className="font-semibold text-foreground mb-4">Basic Information</h3>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm text-gray-600">Baseline Year</Label>
+              <Label className="text-sm text-muted-foreground">Baseline Year</Label>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-2xl font-bold text-gray-900">{currentBaseline.year}</p>
+                <p className="text-2xl font-bold text-foreground">{currentBaseline.year}</p>
                 {!currentBaseline.locked && (
                   <Button 
                     variant="ghost" 
@@ -220,10 +220,10 @@ export default function BaselineSetup() {
               </div>
             </div>
             <div>
-              <Label className="text-sm text-gray-600">Total Emissions</Label>
+              <Label className="text-sm text-muted-foreground">Total Emissions</Label>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-2xl font-bold text-gray-900">
-                  {currentBaseline.emissions.toLocaleString()} <span className="text-base font-normal text-gray-600">tCO₂e</span>
+                <p className="text-2xl font-bold text-foreground">
+                  {currentBaseline.emissions.toLocaleString()} <span className="text-base font-normal text-muted-foreground">tCO₂e</span>
                 </p>
                 {!currentBaseline.locked && (
                   <Button 
@@ -240,10 +240,10 @@ export default function BaselineSetup() {
               </div>
             </div>
             <div>
-              <Label className="text-sm text-gray-600 mb-2 block">Status</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Status</Label>
               <Badge
                 variant="outline"
-                className={currentBaseline.locked ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}
+                className={currentBaseline.locked ? 'bg-success-subtle text-success border-success/25' : 'bg-warning-subtle text-warning border-warning/25'}
               >
                 {currentBaseline.locked ? 'Locked' : 'Unlocked'}
               </Badge>
@@ -253,41 +253,41 @@ export default function BaselineSetup() {
 
         {/* Data Sources */}
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Data Sources</h3>
+          <h3 className="font-semibold text-foreground mb-4">Data Sources</h3>
           <div className="space-y-3">
             <div>
-              <Label className="text-sm text-gray-600">Primary Source</Label>
-              <p className="text-sm font-medium text-gray-900 mt-1">{currentBaseline.dataSource}</p>
+              <Label className="text-sm text-muted-foreground">Primary Source</Label>
+              <p className="text-sm font-medium text-foreground mt-1">{currentBaseline.dataSource}</p>
             </div>
             <div>
-              <Label className="text-sm text-gray-600">Emission Factor Version</Label>
-              <p className="text-sm font-medium text-gray-900 mt-1">{currentBaseline.emissionFactorVersion}</p>
+              <Label className="text-sm text-muted-foreground">Emission Factor Version</Label>
+              <p className="text-sm font-medium text-foreground mt-1">{currentBaseline.emissionFactorVersion}</p>
             </div>
           </div>
         </Card>
 
         {/* Organizational Boundaries */}
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Organizational Coverage</h3>
+          <h3 className="font-semibold text-foreground mb-4">Organizational Coverage</h3>
           <div className="space-y-3">
             <div>
-              <Label className="text-sm text-gray-600">Offices</Label>
+              <Label className="text-sm text-muted-foreground">Offices</Label>
               <div className="mt-2 space-y-2">
                 {currentBaseline.offices.map((office, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm text-gray-900">{office}</span>
+                    <Building2 className="h-4 w-4 text-info" />
+                    <span className="text-sm text-foreground">{office}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div className="pt-3 border-t">
-              <Label className="text-sm text-gray-600">Legal Entities</Label>
+              <Label className="text-sm text-muted-foreground">Legal Entities</Label>
               <div className="mt-2 space-y-2">
                 {currentBaseline.legalEntities.map((entity, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm text-gray-900">{entity}</span>
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <span className="text-sm text-foreground">{entity}</span>
                   </div>
                 ))}
               </div>
@@ -298,14 +298,14 @@ export default function BaselineSetup() {
 
       {/* All Baselines History */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Baseline History</h3>
+        <h3 className="font-semibold text-foreground mb-4">Baseline History</h3>
         <div className="space-y-3">
           {baselines.map((baseline) => (
-            <div key={baseline.year} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+            <div key={baseline.year} className="flex items-center justify-between p-4 border rounded-lg hover:bg-background-subtle">
               <div className="flex items-center gap-4">
                 <div>
-                  <p className="font-medium text-gray-900">Baseline Year {baseline.year}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-foreground">Baseline Year {baseline.year}</p>
+                  <p className="text-sm text-muted-foreground">
                     {baseline.emissions.toLocaleString()} tCO₂e • {baseline.offices.length} offices • {baseline.legalEntities.length} entities
                   </p>
                 </div>
@@ -313,7 +313,7 @@ export default function BaselineSetup() {
               <div className="flex items-center gap-2">
                 <Badge
                   variant="outline"
-                  className={baseline.locked ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}
+                  className={baseline.locked ? 'bg-success-subtle text-success border-success/25' : 'bg-warning-subtle text-warning border-warning/25'}
                 >
                   {baseline.locked ? 'Locked' : 'Unlocked'}
                 </Badge>
@@ -452,8 +452,8 @@ export default function BaselineSetup() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 <strong>Current:</strong> {selectedBaseline?.emissions.toLocaleString()} tCO₂e
               </p>
             </div>
@@ -505,28 +505,28 @@ export default function BaselineSetup() {
           <div className="space-y-4 py-4">
             {baselines.map((baseline, index) => (
               <div key={baseline.year} className="grid grid-cols-4 gap-4">
-                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
-                  <p className="text-sm text-gray-600 mb-1">Year</p>
+                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-background-subtle'}`}>
+                  <p className="text-sm text-muted-foreground mb-1">Year</p>
                   <p className="font-bold">{baseline.year}</p>
                   {baseline.year === currentBaseline.year && <Badge className="mt-2" variant="default">Current</Badge>}
                 </div>
-                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
-                  <p className="text-sm text-gray-600 mb-1">Emissions</p>
+                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-background-subtle'}`}>
+                  <p className="text-sm text-muted-foreground mb-1">Emissions</p>
                   <p className="font-bold">{baseline.emissions.toLocaleString()} tCO₂e</p>
                 </div>
-                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-gray-50'}`}>
-                  <p className="text-sm text-gray-600 mb-1">Status</p>
+                <div className={`p-4 border rounded-lg ${index === 0 ? '' : 'bg-background-subtle'}`}>
+                  <p className="text-sm text-muted-foreground mb-1">Status</p>
                   <Badge
                     variant="outline"
-                    className={baseline.locked ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}
+                    className={baseline.locked ? 'bg-success-subtle text-success border-success/25' : 'bg-warning-subtle text-warning border-warning/25'}
                   >
                     {baseline.locked ? 'Locked' : 'Unlocked'}
                   </Badge>
                 </div>
                 {index > 0 && (
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <p className="text-sm text-gray-600 mb-1">vs Previous</p>
-                    <p className={`font-bold ${baseline.emissions < baselines[index - 1].emissions ? 'text-green-600' : 'text-red-600'}`}>
+                  <div className="p-4 border rounded-lg bg-background-subtle">
+                    <p className="text-sm text-muted-foreground mb-1">vs Previous</p>
+                    <p className={`font-bold ${baseline.emissions < baselines[index - 1].emissions ? 'text-success' : 'text-destructive'}`}>
                       {((baseline.emissions - baselines[index - 1].emissions) / baselines[index - 1].emissions * 100).toFixed(1)}%
                     </p>
                   </div>
@@ -550,12 +550,12 @@ export default function BaselineSetup() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-900 mb-1">Important</p>
-                  <p className="text-sm text-yellow-700">
+                  <p className="text-sm font-medium text-warning mb-1">Important</p>
+                  <p className="text-sm text-warning">
                     Once locked, this baseline will be used for all compliance calculations and reports. 
                     You'll need to unlock it first to make any changes.
                   </p>
@@ -564,15 +564,15 @@ export default function BaselineSetup() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Year:</span>
+                <span className="text-muted-foreground">Year:</span>
                 <span className="font-medium">{currentBaseline.year}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Total Emissions:</span>
+                <span className="text-muted-foreground">Total Emissions:</span>
                 <span className="font-medium">{currentBaseline.emissions.toLocaleString()} tCO₂e</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Data Source:</span>
+                <span className="text-muted-foreground">Data Source:</span>
                 <span className="font-medium">{currentBaseline.dataSource}</span>
               </div>
             </div>

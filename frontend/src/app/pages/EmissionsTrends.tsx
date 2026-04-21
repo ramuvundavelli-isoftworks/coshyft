@@ -61,8 +61,8 @@ export default function EmissionsTrends() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Emissions Trends</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Emissions Trends</h1>
+          <p className="text-muted-foreground mt-1">
             Historical analysis with forecasting and anomaly detection
           </p>
         </div>
@@ -82,45 +82,45 @@ export default function EmissionsTrends() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Trend Direction</p>
-              <p className="text-2xl font-bold text-green-600">Decreasing</p>
+              <p className="text-sm text-muted-foreground">Trend Direction</p>
+              <p className="text-2xl font-bold text-success">Decreasing</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">YoY Change</p>
-              <p className="text-2xl font-bold text-green-600">-9.2%</p>
+              <p className="text-sm text-muted-foreground">YoY Change</p>
+              <p className="text-2xl font-bold text-success">-9.2%</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <BarChart3 className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <BarChart3 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Forecast Accuracy</p>
-              <p className="text-2xl font-bold text-gray-900">92%</p>
+              <p className="text-sm text-muted-foreground">Forecast Accuracy</p>
+              <p className="text-2xl font-bold text-foreground">92%</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertCircle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Anomalies</p>
-              <p className="text-2xl font-bold text-yellow-600">2</p>
+              <p className="text-sm text-muted-foreground">Anomalies</p>
+              <p className="text-2xl font-bold text-warning">2</p>
             </div>
           </div>
         </Card>
@@ -129,7 +129,7 @@ export default function EmissionsTrends() {
       {/* Trend with Forecast */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Historical Trend & Forecast</h3>
+          <h3 className="font-semibold text-foreground">Historical Trend & Forecast</h3>
           <Button
             variant="outline"
             size="sm"
@@ -183,7 +183,7 @@ export default function EmissionsTrends() {
       {/* YoY Comparison */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Year-over-Year Comparison</h3>
+          <h3 className="font-semibold text-foreground">Year-over-Year Comparison</h3>
           <Button
             variant="outline"
             size="sm"
@@ -295,21 +295,21 @@ export default function EmissionsTrends() {
           </DialogHeader>
           <div className="py-4">
             <div className="space-y-3">
-              <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+              <div className="p-4 border border-warning/25 bg-warning-subtle rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
                   <div>
-                    <p className="font-medium text-yellow-900">March 2026 Spike</p>
-                    <p className="text-sm text-yellow-700">Emissions 5% higher than forecast</p>
+                    <p className="font-medium text-warning">March 2026 Spike</p>
+                    <p className="text-sm text-warning">Emissions 5% higher than forecast</p>
                   </div>
                 </div>
               </div>
-              <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+              <div className="p-4 border border-warning/25 bg-warning-subtle rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
                   <div>
-                    <p className="font-medium text-yellow-900">Seasonal Pattern Change</p>
-                    <p className="text-sm text-yellow-700">Unexpected variation detected</p>
+                    <p className="font-medium text-warning">Seasonal Pattern Change</p>
+                    <p className="text-sm text-warning">Unexpected variation detected</p>
                   </div>
                 </div>
               </div>

@@ -66,8 +66,8 @@ export default function OfferRide() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Offer a Ride</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Offer a Ride</h1>
+          <p className="text-muted-foreground mt-1">
             Share your commute and help reduce emissions
           </p>
         </div>
@@ -79,38 +79,38 @@ export default function OfferRide() {
 
       {/* Benefits */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-6 bg-blue-50 border-blue-200">
+        <Card className="p-6 bg-info-subtle border-info/25">
           <div className="text-center">
-            <div className="p-3 bg-blue-100 rounded-full inline-block mb-3">
-              <Car className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-info-subtle rounded-full inline-block mb-3">
+              <Car className="h-6 w-6 text-info" />
             </div>
-            <h3 className="font-semibold text-blue-900 mb-2">Reduce Emissions</h3>
-            <p className="text-sm text-blue-700">Help lower your company's carbon footprint</p>
+            <h3 className="font-semibold text-info mb-2">Reduce Emissions</h3>
+            <p className="text-sm text-info">Help lower your company's carbon footprint</p>
           </div>
         </Card>
-        <Card className="p-6 bg-green-50 border-green-200">
+        <Card className="p-6 bg-success-subtle border-success/25">
           <div className="text-center">
-            <div className="p-3 bg-green-100 rounded-full inline-block mb-3">
-              <Users className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-success-subtle rounded-full inline-block mb-3">
+              <Users className="h-6 w-6 text-success" />
             </div>
-            <h3 className="font-semibold text-green-900 mb-2">Build Community</h3>
-            <p className="text-sm text-green-700">Connect with colleagues on your route</p>
+            <h3 className="font-semibold text-success mb-2">Build Community</h3>
+            <p className="text-sm text-success">Connect with colleagues on your route</p>
           </div>
         </Card>
-        <Card className="p-6 bg-purple-50 border-purple-200">
+        <Card className="p-6 bg-info-subtle border-info/25">
           <div className="text-center">
-            <div className="p-3 bg-purple-100 rounded-full inline-block mb-3">
-              <CheckCircle className="h-6 w-6 text-purple-600" />
+            <div className="p-3 bg-info-subtle rounded-full inline-block mb-3">
+              <CheckCircle className="h-6 w-6 text-info" />
             </div>
-            <h3 className="font-semibold text-purple-900 mb-2">Earn Rewards</h3>
-            <p className="text-sm text-purple-700">Get points for each successful carpool</p>
+            <h3 className="font-semibold text-foreground mb-2">Earn Rewards</h3>
+            <p className="text-sm text-info">Get points for each successful carpool</p>
           </div>
         </Card>
       </div>
 
       {/* My Offers */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">My Ride Offers</h3>
+        <h3 className="font-semibold text-foreground mb-4">My Ride Offers</h3>
         <div className="space-y-3">
           {myOffers.map((offer) => (
             <div key={offer.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
@@ -118,34 +118,34 @@ export default function OfferRide() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge className={
-                      offer.status === 'active' ? 'bg-green-100 text-green-700' :
-                      offer.status === 'completed' ? 'bg-gray-100 text-gray-700' :
-                      'bg-yellow-100 text-yellow-700'
+                      offer.status === 'active' ? 'bg-success-subtle text-success' :
+                      offer.status === 'completed' ? 'bg-muted text-foreground' :
+                      'bg-warning-subtle text-warning'
                     }>
                       {offer.status}
                     </Badge>
-                    <span className="text-sm text-gray-600">{offer.date} at {offer.time}</span>
+                    <span className="text-sm text-muted-foreground">{offer.date} at {offer.time}</span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <span className="text-gray-600">From: </span>
-                        <span className="font-medium text-gray-900">{offer.from}</span>
+                        <span className="text-muted-foreground">From: </span>
+                        <span className="font-medium text-foreground">{offer.from}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <span className="text-gray-600">To: </span>
-                        <span className="font-medium text-gray-900">{offer.to}</span>
+                        <span className="text-muted-foreground">To: </span>
+                        <span className="font-medium text-foreground">{offer.to}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-400" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <span className="text-gray-600">Requests: </span>
-                        <span className="font-medium text-gray-900">{offer.requests}/{offer.seats}</span>
+                        <span className="text-muted-foreground">Requests: </span>
+                        <span className="font-medium text-foreground">{offer.requests}/{offer.seats}</span>
                       </div>
                     </div>
                   </div>
@@ -158,34 +158,34 @@ export default function OfferRide() {
 
       {/* Quick Tips */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Tips for Offering Rides</h3>
+        <h3 className="font-semibold text-foreground mb-4">Tips for Offering Rides</h3>
         <div className="space-y-3">
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success mt-0.5" />
             <div>
-              <p className="font-medium text-gray-900">Post in Advance</p>
-              <p className="text-sm text-gray-600">Share your ride at least a day before to get more requests</p>
+              <p className="font-medium text-foreground">Post in Advance</p>
+              <p className="text-sm text-muted-foreground">Share your ride at least a day before to get more requests</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success mt-0.5" />
             <div>
-              <p className="font-medium text-gray-900">Be Punctual</p>
-              <p className="text-sm text-gray-600">Arrive on time to build trust with your passengers</p>
+              <p className="font-medium text-foreground">Be Punctual</p>
+              <p className="text-sm text-muted-foreground">Arrive on time to build trust with your passengers</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success mt-0.5" />
             <div>
-              <p className="font-medium text-gray-900">Communicate</p>
-              <p className="text-sm text-gray-600">Keep passengers informed of any changes or delays</p>
+              <p className="font-medium text-foreground">Communicate</p>
+              <p className="text-sm text-muted-foreground">Keep passengers informed of any changes or delays</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success mt-0.5" />
             <div>
-              <p className="font-medium text-gray-900">Safety First</p>
-              <p className="text-sm text-gray-600">Follow all traffic rules and maintain a clean vehicle</p>
+              <p className="font-medium text-foreground">Safety First</p>
+              <p className="text-sm text-muted-foreground">Follow all traffic rules and maintain a clean vehicle</p>
             </div>
           </div>
         </div>
@@ -271,8 +271,8 @@ export default function OfferRide() {
               />
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 <strong>Note:</strong> You'll receive notifications when colleagues request to join your ride.
               </p>
             </div>

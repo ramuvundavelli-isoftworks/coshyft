@@ -76,35 +76,35 @@ export default function TripStatusTimeline({
           <div
             className={`h-10 w-10 rounded-full flex items-center justify-center ${
               statusInfo.color === 'green'
-                ? 'bg-green-100 text-green-600'
+                ? 'bg-success-subtle text-success'
                 : statusInfo.color === 'blue'
-                ? 'bg-blue-100 text-blue-600'
+                ? 'bg-info-subtle text-info'
                 : statusInfo.color === 'yellow'
-                ? 'bg-yellow-100 text-yellow-600'
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-warning-subtle text-warning'
+                : 'bg-muted text-muted-foreground'
             }`}
           >
             <span className="text-lg">{statusInfo.icon}</span>
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-gray-900">{statusInfo.label}</h3>
+              <h3 className="font-semibold text-foreground">{statusInfo.label}</h3>
               <Badge
                 variant={statusInfo.color === 'green' ? 'default' : 'secondary'}
                 className={
                   statusInfo.color === 'green'
-                    ? 'bg-green-600'
+                    ? 'bg-success'
                     : statusInfo.color === 'blue'
-                    ? 'bg-blue-600'
+                    ? 'bg-info'
                     : statusInfo.color === 'yellow'
-                    ? 'bg-yellow-600'
-                    : 'bg-gray-600'
+                    ? 'bg-warning'
+                    : 'bg-muted-foreground'
                 }
               >
                 {statusInfo.label}
               </Badge>
             </div>
-            <p className="text-sm text-gray-600">{statusInfo.description}</p>
+            <p className="text-sm text-muted-foreground">{statusInfo.description}</p>
           </div>
         </div>
       </Card>
@@ -113,7 +113,7 @@ export default function TripStatusTimeline({
 
   return (
     <Card className="p-6">
-      <h3 className="font-semibold text-gray-900 mb-6">Trip Progress</h3>
+      <h3 className="font-semibold text-foreground mb-6">Trip Progress</h3>
 
       {/* Main Status Timeline */}
       <div className="space-y-4 mb-6">
@@ -131,18 +131,18 @@ export default function TripStatusTimeline({
                   <div
                     className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all ${
                       isCompleted
-                        ? 'bg-green-100 border-green-500'
+                        ? 'bg-success-subtle border-success'
                         : isCurrent
-                        ? 'bg-blue-100 border-blue-500 ring-4 ring-blue-100'
-                        : 'bg-gray-100 border-gray-300'
+                        ? 'bg-info-subtle border-info ring-4 ring-blue-100'
+                        : 'bg-muted border-border'
                     }`}
                   >
                     {isCompleted ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success" />
                     ) : isCurrent ? (
-                      <Circle className="h-5 w-5 text-blue-600 fill-blue-600 animate-pulse" />
+                      <Circle className="h-5 w-5 text-info fill-info animate-pulse" />
                     ) : (
-                      <Circle className="h-5 w-5 text-gray-400" />
+                      <Circle className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>
 
@@ -150,7 +150,7 @@ export default function TripStatusTimeline({
                   {!isLast && (
                     <div
                       className={`absolute top-10 left-1/2 transform -translate-x-1/2 w-0.5 h-8 ${
-                        isCompleted ? 'bg-green-500' : 'bg-gray-300'
+                        isCompleted ? 'bg-success' : 'bg-border'
                       }`}
                     ></div>
                   )}
@@ -162,19 +162,19 @@ export default function TripStatusTimeline({
                     <p
                       className={`font-medium ${
                         isCurrent
-                          ? 'text-blue-900'
+                          ? 'text-info'
                           : isCompleted
-                          ? 'text-gray-900'
-                          : 'text-gray-500'
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
                       }`}
                     >
                       {status.label}
                     </p>
                     {isCurrent && (
-                      <Badge className="bg-blue-600">Current</Badge>
+                      <Badge className="bg-info">Current</Badge>
                     )}
                     {isCompleted && (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         <CheckCircle className="h-3 w-3 inline mr-1" />
                         Complete
                       </span>
@@ -182,7 +182,7 @@ export default function TripStatusTimeline({
                   </div>
                   
                   {isCurrent && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {getTripStatusInfo(status.status).description}
                     </p>
                   )}
@@ -196,7 +196,7 @@ export default function TripStatusTimeline({
       {/* Waypoints Section */}
       {waypoints.length > 0 && (
         <div className="pt-6 border-t">
-          <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <h4 className="font-medium text-foreground mb-4 flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Pickup & Dropoff Points
           </h4>
@@ -206,24 +206,24 @@ export default function TripStatusTimeline({
                 key={waypoint.id}
                 className={`flex items-start gap-3 p-3 rounded-lg border ${
                   waypoint.status === 'completed'
-                    ? 'bg-green-50 border-green-200'
+                    ? 'bg-success-subtle border-success/25'
                     : waypoint.status === 'arrived'
-                    ? 'bg-yellow-50 border-yellow-200'
-                    : 'bg-gray-50 border-gray-200'
+                    ? 'bg-warning-subtle border-warning/25'
+                    : 'bg-background-subtle border-border'
                 }`}
               >
                 <div className="flex-shrink-0">
                   {waypoint.status === 'completed' ? (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                   ) : waypoint.status === 'arrived' ? (
-                    <Clock className="h-5 w-5 text-yellow-600 animate-pulse" />
+                    <Clock className="h-5 w-5 text-warning animate-pulse" />
                   ) : (
-                    <Circle className="h-5 w-5 text-gray-400" />
+                    <Circle className="h-5 w-5 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {waypoint.type === 'pickup' ? '📍 Pickup' : '📍 Dropoff'}
                     </p>
                     {waypoint.passengerName && (
@@ -233,14 +233,14 @@ export default function TripStatusTimeline({
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-gray-600">{waypoint.address}</p>
+                  <p className="text-xs text-muted-foreground">{waypoint.address}</p>
                   {waypoint.actualTime && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Completed at {waypoint.actualTime.toLocaleTimeString()}
                     </p>
                   )}
                   {waypoint.scheduledTime && !waypoint.actualTime && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Scheduled for {waypoint.scheduledTime.toLocaleTimeString()}
                     </p>
                   )}
@@ -256,12 +256,12 @@ export default function TripStatusTimeline({
         <div
           className={`p-4 rounded-lg ${
             statusInfo.color === 'green'
-              ? 'bg-green-50 border border-green-200'
+              ? 'bg-success-subtle border border-success/25'
               : statusInfo.color === 'blue'
-              ? 'bg-blue-50 border border-blue-200'
+              ? 'bg-info-subtle border border-info/25'
               : statusInfo.color === 'yellow'
-              ? 'bg-yellow-50 border border-yellow-200'
-              : 'bg-gray-50 border border-gray-200'
+              ? 'bg-warning-subtle border border-warning/25'
+              : 'bg-background-subtle border border-border'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -270,12 +270,12 @@ export default function TripStatusTimeline({
               <p
                 className={`font-semibold ${
                   statusInfo.color === 'green'
-                    ? 'text-green-900'
+                    ? 'text-success'
                     : statusInfo.color === 'blue'
-                    ? 'text-blue-900'
+                    ? 'text-info'
                     : statusInfo.color === 'yellow'
-                    ? 'text-yellow-900'
-                    : 'text-gray-900'
+                    ? 'text-warning'
+                    : 'text-foreground'
                 }`}
               >
                 {statusInfo.label}
@@ -283,12 +283,12 @@ export default function TripStatusTimeline({
               <p
                 className={`text-sm ${
                   statusInfo.color === 'green'
-                    ? 'text-green-700'
+                    ? 'text-success'
                     : statusInfo.color === 'blue'
-                    ? 'text-blue-700'
+                    ? 'text-info'
                     : statusInfo.color === 'yellow'
-                    ? 'text-yellow-700'
-                    : 'text-gray-700'
+                    ? 'text-warning'
+                    : 'text-foreground'
                 }`}
               >
                 {statusInfo.description}

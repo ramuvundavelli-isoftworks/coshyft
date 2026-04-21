@@ -190,8 +190,8 @@ export default function ShareTripModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Share2 className="h-6 w-6 text-blue-600" />
+            <div className="h-12 w-12 bg-info-subtle rounded-full flex items-center justify-center">
+              <Share2 className="h-6 w-6 text-info" />
             </div>
             <div>
               <DialogTitle className="text-xl">Share Trip Tracking</DialogTitle>
@@ -204,14 +204,14 @@ export default function ShareTripModal({
 
         <div className="space-y-6 py-4">
           {/* Trip Summary */}
-          <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="p-4 bg-gradient-to-br from-info-subtle to-info-subtle">
             <div className="flex items-start gap-3 mb-3">
-              <Globe className="h-5 w-5 text-blue-600 mt-0.5" />
+              <Globe className="h-5 w-5 text-info mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-blue-900 mb-1">
+                <p className="text-sm font-semibold text-info mb-1">
                   Live Tracking Link Active
                 </p>
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-info">
                   Anyone with this link can see your real-time location during the trip
                 </p>
               </div>
@@ -219,13 +219,13 @@ export default function ShareTripModal({
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <p className="text-blue-700">Driver</p>
-                <p className="font-medium text-blue-900">{driverName}</p>
+                <p className="text-info">Driver</p>
+                <p className="font-medium text-info">{driverName}</p>
               </div>
               <div>
-                <p className="text-blue-700">Share Code</p>
+                <p className="text-info">Share Code</p>
                 <div className="flex items-center gap-2">
-                  <p className="font-bold text-blue-900 text-sm font-mono">{shareCode}</p>
+                  <p className="font-bold text-info text-sm font-mono">{shareCode}</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -237,12 +237,12 @@ export default function ShareTripModal({
                 </div>
               </div>
               <div>
-                <p className="text-blue-700">From</p>
-                <p className="font-medium text-blue-900">{origin}</p>
+                <p className="text-info">From</p>
+                <p className="font-medium text-info">{origin}</p>
               </div>
               <div>
-                <p className="text-blue-700">To</p>
-                <p className="font-medium text-blue-900">{destination}</p>
+                <p className="text-info">To</p>
+                <p className="font-medium text-info">{destination}</p>
               </div>
             </div>
           </Card>
@@ -255,18 +255,18 @@ export default function ShareTripModal({
                 onClick={() => setActiveTab(option.id as any)}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   activeTab === option.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-info bg-info-subtle'
+                    : 'border-border hover:border-border'
                 }`}
               >
                 <option.icon
                   className={`h-5 w-5 mx-auto mb-1 ${
-                    activeTab === option.id ? 'text-blue-600' : 'text-gray-600'
+                    activeTab === option.id ? 'text-info' : 'text-muted-foreground'
                   }`}
                 />
                 <p
                   className={`text-xs font-medium ${
-                    activeTab === option.id ? 'text-blue-900' : 'text-gray-700'
+                    activeTab === option.id ? 'text-info' : 'text-foreground'
                   }`}
                 >
                   {option.label}
@@ -301,19 +301,19 @@ export default function ShareTripModal({
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     Share this link with anyone you want to track your trip
                   </p>
                 </div>
 
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <Clock className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <Clock className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-yellow-900">
+                      <p className="text-sm font-medium text-warning">
                         Link expires after trip completion
                       </p>
-                      <p className="text-xs text-yellow-800 mt-1">
+                      <p className="text-xs text-warning mt-1">
                         The tracking link will automatically deactivate once your trip is complete
                         for privacy and security.
                       </p>
@@ -336,14 +336,14 @@ export default function ShareTripModal({
                     onChange={(e) => setEmailAddress(e.target.value)}
                     placeholder="friend@example.com"
                   />
-                  <p className="text-xs text-gray-600 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     We'll open your email client with a pre-filled message
                   </p>
                 </div>
 
-                <div className="p-4 bg-gray-50 border rounded-lg">
-                  <p className="text-xs font-medium text-gray-700 mb-2">Email Preview:</p>
-                  <div className="text-xs text-gray-600 space-y-2">
+                <div className="p-4 bg-background-subtle border rounded-lg">
+                  <p className="text-xs font-medium text-foreground mb-2">Email Preview:</p>
+                  <div className="text-xs text-muted-foreground space-y-2">
                     <p className="font-medium">Subject: Track my trip with {driverName}</p>
                     <p className="whitespace-pre-line">
                       Hi!{'\n\n'}
@@ -374,14 +374,14 @@ export default function ShareTripModal({
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+1 (555) 123-4567"
                   />
-                  <p className="text-xs text-gray-600 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     We'll open your messaging app with a pre-filled text
                   </p>
                 </div>
 
-                <div className="p-4 bg-gray-50 border rounded-lg">
-                  <p className="text-xs font-medium text-gray-700 mb-2">SMS Preview:</p>
-                  <div className="text-xs text-gray-600">
+                <div className="p-4 bg-background-subtle border rounded-lg">
+                  <p className="text-xs font-medium text-foreground mb-2">SMS Preview:</p>
+                  <div className="text-xs text-muted-foreground">
                     <p>Track my trip: {shareLink}</p>
                     <p>Code: {shareCode}</p>
                     <p>Driver: {driverName}</p>
@@ -399,11 +399,11 @@ export default function ShareTripModal({
               <div className="space-y-4">
                 <div className="flex flex-col items-center py-6">
                   {/* QR Code Placeholder - In production, use a QR library */}
-                  <div className="w-64 h-64 bg-white border-4 border-gray-200 rounded-lg flex items-center justify-center mb-4">
+                  <div className="w-64 h-64 bg-card border-4 border-border rounded-lg flex items-center justify-center mb-4">
                     <div className="text-center">
-                      <QrCode className="h-32 w-32 text-gray-300 mx-auto mb-4" />
-                      <p className="text-sm text-gray-500">QR Code</p>
-                      <p className="text-xs text-gray-400 mt-1">Scan to track trip</p>
+                      <QrCode className="h-32 w-32 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-sm text-muted-foreground">QR Code</p>
+                      <p className="text-xs text-muted-foreground mt-1">Scan to track trip</p>
                     </div>
                   </div>
 
@@ -411,14 +411,14 @@ export default function ShareTripModal({
                     Code: {shareCode}
                   </Badge>
 
-                  <p className="text-xs text-gray-600 text-center max-w-xs">
+                  <p className="text-xs text-muted-foreground text-center max-w-xs">
                     Scan this QR code with a smartphone camera to instantly access the trip
                     tracking page
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                  <p className="text-xs text-blue-800">
+                <div className="p-4 bg-info-subtle border border-info/25 rounded-lg text-center">
+                  <p className="text-xs text-info">
                     📱 Production: Generate scannable QR code using qrcode.react library
                   </p>
                 </div>
@@ -427,14 +427,14 @@ export default function ShareTripModal({
           </Card>
 
           {/* Safety Information */}
-          <Card className="p-4 bg-green-50 border-green-200">
+          <Card className="p-4 bg-success-subtle border-success/25">
             <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <CheckCircle className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-green-900 mb-1">
+                <p className="text-sm font-medium text-success mb-1">
                   Tracking Features Included
                 </p>
-                <ul className="text-xs text-green-800 space-y-1">
+                <ul className="text-xs text-success space-y-1">
                   <li>• Real-time location updates every 30 seconds</li>
                   <li>• Live ETA and route progress</li>
                   <li>• Driver and vehicle information</li>

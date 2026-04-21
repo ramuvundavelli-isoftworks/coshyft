@@ -52,8 +52,8 @@ export default function AuditAssurance() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Audit & Assurance</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Audit & Assurance</h1>
+          <p className="text-muted-foreground mt-1">
             External assurance and audit tracking
           </p>
         </div>
@@ -67,23 +67,23 @@ export default function AuditAssurance() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Shield className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Assurance Items</p>
-              <p className="text-2xl font-bold text-gray-900">{assuranceItems.length}</p>
+              <p className="text-sm text-muted-foreground">Assurance Items</p>
+              <p className="text-2xl font-bold text-foreground">{assuranceItems.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Complete</p>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-sm text-muted-foreground">Complete</p>
+              <p className="text-2xl font-bold text-success">
                 {assuranceItems.filter(a => a.status === 'complete').length}
               </p>
             </div>
@@ -91,12 +91,12 @@ export default function AuditAssurance() {
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Findings</p>
-              <p className="text-2xl font-bold text-yellow-600">
+              <p className="text-sm text-muted-foreground">Total Findings</p>
+              <p className="text-2xl font-bold text-warning">
                 {assuranceItems.reduce((sum, a) => sum + a.findings, 0)}
               </p>
             </div>
@@ -104,12 +104,12 @@ export default function AuditAssurance() {
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Shield className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Assurance Level</p>
-              <p className="text-lg font-bold text-gray-900">Reasonable</p>
+              <p className="text-sm text-muted-foreground">Assurance Level</p>
+              <p className="text-lg font-bold text-foreground">Reasonable</p>
             </div>
           </div>
         </Card>
@@ -117,17 +117,17 @@ export default function AuditAssurance() {
 
       {/* Assurance Levels */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Assurance Levels</h3>
+        <h3 className="font-semibold text-foreground mb-4">Assurance Levels</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 border-2 border-green-500 rounded-lg bg-green-50">
-            <h4 className="font-medium text-green-900 mb-2">Reasonable Assurance</h4>
-            <p className="text-sm text-green-700">
+          <div className="p-4 border-2 border-success rounded-lg bg-success-subtle">
+            <h4 className="font-medium text-success mb-2">Reasonable Assurance</h4>
+            <p className="text-sm text-success">
               High, but not absolute, level of assurance. Auditor obtains sufficient appropriate evidence.
             </p>
           </div>
           <div className="p-4 border rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Limited Assurance</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="font-medium text-foreground mb-2">Limited Assurance</h4>
+            <p className="text-sm text-muted-foreground">
               Lower level of assurance. Auditor performs limited procedures focused on inquiry and analytical review.
             </p>
           </div>
@@ -136,7 +136,7 @@ export default function AuditAssurance() {
 
       {/* Assurance Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Assurance Activities</h3>
+        <h3 className="font-semibold text-foreground mb-4">Assurance Activities</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -155,7 +155,7 @@ export default function AuditAssurance() {
                 <TableCell className="font-medium">{item.area}</TableCell>
                 <TableCell>
                   <Badge className={
-                    item.level === 'reasonable' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                    item.level === 'reasonable' ? 'bg-success-subtle text-success' : 'bg-info-subtle text-info'
                   }>
                     {item.level}
                   </Badge>
@@ -163,9 +163,9 @@ export default function AuditAssurance() {
                 <TableCell>{item.provider}</TableCell>
                 <TableCell>
                   <Badge className={
-                    item.status === 'complete' ? 'bg-green-100 text-green-700' :
-                    item.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                    'bg-gray-100 text-gray-700'
+                    item.status === 'complete' ? 'bg-success-subtle text-success' :
+                    item.status === 'in-progress' ? 'bg-info-subtle text-info' :
+                    'bg-muted text-foreground'
                   }>
                     {item.status}
                   </Badge>
@@ -173,9 +173,9 @@ export default function AuditAssurance() {
                 <TableCell>{item.date}</TableCell>
                 <TableCell>
                   {item.findings > 0 ? (
-                    <Badge className="bg-yellow-100 text-yellow-700">{item.findings}</Badge>
+                    <Badge className="bg-warning-subtle text-warning">{item.findings}</Badge>
                   ) : (
-                    <Badge className="bg-green-100 text-green-700">None</Badge>
+                    <Badge className="bg-success-subtle text-success">None</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -214,28 +214,28 @@ export default function AuditAssurance() {
 
       {/* Standards Compliance */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Standards & Compliance</h3>
+        <h3 className="font-semibold text-foreground mb-4">Standards & Compliance</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="font-medium text-gray-900">ISAE 3000</span>
+              <CheckCircle className="h-5 w-5 text-success" />
+              <span className="font-medium text-foreground">ISAE 3000</span>
             </div>
-            <Badge className="bg-green-100 text-green-700">Compliant</Badge>
+            <Badge className="bg-success-subtle text-success">Compliant</Badge>
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="font-medium text-gray-900">AA1000AS</span>
+              <CheckCircle className="h-5 w-5 text-success" />
+              <span className="font-medium text-foreground">AA1000AS</span>
             </div>
-            <Badge className="bg-green-100 text-green-700">Compliant</Badge>
+            <Badge className="bg-success-subtle text-success">Compliant</Badge>
           </div>
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="font-medium text-gray-900">ISO 14064-3</span>
+              <CheckCircle className="h-5 w-5 text-success" />
+              <span className="font-medium text-foreground">ISO 14064-3</span>
             </div>
-            <Badge className="bg-green-100 text-green-700">Compliant</Badge>
+            <Badge className="bg-success-subtle text-success">Compliant</Badge>
           </div>
         </div>
       </Card>
@@ -251,25 +251,25 @@ export default function AuditAssurance() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Level</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.level}</p>
+                  <Label className="text-sm text-muted-foreground">Level</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.level}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Provider</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.provider}</p>
+                  <Label className="text-sm text-muted-foreground">Provider</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.provider}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.status}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Date</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedItem.date}</p>
+                  <Label className="text-sm text-muted-foreground">Date</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedItem.date}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Findings</Label>
-                <p className="font-medium text-gray-900 mt-1">
+                <Label className="text-sm text-muted-foreground">Findings</Label>
+                <p className="font-medium text-foreground mt-1">
                   {selectedItem.findings > 0 ? `${selectedItem.findings} finding(s)` : 'No findings'}
                 </p>
               </div>
@@ -289,9 +289,9 @@ export default function AuditAssurance() {
             <DialogDescription>Download assurance documentation</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Report includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Report includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Assurance opinion</li>
                 <li>Scope of work</li>
                 <li>Methodology applied</li>

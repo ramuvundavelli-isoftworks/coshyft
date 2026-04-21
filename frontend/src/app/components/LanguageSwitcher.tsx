@@ -38,14 +38,14 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <Card className="p-6 border border-gray-200">
+    <Card className="p-6 border border-border">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Globe className="h-5 w-5 text-blue-600" />
+        <div className="p-2 bg-info-subtle rounded-lg">
+          <Globe className="h-5 w-5 text-info" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-[#101828]">Language Preferences</h3>
-          <p className="text-sm text-[#6a7282]">Select your preferred interface language</p>
+          <h3 className="text-lg font-semibold text-foreground">Language Preferences</h3>
+          <p className="text-sm text-muted-foreground">Select your preferred interface language</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function LanguageSwitcher() {
                     <span>{lang.flag}</span>
                     <span>{lang.nativeName}</span>
                     {lang.name !== lang.nativeName && (
-                      <span className="text-xs text-[#6a7282]">({lang.name})</span>
+                      <span className="text-xs text-muted-foreground">({lang.name})</span>
                     )}
                   </div>
                 </SelectItem>
@@ -72,12 +72,12 @@ export function LanguageSwitcher() {
           </Select>
         </div>
 
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
           <div className="flex items-start gap-2">
-            <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-blue-900">Current Language</p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm font-medium text-info">Current Language</p>
+              <p className="text-sm text-info mt-1">
                 {languages.find((l) => l.code === selectedLanguage)?.flag}{' '}
                 {languages.find((l) => l.code === selectedLanguage)?.nativeName}
               </p>
@@ -86,15 +86,15 @@ export function LanguageSwitcher() {
         </div>
 
         {selectedLanguage === 'ga' && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <Globe className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <Globe className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-green-900">Gaeilge Activated</p>
-                <p className="text-sm text-green-700 mt-1">
+                <p className="text-sm font-medium text-success">Gaeilge Activated</p>
+                <p className="text-sm text-success mt-1">
                   Tá an Ghaeilge ar fáil anois. Is féidir leat an t-idirbheo a úsáid i nGaeilge.
                 </p>
-                <p className="text-xs text-green-600 mt-2">
+                <p className="text-xs text-success mt-2">
                   (Irish language is now available. You can use the interface in Irish.)
                 </p>
               </div>
@@ -103,29 +103,29 @@ export function LanguageSwitcher() {
         )}
 
         <div className="space-y-2">
-          <p className="text-sm font-medium text-[#101828]">Translation Coverage</p>
+          <p className="text-sm font-medium text-foreground">Translation Coverage</p>
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#6a7282]">Navigation & Menus</span>
-              <Badge className="bg-green-100 text-green-700 border-green-200">100%</Badge>
+              <span className="text-sm text-muted-foreground">Navigation & Menus</span>
+              <Badge className="bg-success-subtle text-success border-success/25">100%</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#6a7282]">Forms & Labels</span>
-              <Badge className="bg-green-100 text-green-700 border-green-200">100%</Badge>
+              <span className="text-sm text-muted-foreground">Forms & Labels</span>
+              <Badge className="bg-success-subtle text-success border-success/25">100%</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#6a7282]">Reports & Documents</span>
-              <Badge className="bg-green-100 text-green-700 border-green-200">95%</Badge>
+              <span className="text-sm text-muted-foreground">Reports & Documents</span>
+              <Badge className="bg-success-subtle text-success border-success/25">95%</Badge>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-[#6a7282]">Help & Tooltips</span>
-              <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">85%</Badge>
+              <span className="text-sm text-muted-foreground">Help & Tooltips</span>
+              <Badge className="bg-warning-subtle text-warning border-warning/25">85%</Badge>
             </div>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-xs text-[#6a7282]">
+        <div className="pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground">
             Language support is provided in compliance with the Official Languages Act 2003. All
             statutory reporting and regulatory submissions support both English and Irish.
           </p>

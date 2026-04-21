@@ -209,7 +209,7 @@ export function ExportDataModal({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Download className="h-6 w-6 text-[#00bc7d]" />
+            <Download className="h-6 w-6 text-brand-500" />
             Export {dataType.charAt(0).toUpperCase() + dataType.slice(1)} Data
           </DialogTitle>
           <DialogDescription>
@@ -230,20 +230,20 @@ export function ExportDataModal({
                     onClick={() => setFormat(fmt.value as any)}
                     className={`p-4 border-2 rounded-lg transition-all text-left ${
                       format === fmt.value
-                        ? 'border-[#00bc7d] bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-brand-500 bg-success-subtle'
+                        : 'border-border hover:border-border'
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <Icon className={`h-6 w-6 ${format === fmt.value ? 'text-[#00bc7d]' : 'text-gray-400'}`} />
+                      <Icon className={`h-6 w-6 ${format === fmt.value ? 'text-brand-500' : 'text-muted-foreground'}`} />
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{fmt.label}</p>
+                        <p className="font-semibold text-foreground">{fmt.label}</p>
                         <Badge variant="outline" className="text-xs mt-1">
                           {fmt.size} file size
                         </Badge>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600">{fmt.description}</p>
+                    <p className="text-xs text-muted-foreground">{fmt.description}</p>
                   </button>
                 );
               })}
@@ -272,7 +272,7 @@ export function ExportDataModal({
 
           {/* Custom Date Range */}
           {dateRange === 'custom' && (
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-background-subtle rounded-lg">
               <div>
                 <Label htmlFor="startDate">Start Date</Label>
                 <input
@@ -333,7 +333,7 @@ export function ExportDataModal({
                   />
                   <label
                     htmlFor={`col-${column}`}
-                    className="text-sm text-gray-700 cursor-pointer flex-1"
+                    className="text-sm text-foreground cursor-pointer flex-1"
                   >
                     {column}
                   </label>
@@ -343,26 +343,26 @@ export function ExportDataModal({
           </div>
 
           {/* Additional Options */}
-          <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+          <div className="space-y-3 p-4 bg-background-subtle rounded-lg">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="includeArchived"
                 checked={includeArchived}
                 onCheckedChange={(checked) => setIncludeArchived(checked as boolean)}
               />
-              <label htmlFor="includeArchived" className="text-sm text-gray-700 cursor-pointer">
+              <label htmlFor="includeArchived" className="text-sm text-foreground cursor-pointer">
                 Include archived records
               </label>
             </div>
           </div>
 
           {/* Export Summary */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-blue-900 mb-2">Export Summary</p>
-                <div className="space-y-1 text-xs text-blue-700">
+                <p className="text-sm font-medium text-info mb-2">Export Summary</p>
+                <div className="space-y-1 text-xs text-info">
                   <p>• Format: {selectedFormat?.label}</p>
                   <p>• Date Range: {dateRangeOptions.find(d => d.value === dateRange)?.label}</p>
                   <p>• Columns: {selectedColumns.length} selected</p>
@@ -374,8 +374,8 @@ export function ExportDataModal({
           </div>
 
           {/* GDPR Notice */}
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-xs text-amber-800">
+          <div className="p-3 bg-warning-subtle border border-warning/25 rounded-lg">
+            <p className="text-xs text-warning">
               <strong>GDPR Notice:</strong> Exported data may contain personal information. 
               Handle in accordance with data protection policies. This export will be logged for audit purposes.
             </p>

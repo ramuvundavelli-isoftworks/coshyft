@@ -63,8 +63,8 @@ export default function LocationPerformance() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Location Performance</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Location Performance</h1>
+          <p className="text-muted-foreground mt-1">
             Benchmark and compare emissions across office locations
           </p>
         </div>
@@ -84,45 +84,45 @@ export default function LocationPerformance() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Locations</p>
-              <p className="text-2xl font-bold text-gray-900">{mockLocationPerformance.length}</p>
+              <p className="text-sm text-muted-foreground">Total Locations</p>
+              <p className="text-2xl font-bold text-foreground">{mockLocationPerformance.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingUp className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Best Performer</p>
-              <p className="text-lg font-bold text-gray-900">London</p>
+              <p className="text-sm text-muted-foreground">Best Performer</p>
+              <p className="text-lg font-bold text-foreground">London</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Needs Attention</p>
-              <p className="text-lg font-bold text-gray-900">Tokyo</p>
+              <p className="text-sm text-muted-foreground">Needs Attention</p>
+              <p className="text-lg font-bold text-foreground">Tokyo</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Target className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Target className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Avg Achievement</p>
-              <p className="text-2xl font-bold text-gray-900">87%</p>
+              <p className="text-sm text-muted-foreground">Avg Achievement</p>
+              <p className="text-2xl font-bold text-foreground">87%</p>
             </div>
           </div>
         </Card>
@@ -130,7 +130,7 @@ export default function LocationPerformance() {
 
       {/* Radar Comparison */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Multi-Metric Comparison</h3>
+        <h3 className="font-semibold text-foreground mb-4">Multi-Metric Comparison</h3>
         <div style={{ height: '400px', width: '100%' }}>
           <Radar
             data={{
@@ -173,7 +173,7 @@ export default function LocationPerformance() {
 
       {/* Emissions by Location */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Emissions by Location</h3>
+        <h3 className="font-semibold text-foreground mb-4">Emissions by Location</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <Bar
             data={{
@@ -194,7 +194,7 @@ export default function LocationPerformance() {
 
       {/* Location Rankings */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Location Rankings</h3>
+        <h3 className="font-semibold text-foreground mb-4">Location Rankings</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -213,17 +213,17 @@ export default function LocationPerformance() {
                 <TableCell className="font-bold">#{idx + 1}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">{loc.location}</span>
                   </div>
                 </TableCell>
                 <TableCell>{loc.emissions} tCO₂e</TableCell>
                 <TableCell>{loc.perEmployee} tCO₂e/FTE</TableCell>
                 <TableCell>
-                  <Badge className="bg-green-100 text-green-700">{loc.dataQuality}%</Badge>
+                  <Badge className="bg-success-subtle text-success">{loc.dataQuality}%</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-green-100 text-green-700">On Track</Badge>
+                  <Badge className="bg-success-subtle text-success">On Track</Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -268,20 +268,20 @@ export default function LocationPerformance() {
             <div className="py-4">
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Total Emissions</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedLocation.emissions} tCO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Total Emissions</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedLocation.emissions} tCO₂e</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Per Employee</Label>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{selectedLocation.perEmployee} tCO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Per Employee</Label>
+                  <p className="text-2xl font-bold text-foreground mt-1">{selectedLocation.perEmployee} tCO₂e</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Data Quality</Label>
-                  <p className="text-2xl font-bold text-green-600 mt-1">{selectedLocation.dataQuality}%</p>
+                  <Label className="text-sm text-muted-foreground">Data Quality</Label>
+                  <p className="text-2xl font-bold text-success mt-1">{selectedLocation.dataQuality}%</p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Participation</Label>
-                  <p className="text-2xl font-bold text-blue-600 mt-1">82%</p>
+                  <Label className="text-sm text-muted-foreground">Participation</Label>
+                  <p className="text-2xl font-bold text-info mt-1">82%</p>
                 </Card>
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function LocationPerformance() {
               onChange={(e) => setTargetValue(e.target.value)}
               placeholder="Enter target"
             />
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Current: {selectedLocation?.emissions} tCO₂e
             </p>
           </div>

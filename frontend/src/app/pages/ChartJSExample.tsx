@@ -19,15 +19,15 @@ export default function ChartJSExample() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-[#101828]">Chart.js Examples</h1>
-        <p className="text-[#4a5565] mt-1">
+        <h1 className="text-2xl font-semibold text-foreground">Chart.js Examples</h1>
+        <p className="text-muted-foreground mt-1">
           Modern, clean charts for enwayu dashboards
         </p>
       </div>
 
       {/* Line Chart - Emissions Trend */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Emissions Trend - Line Chart
         </h3>
         <div style={{ height: '300px' }}>
@@ -37,7 +37,7 @@ export default function ChartJSExample() {
 
       {/* Bar Chart - Department Comparison */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Department Emissions - Bar Chart
         </h3>
         <div style={{ height: '300px' }}>
@@ -47,7 +47,7 @@ export default function ChartJSExample() {
 
       {/* Doughnut Chart - Mode Split */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Transport Mode Split - Doughnut Chart
         </h3>
         <div style={{ height: '350px' }}>
@@ -57,7 +57,7 @@ export default function ChartJSExample() {
 
       {/* Area Chart Example */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Area Chart with Gradient Fill
         </h3>
         <div style={{ height: '300px' }}>
@@ -80,7 +80,7 @@ export default function ChartJSExample() {
 
       {/* Multiple Datasets Example */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Multi-Dataset Comparison
         </h3>
         <div style={{ height: '300px' }}>
@@ -114,8 +114,8 @@ export default function ChartJSExample() {
       </Card>
 
       {/* Custom Styled Chart */}
-      <Card className="p-6 bg-gradient-to-br from-gray-50 to-gray-100">
-        <h3 className="text-lg font-semibold text-[#101828] mb-4">
+      <Card className="p-6 bg-gradient-to-br from-background-subtle to-muted">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Custom Styled Chart Example
         </h3>
         <div style={{ height: '300px' }}>
@@ -153,37 +153,37 @@ export default function ChartJSExample() {
       </Card>
 
       {/* Usage Instructions */}
-      <Card className="p-6 bg-blue-50 border-2 border-blue-200">
-        <h3 className="text-lg font-semibold text-blue-900 mb-3">
+      <Card className="p-6 bg-info-subtle border-2 border-info/25">
+        <h3 className="text-lg font-semibold text-info mb-3">
           How to Use Chart.js in Your Pages
         </h3>
-        <div className="space-y-3 text-sm text-blue-800">
-          <div className="p-3 bg-white rounded-lg">
+        <div className="space-y-3 text-sm text-info">
+          <div className="p-3 bg-card rounded-lg">
             <p className="font-semibold mb-2">1. Import the chart type:</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block">
+            <code className="text-xs bg-muted p-2 rounded block">
               {`import { Line, Bar, Doughnut } from 'react-chartjs-2';`}
             </code>
           </div>
 
-          <div className="p-3 bg-white rounded-lg">
+          <div className="p-3 bg-card rounded-lg">
             <p className="font-semibold mb-2">2. Import chart config:</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block">
+            <code className="text-xs bg-muted p-2 rounded block">
               {`import { lineChartOptions, colors } from '../utils/chartConfig';`}
             </code>
           </div>
 
-          <div className="p-3 bg-white rounded-lg">
+          <div className="p-3 bg-card rounded-lg">
             <p className="font-semibold mb-2">3. Use in your component:</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block whitespace-pre">
+            <code className="text-xs bg-muted p-2 rounded block whitespace-pre">
 {`<div style={{ height: '300px' }}>
   <Line data={yourData} options={lineChartOptions} />
 </div>`}
             </code>
           </div>
 
-          <div className="p-3 bg-white rounded-lg">
+          <div className="p-3 bg-card rounded-lg">
             <p className="font-semibold mb-2">4. Data structure:</p>
-            <code className="text-xs bg-gray-100 p-2 rounded block whitespace-pre">
+            <code className="text-xs bg-muted p-2 rounded block whitespace-pre">
 {`const data = {
   labels: ['Jan', 'Feb', 'Mar'],
   datasets: [{
@@ -200,31 +200,31 @@ export default function ChartJSExample() {
 
       {/* Benefits */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-[#101828] mb-3">
+        <h3 className="text-lg font-semibold text-foreground mb-3">
           Why Chart.js?
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="font-semibold text-green-900 mb-2">✓ Better Performance</p>
-            <p className="text-sm text-green-700">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+            <p className="font-semibold text-success mb-2">✓ Better Performance</p>
+            <p className="text-sm text-success">
               Faster rendering and smoother animations
             </p>
           </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="font-semibold text-green-900 mb-2">✓ Cleaner Design</p>
-            <p className="text-sm text-green-700">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+            <p className="font-semibold text-success mb-2">✓ Cleaner Design</p>
+            <p className="text-sm text-success">
               More professional, modern appearance
             </p>
           </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="font-semibold text-green-900 mb-2">✓ Better Tooltips</p>
-            <p className="text-sm text-green-700">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+            <p className="font-semibold text-success mb-2">✓ Better Tooltips</p>
+            <p className="text-sm text-success">
               More informative, better styled
             </p>
           </div>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="font-semibold text-green-900 mb-2">✓ More Flexible</p>
-            <p className="text-sm text-green-700">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+            <p className="font-semibold text-success mb-2">✓ More Flexible</p>
+            <p className="text-sm text-success">
               Easier to customize and extend
             </p>
           </div>

@@ -99,8 +99,8 @@ export default function AuditorReports() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Audit Reports</h1>
-          <p className="text-gray-600 mt-1">Generate and manage audit reports</p>
+          <h1 className="text-3xl font-bold text-foreground">Audit Reports</h1>
+          <p className="text-muted-foreground mt-1">Generate and manage audit reports</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => setIsResponseDialogOpen(true)}>
@@ -118,23 +118,23 @@ export default function AuditorReports() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Reports</p>
-              <p className="text-2xl font-bold text-gray-900">{auditReports.length}</p>
+              <p className="text-sm text-muted-foreground">Total Reports</p>
+              <p className="text-2xl font-bold text-foreground">{auditReports.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <PenTool className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <PenTool className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">In Draft</p>
-              <p className="text-2xl font-bold text-yellow-600">
+              <p className="text-sm text-muted-foreground">In Draft</p>
+              <p className="text-2xl font-bold text-warning">
                 {auditReports.filter(r => r.status === 'draft').length}
               </p>
             </div>
@@ -142,12 +142,12 @@ export default function AuditorReports() {
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Signed Off</p>
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-sm text-muted-foreground">Signed Off</p>
+              <p className="text-2xl font-bold text-success">
                 {auditReports.filter(r => r.status === 'signed').length}
               </p>
             </div>
@@ -155,12 +155,12 @@ export default function AuditorReports() {
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <FileText className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Distributed</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Distributed</p>
+              <p className="text-2xl font-bold text-foreground">
                 {auditReports.filter(r => r.status === 'distributed').length}
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function AuditorReports() {
 
       {/* Reports Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Audit Reports</h3>
+        <h3 className="font-semibold text-foreground mb-4">Audit Reports</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -193,12 +193,12 @@ export default function AuditorReports() {
                   <Badge
                     className={
                       report.status === 'distributed'
-                        ? 'bg-purple-100 text-purple-700'
+                        ? 'bg-info-subtle text-info'
                         : report.status === 'signed'
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-success-subtle text-success'
                         : report.status === 'review'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
+                        ? 'bg-info-subtle text-info'
+                        : 'bg-muted text-foreground'
                     }
                   >
                     {report.status}
@@ -303,22 +303,22 @@ export default function AuditorReports() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Type</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedReport.type}</p>
+                  <Label className="text-sm text-muted-foreground">Type</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedReport.type}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Date</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedReport.date}</p>
+                  <Label className="text-sm text-muted-foreground">Date</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedReport.date}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Findings</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedReport.findings}</p>
+                  <Label className="text-sm text-muted-foreground">Findings</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedReport.findings}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedReport.status}</p>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedReport.status}</p>
                 </div>
               </div>
             </div>
@@ -362,14 +362,14 @@ export default function AuditorReports() {
             <DialogDescription>Provide final audit sign-off for {selectedReport?.name}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg mb-4">
+              <p className="text-sm text-info">
                 <strong>Report:</strong> {selectedReport?.name}
               </p>
-              <p className="text-sm text-blue-900">
+              <p className="text-sm text-info">
                 <strong>Findings:</strong> {selectedReport?.findings}
               </p>
-              <p className="text-sm text-blue-700 mt-2">
+              <p className="text-sm text-info mt-2">
                 By signing off, you confirm this report is complete and accurate.
               </p>
             </div>
@@ -409,9 +409,9 @@ export default function AuditorReports() {
                 <SelectItem value="excel">Excel Workbook</SelectItem>
               </SelectContent>
             </Select>
-            <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Report includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="mt-4 p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Report includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>Executive summary</li>
                 <li>Audit findings</li>
                 <li>Management responses</li>

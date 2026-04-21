@@ -71,8 +71,8 @@ export default function EmissionsOverview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Emissions Intelligence</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Emissions Intelligence</h1>
+          <p className="text-muted-foreground mt-1">
             Comprehensive emissions analytics with audit-grade traceability
           </p>
         </div>
@@ -145,7 +145,7 @@ export default function EmissionsOverview() {
       {/* Mode Distribution & Monthly Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Mode Distribution</h3>
+          <h3 className="font-semibold text-foreground mb-4">Mode Distribution</h3>
           <div style={{ height: '320px', width: '100%' }}>
             <Doughnut
               data={{
@@ -168,7 +168,7 @@ export default function EmissionsOverview() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Monthly Emissions Trend</h3>
+          <h3 className="font-semibold text-foreground mb-4">Monthly Emissions Trend</h3>
           <div style={{ height: '320px', width: '100%' }}>
             <Line
               data={{
@@ -191,7 +191,7 @@ export default function EmissionsOverview() {
       {/* Location Performance */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Location Performance</h3>
+          <h3 className="font-semibold text-foreground">Location Performance</h3>
           <Button
             variant="outline"
             size="sm"
@@ -217,15 +217,15 @@ export default function EmissionsOverview() {
           </TableHeader>
           <TableBody>
             {locationData.map((loc) => (
-              <TableRow key={loc.location} className="hover:bg-gray-50">
+              <TableRow key={loc.location} className="hover:bg-background-subtle">
                 <TableCell className="font-medium">{loc.location}</TableCell>
                 <TableCell>{loc.emissions} tCO₂e</TableCell>
                 <TableCell>{loc.perEmployee} tCO₂e/FTE</TableCell>
                 <TableCell>
-                  <Badge className="bg-green-100 text-green-700">{loc.dataQuality}%</Badge>
+                  <Badge className="bg-success-subtle text-success">{loc.dataQuality}%</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-green-100 text-green-700">On Track</Badge>
+                  <Badge className="bg-success-subtle text-success">On Track</Badge>
                 </TableCell>
                 <TableCell>
                   <Button
@@ -308,7 +308,7 @@ export default function EmissionsOverview() {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">{mode.emissions} tCO₂e</p>
-                    <p className="text-sm text-gray-600">{mode.percentage}%</p>
+                    <p className="text-sm text-muted-foreground">{mode.percentage}%</p>
                   </div>
                 </div>
               ))}
@@ -332,19 +332,19 @@ export default function EmissionsOverview() {
           <div className="py-4">
             <div className="space-y-3">
               <div className="p-3 border rounded-lg">
-                <Label className="text-sm text-gray-600">Data Source</Label>
+                <Label className="text-sm text-muted-foreground">Data Source</Label>
                 <p className="font-medium mt-1">Employee Commute Log</p>
               </div>
               <div className="p-3 border rounded-lg">
-                <Label className="text-sm text-gray-600">Calculation Method</Label>
+                <Label className="text-sm text-muted-foreground">Calculation Method</Label>
                 <p className="font-medium mt-1">GHG Protocol</p>
               </div>
               <div className="p-3 border rounded-lg">
-                <Label className="text-sm text-gray-600">Emission Factors</Label>
+                <Label className="text-sm text-muted-foreground">Emission Factors</Label>
                 <p className="font-medium mt-1">DEFRA 2024</p>
               </div>
               <div className="p-3 border rounded-lg">
-                <Label className="text-sm text-gray-600">Last Updated</Label>
+                <Label className="text-sm text-muted-foreground">Last Updated</Label>
                 <p className="font-medium mt-1">Feb 18, 2026 10:32 AM</p>
               </div>
             </div>
@@ -365,11 +365,11 @@ export default function EmissionsOverview() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 This will recalculate all emissions using the latest:
               </p>
-              <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
+              <ul className="text-sm text-info mt-2 space-y-1 list-disc list-inside">
                 <li>Commute trip data</li>
                 <li>Emission factors</li>
                 <li>Calculation methodologies</li>

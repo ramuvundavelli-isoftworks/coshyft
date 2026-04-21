@@ -191,11 +191,11 @@ export default function ReportBuilder() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'draft':
-        return <Badge className="bg-yellow-100 text-yellow-700">Draft</Badge>;
+        return <Badge className="bg-warning-subtle text-warning">Draft</Badge>;
       case 'final':
-        return <Badge className="bg-green-100 text-green-700">Final</Badge>;
+        return <Badge className="bg-success-subtle text-success">Final</Badge>;
       case 'submitted':
-        return <Badge className="bg-blue-100 text-blue-700">Submitted</Badge>;
+        return <Badge className="bg-info-subtle text-info">Submitted</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -206,8 +206,8 @@ export default function ReportBuilder() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Report Builder</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Report Builder</h1>
+          <p className="text-muted-foreground mt-1">
             Generate compliance reports (CSRD, GRI, CDP, TCFD)
           </p>
         </div>
@@ -221,24 +221,24 @@ export default function ReportBuilder() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <FileText className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Reports</p>
-              <p className="text-2xl font-bold text-gray-900">{reports.length}</p>
+              <p className="text-sm text-muted-foreground">Total Reports</p>
+              <p className="text-2xl font-bold text-foreground">{reports.length}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Clock className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Draft Reports</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Draft Reports</p>
+              <p className="text-2xl font-bold text-foreground">
                 {reports.filter(r => r.status === 'draft').length}
               </p>
             </div>
@@ -247,12 +247,12 @@ export default function ReportBuilder() {
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Final Reports</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Final Reports</p>
+              <p className="text-2xl font-bold text-foreground">
                 {reports.filter(r => r.status === 'final').length}
               </p>
             </div>
@@ -261,12 +261,12 @@ export default function ReportBuilder() {
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Submitted</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">Submitted</p>
+              <p className="text-2xl font-bold text-foreground">
                 {reports.filter(r => r.status === 'submitted').length}
               </p>
             </div>
@@ -276,22 +276,22 @@ export default function ReportBuilder() {
 
       {/* Report Templates */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Report Templates</h3>
+        <h3 className="font-semibold text-foreground mb-4">Report Templates</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {templates.map((template) => (
             <div
               key={template.id}
-              className="p-4 border rounded-lg hover:border-blue-500 hover:shadow-sm transition-all cursor-pointer"
+              className="p-4 border rounded-lg hover:border-info hover:shadow-sm transition-all cursor-pointer"
               onClick={() => {
                 setFormData({ ...formData, framework: template.framework, name: template.name });
                 setIsGenerateDialogOpen(true);
               }}
             >
               <div className="flex items-start justify-between mb-2">
-                <FileText className="h-5 w-5 text-blue-600" />
+                <FileText className="h-5 w-5 text-info" />
                 <Badge variant="outline">{template.framework}</Badge>
               </div>
-              <p className="font-medium text-gray-900 text-sm">{template.name}</p>
+              <p className="font-medium text-foreground text-sm">{template.name}</p>
             </div>
           ))}
         </div>
@@ -300,7 +300,7 @@ export default function ReportBuilder() {
       {/* Reports List */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-semibold text-gray-900">Generated Reports</h3>
+          <h3 className="font-semibold text-foreground">Generated Reports</h3>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-48">
               <SelectValue />
@@ -320,17 +320,17 @@ export default function ReportBuilder() {
           {filteredReports.map((report) => (
             <div
               key={report.id}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-background-subtle"
             >
               <div className="flex items-start gap-4 flex-1">
-                <FileText className="h-5 w-5 text-gray-400 mt-1" />
+                <FileText className="h-5 w-5 text-muted-foreground mt-1" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-gray-900">{report.name}</p>
+                    <p className="font-medium text-foreground">{report.name}</p>
                     {getStatusBadge(report.status)}
                     <Badge variant="outline" className="text-xs">{report.type}</Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {report.period}

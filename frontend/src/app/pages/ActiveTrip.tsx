@@ -102,8 +102,8 @@ export default function ActiveTrip() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Active Trip</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Active Trip</h1>
+            <p className="text-muted-foreground mt-1">
               Live tracking and trip management
             </p>
           </div>
@@ -112,9 +112,9 @@ export default function ActiveTrip() {
         <div className="flex items-center gap-2">
           <Badge
             variant="default"
-            className="bg-green-600 text-white animate-pulse"
+            className="bg-success text-white animate-pulse"
           >
-            <div className="h-2 w-2 bg-white rounded-full mr-2"></div>
+            <div className="h-2 w-2 bg-card rounded-full mr-2"></div>
             Live
           </Badge>
           <Button
@@ -140,10 +140,10 @@ export default function ActiveTrip() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Progress</span>
-            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Progress</span>
+            <TrendingUp className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             {Math.round(trip.status.completionPercentage || 0)}%
           </p>
           <Progress
@@ -154,39 +154,39 @@ export default function ActiveTrip() {
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">ETA</span>
-            <Clock className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">ETA</span>
+            <Clock className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             {formatTimeRemaining(trip.status.durationRemaining || 0)}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {trip.status.estimatedArrival?.toLocaleTimeString()}
           </p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Distance Left</span>
-            <MapPin className="h-4 w-4 text-purple-600" />
+            <span className="text-sm text-muted-foreground">Distance Left</span>
+            <MapPin className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             {trip.status.distanceRemaining?.toFixed(1)} km
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             of {trip.totalDistance} km total
           </p>
         </Card>
 
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">CO₂ Saved</span>
-            <Navigation className="h-4 w-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">CO₂ Saved</span>
+            <Navigation className="h-4 w-4 text-success" />
           </div>
-          <p className="text-2xl font-bold text-green-700">
+          <p className="text-2xl font-bold text-success">
             {trip.co2Saved.toFixed(1)} kg
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             vs. driving alone
           </p>
         </Card>
@@ -215,32 +215,32 @@ export default function ActiveTrip() {
 
           {/* Trip Statistics */}
           <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-info" />
               Trip Statistics
             </h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Distance Traveled</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-muted-foreground mb-1">Distance Traveled</p>
+                <p className="text-lg font-semibold text-foreground">
                   {stats.distanceTraveled.toFixed(1)} km
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Time Elapsed</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-muted-foreground mb-1">Time Elapsed</p>
+                <p className="text-lg font-semibold text-foreground">
                   {Math.round(stats.timeElapsed)} min
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Average Speed</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-muted-foreground mb-1">Average Speed</p>
+                <p className="text-lg font-semibold text-foreground">
                   {Math.round(stats.averageSpeed)} km/h
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">On-Time Status</p>
+                <p className="text-sm text-muted-foreground mb-1">On-Time Status</p>
                 <Badge
                   variant={
                     stats.onTimeStatus === 'on-time'
@@ -251,10 +251,10 @@ export default function ActiveTrip() {
                   }
                   className={
                     stats.onTimeStatus === 'on-time'
-                      ? 'bg-green-600'
+                      ? 'bg-success'
                       : stats.onTimeStatus === 'early'
-                      ? 'bg-blue-600'
-                      : 'bg-yellow-600'
+                      ? 'bg-info'
+                      : 'bg-warning'
                   }
                 >
                   {stats.onTimeStatus === 'early'
@@ -273,8 +273,8 @@ export default function ActiveTrip() {
           {/* Driver Info */}
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Car className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Driver Information</h3>
+              <Car className="h-5 w-5 text-muted-foreground" />
+              <h3 className="font-semibold text-foreground">Driver Information</h3>
             </div>
 
             <div className="flex items-center gap-4 mb-4">
@@ -287,15 +287,15 @@ export default function ActiveTrip() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <p className="font-semibold text-gray-900 text-lg">
+                <p className="font-semibold text-foreground text-lg">
                   {trip.driverName}
                 </p>
                 <div className="flex items-center gap-1 mt-1">
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                  <Badge variant="outline" className="bg-info-subtle text-info">
                     <Shield className="h-3 w-3 mr-1" />
                     Verified
                   </Badge>
-                  <Badge variant="outline" className="bg-green-50 text-green-700">
+                  <Badge variant="outline" className="bg-success-subtle text-success">
                     4.8 ⭐
                   </Badge>
                 </div>
@@ -304,8 +304,8 @@ export default function ActiveTrip() {
 
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
-                <Car className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-600">{trip.vehicleInfo}</span>
+                <Car className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{trip.vehicleInfo}</span>
               </div>
 
               <div className="flex gap-2">
@@ -333,8 +333,8 @@ export default function ActiveTrip() {
           {/* Passengers */}
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">
+              <Users className="h-5 w-5 text-muted-foreground" />
+              <h3 className="font-semibold text-foreground">
                 Passengers ({trip.passengers.length})
               </h3>
             </div>
@@ -343,7 +343,7 @@ export default function ActiveTrip() {
               {trip.passengers.map((passenger) => (
                 <div
                   key={passenger.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-background-subtle rounded-lg"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
@@ -355,15 +355,15 @@ export default function ActiveTrip() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">
+                      <p className="font-medium text-foreground text-sm">
                         {passenger.name}
                       </p>
                       <Badge
                         variant="outline"
                         className={
                           passenger.status === 'picked-up'
-                            ? 'bg-green-50 text-green-700 border-green-200'
-                            : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                            ? 'bg-success-subtle text-success border-success/25'
+                            : 'bg-warning-subtle text-warning border-warning/25'
                         }
                       >
                         {passenger.status === 'picked-up' ? (
@@ -407,16 +407,16 @@ export default function ActiveTrip() {
           </Card>
 
           {/* Safety Actions */}
-          <Card className="p-6 bg-red-50 border-red-200">
+          <Card className="p-6 bg-destructive-subtle border-destructive/25">
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="h-5 w-5 text-red-600" />
-              <h3 className="font-semibold text-red-900">Safety & Help</h3>
+              <Shield className="h-5 w-5 text-destructive" />
+              <h3 className="font-semibold text-destructive">Safety & Help</h3>
             </div>
 
             <div className="space-y-2">
               <Button
                 variant="destructive"
-                className="w-full bg-red-600 hover:bg-red-700"
+                className="w-full bg-destructive hover:bg-destructive"
                 onClick={() => setIsSOSOpen(true)}
               >
                 <AlertTriangle className="h-4 w-4 mr-2" />
@@ -442,8 +442,8 @@ export default function ActiveTrip() {
               </Button>
             </div>
 
-            <div className="mt-4 p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-              <p className="text-xs font-medium text-red-900 mb-1">
+            <div className="mt-4 p-3 bg-card backdrop-blur-md rounded-[14px] border border-border-subtle/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+              <p className="text-xs font-medium text-destructive mb-1">
                 Emergency Contacts on File
               </p>
               <div className="space-y-1">
@@ -452,10 +452,10 @@ export default function ActiveTrip() {
                     key={index}
                     className="flex items-center justify-between text-xs"
                   >
-                    <span className="text-gray-700">
+                    <span className="text-foreground">
                       {contact.name} ({contact.relationship})
                     </span>
-                    <span className="text-gray-500">{contact.phoneNumber}</span>
+                    <span className="text-muted-foreground">{contact.phoneNumber}</span>
                   </div>
                 ))}
               </div>
@@ -465,17 +465,17 @@ export default function ActiveTrip() {
           {/* Route Details */}
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Navigation className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Route Details</h3>
+              <Navigation className="h-5 w-5 text-muted-foreground" />
+              <h3 className="font-semibold text-foreground">Route Details</h3>
             </div>
 
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-700">Origin</span>
+                  <div className="h-3 w-3 bg-info rounded-full"></div>
+                  <span className="text-sm font-medium text-foreground">Origin</span>
                 </div>
-                <p className="text-sm text-gray-900 ml-5">{trip.origin.address}</p>
+                <p className="text-sm text-foreground ml-5">{trip.origin.address}</p>
               </div>
 
               {trip.waypoints
@@ -483,8 +483,8 @@ export default function ActiveTrip() {
                 .map((waypoint) => (
                   <div key={waypoint.id}>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="h-3 w-3 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">
+                      <div className="h-3 w-3 bg-info rounded-full"></div>
+                      <span className="text-sm font-medium text-foreground">
                         {waypoint.type === 'pickup' ? 'Pickup' : 'Dropoff'} -{' '}
                         {waypoint.passengerName}
                       </span>
@@ -492,32 +492,32 @@ export default function ActiveTrip() {
                         variant="outline"
                         className={
                           waypoint.status === 'completed'
-                            ? 'bg-green-50 text-green-700'
+                            ? 'bg-success-subtle text-success'
                             : ''
                         }
                       >
                         {waypoint.status}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-900 ml-5">{waypoint.address}</p>
+                    <p className="text-sm text-foreground ml-5">{waypoint.address}</p>
                   </div>
                 ))}
 
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-700">Destination</span>
+                  <div className="h-3 w-3 bg-success rounded-full"></div>
+                  <span className="text-sm font-medium text-foreground">Destination</span>
                 </div>
-                <p className="text-sm text-gray-900 ml-5">{trip.destination.address}</p>
+                <p className="text-sm text-foreground ml-5">{trip.destination.address}</p>
               </div>
             </div>
           </Card>
 
           {/* Simulation Controls */}
-          <Card className="p-6 bg-blue-50 border-blue-200">
+          <Card className="p-6 bg-info-subtle border-info/25">
             <div className="flex items-center gap-2 mb-4">
-              <Info className="h-5 w-5 text-blue-600" />
-              <h3 className="font-semibold text-blue-900">Live Simulation</h3>
+              <Info className="h-5 w-5 text-info" />
+              <h3 className="font-semibold text-info">Live Simulation</h3>
             </div>
             <div className="flex gap-2">
               {!isSimulating ? (
@@ -540,7 +540,7 @@ export default function ActiveTrip() {
                 </Button>
               )}
             </div>
-            <p className="text-xs text-blue-700 mt-2">
+            <p className="text-xs text-info mt-2">
               Demo mode: Simulating GPS updates every 2 seconds
             </p>
           </Card>

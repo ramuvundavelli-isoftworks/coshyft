@@ -365,8 +365,8 @@ export default function FindRide() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Find a Ride</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Find a Ride</h1>
+          <p className="text-muted-foreground mt-1">
             Join a carpool and reduce your commute emissions
           </p>
         </div>
@@ -384,12 +384,12 @@ export default function FindRide() {
 
       {/* Search Card */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Search for Available Rides</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">Search for Available Rides</h2>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">From</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">From</label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Enter your location"
                 value={origin}
@@ -399,9 +399,9 @@ export default function FindRide() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">To</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">To</label>
             <div className="relative">
-              <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Enter destination"
                 value={destination}
@@ -411,11 +411,11 @@ export default function FindRide() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Date</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">Date</label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Time</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">Time</label>
             <Input
               type="time"
               value={departureTime}
@@ -436,7 +436,7 @@ export default function FindRide() {
             <Filter className="h-4 w-4 mr-2" />
             Advanced Filters
             {getActiveFilterCount() > 0 && (
-              <Badge className="ml-2 bg-blue-600">{getActiveFilterCount()}</Badge>
+              <Badge className="ml-2 bg-info">{getActiveFilterCount()}</Badge>
             )}
           </Button>
 
@@ -471,7 +471,7 @@ export default function FindRide() {
       {/* Results Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Available Rides ({filteredRides.length})
           </h2>
           
@@ -532,12 +532,12 @@ export default function FindRide() {
         {filteredRides.length === 0 ? (
           <Card className="p-12 text-center">
             <div className="flex flex-col items-center gap-4">
-              <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <Car className="h-8 w-8 text-gray-400" />
+              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
+                <Car className="h-8 w-8 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">No rides found</h3>
-                <p className="text-gray-600">
+                <h3 className="text-lg font-semibold text-foreground mb-1">No rides found</h3>
+                <p className="text-muted-foreground">
                   Try adjusting your filters or search criteria
                 </p>
               </div>
@@ -563,24 +563,24 @@ export default function FindRide() {
                     <div className="flex-1">
                       {/* Driver Info */}
                       <div className="flex items-center gap-2 mb-3">
-                        <h3 className="font-semibold text-gray-900 text-lg">{ride.driver}</h3>
+                        <h3 className="font-semibold text-foreground text-lg">{ride.driver}</h3>
                         {ride.verifiedDriver && (
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          <Badge variant="outline" className="bg-info-subtle text-info border-info/25">
                             <Shield className="h-3 w-3 mr-1" />
                             Verified
                           </Badge>
                         )}
                         {ride.recurring && (
-                          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                          <Badge variant="outline" className="bg-info-subtle text-info border-info/25">
                             <Repeat className="h-3 w-3 mr-1" />
                             Recurring
                           </Badge>
                         )}
                         {ride.driverRating && (
-                          <div className="flex items-center gap-1 text-yellow-600">
+                          <div className="flex items-center gap-1 text-warning">
                             <Star className="h-4 w-4 fill-current" />
                             <span className="text-sm font-medium">{ride.driverRating}</span>
-                            <span className="text-xs text-gray-500">({ride.totalTrips} trips)</span>
+                            <span className="text-xs text-muted-foreground">({ride.totalTrips} trips)</span>
                           </div>
                         )}
                       </div>
@@ -593,31 +593,31 @@ export default function FindRide() {
                       {/* Route Details */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
                         <div className="flex items-start gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
+                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
-                            <p className="font-medium text-gray-900">{ride.origin}</p>
-                            <p className="text-xs text-gray-600">→ {ride.destination}</p>
+                            <p className="font-medium text-foreground">{ride.origin}</p>
+                            <p className="text-xs text-muted-foreground">→ {ride.destination}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-gray-400 mt-0.5" />
+                          <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
-                            <p className="font-medium text-gray-900">{ride.departureTime}</p>
-                            <p className="text-xs text-gray-600">{ride.distance.toFixed(1)} km</p>
+                            <p className="font-medium text-foreground">{ride.departureTime}</p>
+                            <p className="text-xs text-muted-foreground">{ride.distance.toFixed(1)} km</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-2 text-sm">
-                          <Users className="h-4 w-4 text-gray-400 mt-0.5" />
+                          <Users className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
-                            <p className="font-medium text-gray-900">{ride.seatsAvailable} seats</p>
-                            <p className="text-xs text-gray-600">available</p>
+                            <p className="font-medium text-foreground">{ride.seatsAvailable} seats</p>
+                            <p className="text-xs text-muted-foreground">available</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-2 text-sm">
-                          <Navigation className="h-4 w-4 text-green-600 mt-0.5" />
+                          <Navigation className="h-4 w-4 text-success mt-0.5" />
                           <div>
-                            <p className="font-medium text-green-700">{ride.co2Saved.toFixed(1)} kg CO₂</p>
-                            <p className="text-xs text-gray-600">saved</p>
+                            <p className="font-medium text-success">{ride.co2Saved.toFixed(1)} kg CO₂</p>
+                            <p className="text-xs text-muted-foreground">saved</p>
                           </div>
                         </div>
                       </div>
@@ -625,19 +625,19 @@ export default function FindRide() {
                       {/* Vehicle & Preferences */}
                       <div className="flex flex-wrap items-center gap-2">
                         {ride.vehicleMake && (
-                          <Badge variant="outline" className="bg-gray-50">
+                          <Badge variant="outline" className="bg-background-subtle">
                             <span className="mr-1">{getVehicleIcon(ride.vehicleType || '')}</span>
                             {ride.vehicleMake}
                           </Badge>
                         )}
                         {ride.vehicleType === 'electric' && (
-                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          <Badge variant="outline" className="bg-success-subtle text-success border-success/25">
                             <Zap className="h-3 w-3 mr-1" />
                             Zero Emissions
                           </Badge>
                         )}
                         {ride.preferencesTags?.slice(0, 3).map((tag, idx) => (
-                          <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700">
+                          <Badge key={idx} variant="outline" className="bg-info-subtle text-info">
                             {tag}
                           </Badge>
                         ))}
@@ -712,7 +712,7 @@ export default function FindRide() {
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-xl font-semibold">{selectedRide.driver}</h3>
                     {selectedRide.verifiedDriver && (
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                      <Badge variant="outline" className="bg-info-subtle text-info">
                         <Shield className="h-3 w-3 mr-1" />
                         Verified Driver
                       </Badge>
@@ -720,15 +720,15 @@ export default function FindRide() {
                   </div>
                   {selectedRide.driverRating && (
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1 text-yellow-600">
+                      <div className="flex items-center gap-1 text-warning">
                         <Star className="h-5 w-5 fill-current" />
                         <span className="font-medium text-lg">{selectedRide.driverRating}</span>
                       </div>
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">
                         {selectedRide.totalTrips} completed trips
                       </span>
-                      <span className="text-gray-600">•</span>
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground">
                         Trust Score: {selectedRide.trustScore}%
                       </span>
                     </div>
@@ -757,14 +757,14 @@ export default function FindRide() {
               {/* Trip Details */}
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Departure Time</Label>
-                  <p className="font-medium text-gray-900 mt-1 text-lg">
+                  <Label className="text-sm text-muted-foreground">Departure Time</Label>
+                  <p className="font-medium text-foreground mt-1 text-lg">
                     {selectedRide.departureTime}
                   </p>
                 </Card>
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600">Seats Available</Label>
-                  <p className="font-medium text-gray-900 mt-1 text-lg">
+                  <Label className="text-sm text-muted-foreground">Seats Available</Label>
+                  <p className="font-medium text-foreground mt-1 text-lg">
                     {selectedRide.seatsAvailable}
                   </p>
                 </Card>
@@ -773,12 +773,12 @@ export default function FindRide() {
               {/* Vehicle Info */}
               {selectedRide.vehicleMake && (
                 <Card className="p-4">
-                  <Label className="text-sm text-gray-600 mb-2 block">Vehicle</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Vehicle</Label>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{getVehicleIcon(selectedRide.vehicleType || '')}</span>
-                    <p className="font-medium text-gray-900 text-lg">{selectedRide.vehicleMake}</p>
+                    <p className="font-medium text-foreground text-lg">{selectedRide.vehicleMake}</p>
                     {selectedRide.vehicleType === 'electric' && (
-                      <Badge className="bg-green-600">
+                      <Badge className="bg-success">
                         <Zap className="h-3 w-3 mr-1" />
                         Zero Emissions
                       </Badge>
@@ -790,12 +790,12 @@ export default function FindRide() {
               {/* Ride Preferences */}
               {selectedRide.preferencesTags && selectedRide.preferencesTags.length > 0 && (
                 <div>
-                  <Label className="text-sm text-gray-600 mb-3 block">
+                  <Label className="text-sm text-muted-foreground mb-3 block">
                     Ride Preferences & Atmosphere
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {selectedRide.preferencesTags.map((pref, idx) => (
-                      <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700">
+                      <Badge key={idx} variant="outline" className="bg-info-subtle text-info">
                         {pref}
                       </Badge>
                     ))}
@@ -805,14 +805,14 @@ export default function FindRide() {
 
               {/* Recurring Schedule */}
               {selectedRide.recurring && selectedRide.daysOfWeek && (
-                <Card className="p-4 bg-purple-50 border-purple-200">
+                <Card className="p-4 bg-info-subtle border-info/25">
                   <div className="flex items-center gap-2 mb-2">
-                    <Repeat className="h-5 w-5 text-purple-600" />
-                    <Label className="text-sm font-medium text-purple-900">
+                    <Repeat className="h-5 w-5 text-info" />
+                    <Label className="text-sm font-medium text-foreground">
                       Recurring Schedule
                     </Label>
                   </div>
-                  <p className="text-sm text-purple-700">
+                  <p className="text-sm text-info">
                     This ride repeats every{' '}
                     {selectedRide.daysOfWeek
                       .map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d])
@@ -822,12 +822,12 @@ export default function FindRide() {
               )}
 
               {/* Environmental Impact */}
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Navigation className="h-5 w-5 text-green-600" />
-                  <span className="font-semibold text-green-900">Environmental Impact</span>
+                  <Navigation className="h-5 w-5 text-success" />
+                  <span className="font-semibold text-success">Environmental Impact</span>
                 </div>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-success">
                   By joining this ride, you'll save{' '}
                   <strong>{selectedRide.co2Saved.toFixed(1)} kg CO₂</strong> compared to driving
                   alone. That's equivalent to planting{' '}
@@ -862,12 +862,12 @@ export default function FindRide() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-blue-900">
+                <span className="text-info">
                   <strong>{selectedRide?.driver}</strong> • {selectedRide?.departureTime}
                 </span>
-                <Badge variant="outline" className="bg-green-50 text-green-700">
+                <Badge variant="outline" className="bg-success-subtle text-success">
                   {selectedRide?.co2Saved.toFixed(1)} kg CO₂ saved
                 </Badge>
               </div>
@@ -1031,15 +1031,15 @@ export default function FindRide() {
                 onChange={(e) => setOfferData({ ...offerData, preferences: e.target.value })}
                 placeholder="e.g., No smoking, Music OK, Quiet ride"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Separate multiple preferences with commas
               </p>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <Settings className="h-5 w-5 text-blue-600" />
-                <p className="text-sm font-medium text-blue-900">
+                <Settings className="h-5 w-5 text-info" />
+                <p className="text-sm font-medium text-info">
                   Your default commute preferences will be applied
                 </p>
               </div>
@@ -1109,8 +1109,8 @@ export default function FindRide() {
         <DialogContent>
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
-              <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-10 w-10 text-green-600" />
+              <div className="h-16 w-16 bg-success-subtle rounded-full flex items-center justify-center">
+                <CheckCircle className="h-10 w-10 text-success" />
               </div>
             </div>
             <DialogTitle className="text-center">Booking Confirmed!</DialogTitle>
@@ -1119,31 +1119,31 @@ export default function FindRide() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+            <div className="p-4 bg-background-subtle rounded-lg space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Driver:</span>
+                <span className="text-muted-foreground">Driver:</span>
                 <span className="font-medium">{selectedRide?.driver}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Departure:</span>
+                <span className="text-muted-foreground">Departure:</span>
                 <span className="font-medium">{selectedRide?.departureTime}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Pickup:</span>
+                <span className="text-muted-foreground">Pickup:</span>
                 <span className="font-medium">{bookingData.pickupLocation}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Seats:</span>
+                <span className="text-muted-foreground">Seats:</span>
                 <span className="font-medium">{bookingData.seats}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Match Score:</span>
-                <span className="font-medium text-green-600">{selectedRide?.matchScore}%</span>
+                <span className="text-muted-foreground">Match Score:</span>
+                <span className="font-medium text-success">{selectedRide?.matchScore}%</span>
               </div>
             </div>
 
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-              <p className="text-sm text-green-700">
+            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg text-center">
+              <p className="text-sm text-success">
                 🌱 You'll save <strong>{selectedRide?.co2Saved.toFixed(1)} kg CO₂</strong> on this
                 trip!
               </p>

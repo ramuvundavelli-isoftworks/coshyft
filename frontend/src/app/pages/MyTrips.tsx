@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
-import { useApi } from '../api';
+import { useApi, useApiMutation } from '../api';
 import { commuteApi } from '../api';
 
 type SortField = 'date' | 'mode' | 'distance' | 'co2Saved';
@@ -80,7 +80,36 @@ const mockTrips: Trip[] = [
 ];
 
 export default function MyTrips() {
+  const { data: historyData, loading: historyLoading, refetch: refetchHistory } = useApi(
+    () => commuteApi.getHistory({ page: 1, page_size: 100 }),
+    { deps: [] }
+  );
+
+  // Map API commute entries to Trip shape; fall back to mock until data loads
+  const apiTrips: Trip[] = ((historyData as any)?.items ?? []).map((e: any) => ({
+    id: e.id,
+    date: e.date,
+    mode: e.transport_mode_label,
+    driver: null,
+    distance: e.distance_km,
+    co2Saved: Math.max(0, e.distance_km * 0.178 - e.emissions_kg_co2),
+    emissions: e.emissions_kg_co2,
+    status: 'completed' as const,
+    office: e.destination_address ?? 'Office',
+    passengers: e.carpool_passengers ?? 0,
+  }));
+
   const [trips, setTrips] = useState<Trip[]>(mockTrips);
+
+  useEffect(() => {
+    if (apiTrips.length > 0) setTrips(apiTrips);
+  }, [historyData]);
+
+  const deleteMutation = useApiMutation((id: string) => commuteApi.deleteCommute(id));
+  const editMutation = useApiMutation((d: { id: string; data: any }) =>
+    commuteApi.updateCommute(d.id, d.data)
+  );
+
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [modeFilter, setModeFilter] = useState('all');
@@ -157,29 +186,42 @@ export default function MyTrips() {
     }
   };
 
-  const handleEditTrip = () => {
+  const handleEditTrip = async () => {
     if (selectedTrip) {
-      const updated = trips.map(t =>
-        t.id === selectedTrip.id
-          ? {
-              ...t,
-              mode: editData.mode,
-              distance: parseFloat(editData.distance),
-              passengers: parseInt(editData.passengers),
-            }
-          : t
-      );
-      setTrips(updated);
+      const result = await editMutation.execute({
+        id: selectedTrip.id,
+        data: {
+          distance_km: parseFloat(editData.distance),
+          carpool_passengers: parseInt(editData.passengers) || undefined,
+          notes: editData.notes || undefined,
+        },
+      });
+      if (result.success) {
+        setTrips(prev => prev.map(t =>
+          t.id === selectedTrip.id
+            ? { ...t, mode: editData.mode, distance: parseFloat(editData.distance), passengers: parseInt(editData.passengers) }
+            : t
+        ));
+        toast.success('Trip updated successfully');
+        refetchHistory();
+      } else {
+        toast.error(result.error?.message ?? 'Failed to update trip');
+      }
       setIsEditDialogOpen(false);
-      toast.success('Trip updated successfully');
     }
   };
 
-  const handleDeleteTrip = () => {
+  const handleDeleteTrip = async () => {
     if (selectedTrip) {
-      setTrips(trips.filter(t => t.id !== selectedTrip.id));
+      const result = await deleteMutation.execute(selectedTrip.id);
+      if (result.success) {
+        setTrips(prev => prev.filter(t => t.id !== selectedTrip.id));
+        toast.success('Trip deleted successfully');
+        refetchHistory();
+      } else {
+        toast.error(result.error?.message ?? 'Failed to delete trip');
+      }
       setIsDeleteDialogOpen(false);
-      toast.success('Trip deleted successfully');
     }
   };
 
@@ -215,42 +257,43 @@ export default function MyTrips() {
     setCommuteEntries(entries);
     setIsLogCommuteOpen(false);
     toast.success(`${entries.length} commute(s) logged successfully`);
+    refetchHistory();
   };
 
   const getModeColor = (mode: string) => {
     switch (mode) {
       case 'Bike':
       case 'Walk':
-        return 'bg-green-100 text-green-700';
+        return 'bg-success-subtle text-success';
       case 'Public Transit':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-info-subtle text-info';
       case 'Carpool':
-        return 'bg-purple-100 text-purple-700';
+        return 'bg-info-subtle text-info';
       case 'SOV':
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-foreground';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-foreground';
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-700">Completed</Badge>;
+        return <Badge className="bg-success-subtle text-success">Completed</Badge>;
       case 'upcoming':
-        return <Badge className="bg-blue-100 text-blue-700">Upcoming</Badge>;
+        return <Badge className="bg-info-subtle text-info">Upcoming</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-100 text-red-700">Cancelled</Badge>;
+        return <Badge className="bg-destructive-subtle text-destructive">Cancelled</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
   };
 
   const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return <ChevronUp className="h-4 w-4 text-gray-400" />;
+    if (sortField !== field) return <ChevronUp className="h-4 w-4 text-muted-foreground" />;
     return sortDirection === 'asc' ? 
-      <ChevronUp className="h-4 w-4 text-blue-600" /> : 
-      <ChevronDown className="h-4 w-4 text-blue-600" />;
+      <ChevronUp className="h-4 w-4 text-info" /> : 
+      <ChevronDown className="h-4 w-4 text-info" />;
   };
 
   return (
@@ -258,8 +301,8 @@ export default function MyTrips() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Trips</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">My Trips</h1>
+          <p className="text-muted-foreground mt-1">
             View and manage your commute history
           </p>
         </div>
@@ -279,45 +322,45 @@ export default function MyTrips() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Trips</p>
-              <p className="text-2xl font-bold text-gray-900">{totalTrips}</p>
+              <p className="text-sm text-muted-foreground">Total Trips</p>
+              <p className="text-2xl font-bold text-foreground">{totalTrips}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <MapPin className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <MapPin className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Distance</p>
-              <p className="text-2xl font-bold text-gray-900">{totalDistance.toFixed(1)} km</p>
+              <p className="text-sm text-muted-foreground">Total Distance</p>
+              <p className="text-2xl font-bold text-foreground">{totalDistance.toFixed(1)} km</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <TrendingDown className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">CO₂ Saved</p>
-              <p className="text-2xl font-bold text-green-600">{totalCO2Saved.toFixed(1)} kg</p>
+              <p className="text-sm text-muted-foreground">CO₂ Saved</p>
+              <p className="text-2xl font-bold text-success">{totalCO2Saved.toFixed(1)} kg</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Calendar className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Upcoming</p>
-              <p className="text-2xl font-bold text-gray-900">{upcomingTrips}</p>
+              <p className="text-sm text-muted-foreground">Upcoming</p>
+              <p className="text-2xl font-bold text-foreground">{upcomingTrips}</p>
             </div>
           </div>
         </Card>
@@ -328,7 +371,7 @@ export default function MyTrips() {
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search trips..."
                 value={searchTerm}
@@ -372,7 +415,7 @@ export default function MyTrips() {
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-2 bg-white border rounded-lg p-1">
+          <div className="flex items-center gap-2 bg-card border rounded-lg p-1">
             <Button
               variant={viewMode === 'cards' ? 'default' : 'ghost'}
               size="sm"
@@ -398,12 +441,12 @@ export default function MyTrips() {
             <Card key={trip.id} className="p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4 flex-1">
-                  <div className="p-3 bg-gray-100 rounded-lg">
-                    <Calendar className="h-6 w-6 text-gray-600" />
+                  <div className="p-3 bg-muted rounded-lg">
+                    <Calendar className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-foreground">
                         {new Date(trip.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                       </h3>
                       <Badge className={getModeColor(trip.mode)}>{trip.mode}</Badge>
@@ -411,21 +454,21 @@ export default function MyTrips() {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       <div>
-                        <p className="text-gray-600">Distance</p>
-                        <p className="font-medium text-gray-900">{trip.distance} km</p>
+                        <p className="text-muted-foreground">Distance</p>
+                        <p className="font-medium text-foreground">{trip.distance} km</p>
                       </div>
                       <div>
-                        <p className="text-gray-600">CO₂ Saved</p>
-                        <p className="font-medium text-green-600">{trip.co2Saved} kg</p>
+                        <p className="text-muted-foreground">CO₂ Saved</p>
+                        <p className="font-medium text-success">{trip.co2Saved} kg</p>
                       </div>
                       <div>
-                        <p className="text-gray-600">Office</p>
-                        <p className="font-medium text-gray-900">{trip.office}</p>
+                        <p className="text-muted-foreground">Office</p>
+                        <p className="font-medium text-foreground">{trip.office}</p>
                       </div>
                       {trip.driver && (
                         <div>
-                          <p className="text-gray-600">Driver</p>
-                          <p className="font-medium text-gray-900">{trip.driver}</p>
+                          <p className="text-muted-foreground">Driver</p>
+                          <p className="font-medium text-foreground">{trip.driver}</p>
                         </div>
                       )}
                     </div>
@@ -523,7 +566,7 @@ export default function MyTrips() {
             </TableHeader>
             <TableBody>
               {filteredTrips.map((trip) => (
-                <TableRow key={trip.id} className="hover:bg-gray-50">
+                <TableRow key={trip.id} className="hover:bg-background-subtle">
                   <TableCell className="font-medium">
                     {new Date(trip.date).toLocaleDateString()}
                   </TableCell>
@@ -531,8 +574,8 @@ export default function MyTrips() {
                     <Badge className={getModeColor(trip.mode)}>{trip.mode}</Badge>
                   </TableCell>
                   <TableCell>{trip.distance} km</TableCell>
-                  <TableCell className="text-green-600 font-medium">{trip.co2Saved} kg</TableCell>
-                  <TableCell className="text-sm text-gray-600">{trip.office}</TableCell>
+                  <TableCell className="text-success font-medium">{trip.co2Saved} kg</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{trip.office}</TableCell>
                   <TableCell>{getStatusBadge(trip.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
@@ -604,46 +647,46 @@ export default function MyTrips() {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Transport Mode</Label>
+                  <Label className="text-sm text-muted-foreground">Transport Mode</Label>
                   <Badge className={`${getModeColor(selectedTrip.mode)} mt-1`}>
                     {selectedTrip.mode}
                   </Badge>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
                   <div className="mt-1">{getStatusBadge(selectedTrip.status)}</div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Distance</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTrip.distance} km</p>
+                  <Label className="text-sm text-muted-foreground">Distance</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTrip.distance} km</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">CO₂ Saved</Label>
-                  <p className="font-medium text-green-600 mt-1">{selectedTrip.co2Saved} kg</p>
+                  <Label className="text-sm text-muted-foreground">CO₂ Saved</Label>
+                  <p className="font-medium text-success mt-1">{selectedTrip.co2Saved} kg</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Emissions</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTrip.emissions} kg CO₂e</p>
+                  <Label className="text-sm text-muted-foreground">Emissions</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTrip.emissions} kg CO₂e</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Office</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTrip.office}</p>
+                  <Label className="text-sm text-muted-foreground">Office</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTrip.office}</p>
                 </div>
               </div>
               {selectedTrip.driver && (
                 <div>
-                  <Label className="text-sm text-gray-600">Driver</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTrip.driver}</p>
+                  <Label className="text-sm text-muted-foreground">Driver</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTrip.driver}</p>
                 </div>
               )}
               {selectedTrip.passengers > 0 && (
                 <div>
-                  <Label className="text-sm text-gray-600">Passengers</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedTrip.passengers} people</p>
+                  <Label className="text-sm text-muted-foreground">Passengers</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedTrip.passengers} people</p>
                 </div>
               )}
             </div>
@@ -734,14 +777,14 @@ export default function MyTrips() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-900">
+                  <p className="text-sm font-medium text-warning">
                     {selectedTrip && new Date(selectedTrip.date).toLocaleDateString()} - {selectedTrip?.mode}
                   </p>
-                  <p className="text-sm text-yellow-700 mt-1">
+                  <p className="text-sm text-warning mt-1">
                     This will permanently remove this trip from your history.
                   </p>
                 </div>
@@ -769,7 +812,7 @@ export default function MyTrips() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               This will cancel your {selectedTrip?.mode} trip. If you're carpooling, the driver will be notified.
             </p>
           </div>

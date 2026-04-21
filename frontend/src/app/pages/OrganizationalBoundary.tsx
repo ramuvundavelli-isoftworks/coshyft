@@ -97,8 +97,8 @@ export default function OrganizationalBoundary() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Organizational Boundary</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Organizational Boundary</h1>
+          <p className="text-muted-foreground mt-1">
             Define scope and consolidation approach
           </p>
         </div>
@@ -118,45 +118,45 @@ export default function OrganizationalBoundary() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Entities</p>
-              <p className="text-2xl font-bold text-gray-900">{entities.length}</p>
+              <p className="text-sm text-muted-foreground">Total Entities</p>
+              <p className="text-2xl font-bold text-foreground">{entities.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Included</p>
-              <p className="text-2xl font-bold text-green-600">{includedEntities.length}</p>
+              <p className="text-sm text-muted-foreground">Included</p>
+              <p className="text-2xl font-bold text-success">{includedEntities.length}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Employees</p>
-              <p className="text-2xl font-bold text-gray-900">{totalEmployees.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Total Employees</p>
+              <p className="text-2xl font-bold text-foreground">{totalEmployees.toLocaleString()}</p>
             </div>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <Building2 className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Control Approach</p>
-              <p className="text-lg font-bold text-gray-900">Operational</p>
+              <p className="text-sm text-muted-foreground">Control Approach</p>
+              <p className="text-lg font-bold text-foreground">Operational</p>
             </div>
           </div>
         </Card>
@@ -164,23 +164,23 @@ export default function OrganizationalBoundary() {
 
       {/* Consolidation Approach */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Consolidation Approach</h3>
+        <h3 className="font-semibold text-foreground mb-4">Consolidation Approach</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
-            <h4 className="font-medium text-blue-900 mb-2">Operational Control (Primary)</h4>
-            <p className="text-sm text-blue-700">
+          <div className="p-4 border-2 border-info rounded-lg bg-info-subtle">
+            <h4 className="font-medium text-info mb-2">Operational Control (Primary)</h4>
+            <p className="text-sm text-info">
               100% of emissions from operations over which the organization has operational control
             </p>
           </div>
           <div className="p-4 border rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Financial Control</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="font-medium text-foreground mb-2">Financial Control</h4>
+            <p className="text-sm text-muted-foreground">
               100% of emissions from operations over which the organization has financial control
             </p>
           </div>
           <div className="p-4 border rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-2">Equity Share</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="font-medium text-foreground mb-2">Equity Share</h4>
+            <p className="text-sm text-muted-foreground">
               Emissions proportional to equity share in the operation
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function OrganizationalBoundary() {
 
       {/* Entities Table */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Organizational Entities</h3>
+        <h3 className="font-semibold text-foreground mb-4">Organizational Entities</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -208,17 +208,17 @@ export default function OrganizationalBoundary() {
               <TableRow key={entity.id}>
                 <TableCell className="font-medium">{entity.name}</TableCell>
                 <TableCell>
-                  <Badge className="bg-gray-100 text-gray-700">{entity.type}</Badge>
+                  <Badge className="bg-muted text-foreground">{entity.type}</Badge>
                 </TableCell>
-                <TableCell className="text-sm text-gray-600">{entity.location}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{entity.location}</TableCell>
                 <TableCell>{entity.control}</TableCell>
                 <TableCell>{entity.ownership}%</TableCell>
                 <TableCell>{entity.employees}</TableCell>
                 <TableCell>
                   {entity.included ? (
-                    <Badge className="bg-green-100 text-green-700">Included</Badge>
+                    <Badge className="bg-success-subtle text-success">Included</Badge>
                   ) : (
-                    <Badge className="bg-gray-100 text-gray-700">Excluded</Badge>
+                    <Badge className="bg-muted text-foreground">Excluded</Badge>
                   )}
                 </TableCell>
                 <TableCell>
@@ -418,29 +418,29 @@ export default function OrganizationalBoundary() {
             <div className="py-4 space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Type</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEntity.type}</p>
+                  <Label className="text-sm text-muted-foreground">Type</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEntity.type}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Control</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEntity.control}</p>
+                  <Label className="text-sm text-muted-foreground">Control</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEntity.control}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Ownership</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEntity.ownership}%</p>
+                  <Label className="text-sm text-muted-foreground">Ownership</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEntity.ownership}%</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Employees</Label>
-                  <p className="font-medium text-gray-900 mt-1">{selectedEntity.employees}</p>
+                  <Label className="text-sm text-muted-foreground">Employees</Label>
+                  <p className="font-medium text-foreground mt-1">{selectedEntity.employees}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Location</Label>
-                <p className="font-medium text-gray-900 mt-1">{selectedEntity.location}</p>
+                <Label className="text-sm text-muted-foreground">Location</Label>
+                <p className="font-medium text-foreground mt-1">{selectedEntity.location}</p>
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Status</Label>
-                <p className="font-medium text-gray-900 mt-1">
+                <Label className="text-sm text-muted-foreground">Status</Label>
+                <p className="font-medium text-foreground mt-1">
                   {selectedEntity.included ? 'Included in boundary' : 'Excluded from boundary'}
                 </p>
               </div>
@@ -460,7 +460,7 @@ export default function OrganizationalBoundary() {
             <DialogDescription>Remove {selectedEntity?.name} from organizational boundary</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               This will remove the entity from your organizational boundary. This action cannot be undone.
             </p>
           </div>
@@ -482,9 +482,9 @@ export default function OrganizationalBoundary() {
             <DialogDescription>Download boundary documentation</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-gray-50 border rounded-lg">
-              <p className="text-sm text-gray-900 font-medium mb-2">Export includes:</p>
-              <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <div className="p-4 bg-background-subtle border rounded-lg">
+              <p className="text-sm text-foreground font-medium mb-2">Export includes:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                 <li>All organizational entities</li>
                 <li>Consolidation approach</li>
                 <li>Control methods</li>

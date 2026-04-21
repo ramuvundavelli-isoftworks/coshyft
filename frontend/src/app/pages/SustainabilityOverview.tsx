@@ -84,10 +84,10 @@ export default function SustainabilityOverview() {
       <div className="flex items-start justify-between py-4">
         {/* Left - Title */}
         <div>
-          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-[#101828] tracking-[0.0703px] mb-2">
+          <h1 className="font-['Inter',sans-serif] font-bold text-[32px] leading-[40px] text-foreground tracking-[0.0703px] mb-2">
             Sustainability Overview
           </h1>
-          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282] tracking-[-0.3125px]">
+          <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-muted-foreground tracking-[-0.3125px]">
             Executive control center for Scope 3 Category 7 compliance
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function SustainabilityOverview() {
         {/* Right - Action Buttons */}
         <div className="flex items-center gap-2">
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-[150px] h-9 bg-white border border-[rgba(0,0,0,0.1)] shadow-sm">
+            <SelectTrigger className="w-[150px] h-9 bg-card border border-[rgba(0,0,0,0.1)] shadow-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -107,16 +107,16 @@ export default function SustainabilityOverview() {
           <Button 
             variant="outline" 
             onClick={() => setIsExportDialogOpen(true)} 
-            className="h-9 bg-white border border-[rgba(0,0,0,0.1)] hover:bg-gray-50 shadow-sm hover:shadow-md"
+            className="h-9 bg-card border border-[rgba(0,0,0,0.1)] hover:bg-background-subtle shadow-sm hover:shadow-md"
           >
             <Download className="h-4 w-4 mr-2" />
-            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-[#101828] tracking-[-0.1504px]">
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-foreground tracking-[-0.1504px]">
               Export
             </span>
           </Button>
           <Button 
             onClick={() => setIsSimulationDialogOpen(true)} 
-            className="h-9 bg-[#00bc7d] hover:bg-[#00a872] text-white shadow-md hover:shadow-lg"
+            className="h-9 bg-brand-500 hover:bg-brand-500 text-white shadow-md hover:shadow-lg"
           >
             <Zap className="h-4 w-4 mr-2" />
             <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-5 text-white tracking-[-0.1504px]">
@@ -167,17 +167,17 @@ export default function SustainabilityOverview() {
 
       {/* Critical Alerts */}
       {criticalAlerts.length > 0 && (
-        <Card className="p-6 border-red-200 bg-red-50">
+        <Card className="p-6 border-destructive/25 bg-destructive-subtle">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-semibold text-red-900 mb-2">Critical Alerts Require Attention</h3>
+              <h3 className="font-semibold text-destructive mb-2">Critical Alerts Require Attention</h3>
               <div className="space-y-2">
                 {criticalAlerts.slice(0, 3).map((alert) => (
-                  <div key={alert.id} className="flex items-center justify-between p-3 bg-white backdrop-blur-md rounded-[14px] border border-gray-100/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                  <div key={alert.id} className="flex items-center justify-between p-3 bg-card backdrop-blur-md rounded-[14px] border border-border-subtle/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                     <div>
-                      <p className="font-medium text-gray-900">{alert.title}</p>
-                      <p className="text-sm text-gray-600">{alert.description}</p>
+                      <p className="font-medium text-foreground">{alert.title}</p>
+                      <p className="text-sm text-muted-foreground">{alert.description}</p>
                     </div>
                     <Button
                       variant="outline"
@@ -200,7 +200,7 @@ export default function SustainabilityOverview() {
 
       {/* Target Gap Analysis */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Target vs Actual Performance</h3>
+        <h3 className="font-semibold text-foreground mb-4">Target vs Actual Performance</h3>
         <div style={{ height: '300px', width: '100%' }}>
           <Line
             data={{
@@ -230,57 +230,57 @@ export default function SustainabilityOverview() {
 
       {/* Quick Links to Compliance & Transport Analytics */}
       <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Compliance & Analytics</h3>
+        <h3 className="font-semibold text-foreground mb-4">Compliance & Analytics</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link to="/csrd-compliance">
-            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+            <div className="p-5 border-2 border-border rounded-lg hover:border-brand-500 hover:shadow-md transition-all cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg group-hover:scale-110 transition-transform">
-                  <FileCheck className="h-6 w-6 text-green-600" />
+                <div className="p-3 bg-gradient-to-br from-success-subtle to-success-subtle rounded-lg group-hover:scale-110 transition-transform">
+                  <FileCheck className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">CSRD/ESRS E1</h4>
-                  <p className="text-sm text-gray-600">Compliance Dashboard</p>
+                  <h4 className="font-semibold text-foreground">CSRD/ESRS E1</h4>
+                  <p className="text-sm text-muted-foreground">Compliance Dashboard</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Track CSRD requirements, materiality assessments, and compliance progress</p>
-              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+              <p className="text-sm text-muted-foreground">Track CSRD requirements, materiality assessments, and compliance progress</p>
+              <div className="flex items-center gap-2 mt-3 text-brand-500 text-sm font-medium">
                 View Dashboard <ArrowRight className="h-4 w-4" />
               </div>
             </div>
           </Link>
 
           <Link to="/regulatory-reporting">
-            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+            <div className="p-5 border-2 border-border rounded-lg hover:border-brand-500 hover:shadow-md transition-all cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg group-hover:scale-110 transition-transform">
-                  <Globe className="h-6 w-6 text-blue-600" />
+                <div className="p-3 bg-gradient-to-br from-info-subtle to-info-subtle rounded-lg group-hover:scale-110 transition-transform">
+                  <Globe className="h-6 w-6 text-info" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Regulatory Reporting</h4>
-                  <p className="text-sm text-gray-600">Reporting & Submissions</p>
+                  <h4 className="font-semibold text-foreground">Regulatory Reporting</h4>
+                  <p className="text-sm text-muted-foreground">Reporting & Submissions</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Manage regulatory reports, submissions, and compliance frameworks</p>
-              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+              <p className="text-sm text-muted-foreground">Manage regulatory reports, submissions, and compliance frameworks</p>
+              <div className="flex items-center gap-2 mt-3 text-brand-500 text-sm font-medium">
                 View Reports <ArrowRight className="h-4 w-4" />
               </div>
             </div>
           </Link>
 
           <Link to="/transport-analytics">
-            <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-[#00bc7d] hover:shadow-md transition-all cursor-pointer group">
+            <div className="p-5 border-2 border-border rounded-lg hover:border-brand-500 hover:shadow-md transition-all cursor-pointer group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg group-hover:scale-110 transition-transform">
-                  <Train className="h-6 w-6 text-purple-600" />
+                <div className="p-3 bg-gradient-to-br from-info-subtle to-primary-subtle rounded-lg group-hover:scale-110 transition-transform">
+                  <Train className="h-6 w-6 text-info" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Public Transport</h4>
-                  <p className="text-sm text-gray-600">Transport Analytics</p>
+                  <h4 className="font-semibold text-foreground">Public Transport</h4>
+                  <p className="text-sm text-muted-foreground">Transport Analytics</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Analyze commuting patterns across public transport networks and modes</p>
-              <div className="flex items-center gap-2 mt-3 text-[#00bc7d] text-sm font-medium">
+              <p className="text-sm text-muted-foreground">Analyze commuting patterns across public transport networks and modes</p>
+              <div className="flex items-center gap-2 mt-3 text-brand-500 text-sm font-medium">
                 View Analytics <ArrowRight className="h-4 w-4" />
               </div>
             </div>
@@ -292,7 +292,7 @@ export default function SustainabilityOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Active Initiatives</h3>
+            <h3 className="font-semibold text-foreground">Active Initiatives</h3>
             <Link to="/initiatives">
               <Button variant="ghost" size="sm">
                 View All <ArrowRight className="h-4 w-4 ml-1" />
@@ -303,12 +303,12 @@ export default function SustainabilityOverview() {
             {activeInitiatives.slice(0, 5).map((initiative) => (
               <div key={initiative.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900">{initiative.name}</h4>
-                  <Badge className="bg-blue-100 text-blue-700">{initiative.status}</Badge>
+                  <h4 className="font-medium text-foreground">{initiative.name}</h4>
+                  <Badge className="bg-info-subtle text-info">{initiative.status}</Badge>
                 </div>
                 <Progress value={initiative.completion} className="mb-2" />
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">{initiative.completion}% Complete</span>
+                  <span className="text-muted-foreground">{initiative.completion}% Complete</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -327,31 +327,31 @@ export default function SustainabilityOverview() {
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Compliance Status</h3>
+          <h3 className="font-semibold text-foreground mb-4">Compliance Status</h3>
           <div className="space-y-4">
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-900">Data Quality</span>
-                <Badge className="bg-green-100 text-green-700">Excellent</Badge>
+                <span className="font-medium text-foreground">Data Quality</span>
+                <Badge className="bg-success-subtle text-success">Excellent</Badge>
               </div>
               <Progress value={94} className="mb-2" />
-              <p className="text-sm text-gray-600">94% of data meets quality standards</p>
+              <p className="text-sm text-muted-foreground">94% of data meets quality standards</p>
             </div>
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-900">Reporting Readiness</span>
-                <Badge className="bg-green-100 text-green-700">Ready</Badge>
+                <span className="font-medium text-foreground">Reporting Readiness</span>
+                <Badge className="bg-success-subtle text-success">Ready</Badge>
               </div>
               <Progress value={100} className="mb-2" />
-              <p className="text-sm text-gray-600">All frameworks up to date</p>
+              <p className="text-sm text-muted-foreground">All frameworks up to date</p>
             </div>
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-900">Audit Preparedness</span>
-                <Badge className="bg-yellow-100 text-yellow-700">In Progress</Badge>
+                <span className="font-medium text-foreground">Audit Preparedness</span>
+                <Badge className="bg-warning-subtle text-warning">In Progress</Badge>
               </div>
               <Progress value={78} className="mb-2" />
-              <p className="text-sm text-gray-600">Evidence collection ongoing</p>
+              <p className="text-sm text-muted-foreground">Evidence collection ongoing</p>
             </div>
           </div>
         </Card>
@@ -379,7 +379,7 @@ export default function SustainabilityOverview() {
                 <SelectItem value="custom">Custom Scenario</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Simulation will analyze projected emissions through 2030
             </p>
           </div>
@@ -440,27 +440,27 @@ export default function SustainabilityOverview() {
           </DialogHeader>
           {selectedAlert && (
             <div className="py-4">
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+              <div className="p-4 bg-destructive-subtle border border-destructive/25 rounded-lg mb-4">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                  <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-red-900">{selectedAlert.title}</h4>
-                    <p className="text-sm text-red-700 mt-1">{selectedAlert.description}</p>
+                    <h4 className="font-semibold text-destructive">{selectedAlert.title}</h4>
+                    <p className="text-sm text-destructive mt-1">{selectedAlert.description}</p>
                   </div>
                 </div>
               </div>
               <div className="space-y-2">
                 <div>
-                  <Label className="text-sm text-gray-600">Severity</Label>
-                  <p className="font-medium text-gray-900">{selectedAlert.severity}</p>
+                  <Label className="text-sm text-muted-foreground">Severity</Label>
+                  <p className="font-medium text-foreground">{selectedAlert.severity}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Category</Label>
-                  <p className="font-medium text-gray-900">{selectedAlert.category}</p>
+                  <Label className="text-sm text-muted-foreground">Category</Label>
+                  <p className="font-medium text-foreground">{selectedAlert.category}</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Source</Label>
-                  <p className="font-medium text-gray-900">{selectedAlert.source}</p>
+                  <Label className="text-sm text-muted-foreground">Source</Label>
+                  <p className="font-medium text-foreground">{selectedAlert.source}</p>
                 </div>
               </div>
             </div>
@@ -487,17 +487,17 @@ export default function SustainabilityOverview() {
             <div className="py-4">
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm text-gray-600">Status</Label>
-                  <Badge className="bg-blue-100 text-blue-700 mt-1">{selectedInitiative.status}</Badge>
+                  <Label className="text-sm text-muted-foreground">Status</Label>
+                  <Badge className="bg-info-subtle text-info mt-1">{selectedInitiative.status}</Badge>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Completion</Label>
+                  <Label className="text-sm text-muted-foreground">Completion</Label>
                   <Progress value={selectedInitiative.completion} className="mt-2" />
-                  <p className="text-sm text-gray-600 mt-1">{selectedInitiative.completion}%</p>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedInitiative.completion}%</p>
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-600">Impact</Label>
-                  <p className="font-medium text-gray-900">{selectedInitiative.impact || 'High'}</p>
+                  <Label className="text-sm text-muted-foreground">Impact</Label>
+                  <p className="font-medium text-foreground">{selectedInitiative.impact || 'High'}</p>
                 </div>
               </div>
             </div>

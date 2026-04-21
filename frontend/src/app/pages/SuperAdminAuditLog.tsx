@@ -18,15 +18,15 @@ import { superadminApi } from '../api';
 const PAGE_SIZE = 20;
 
 const ACTION_COLORS: Record<string, string> = {
-  CREATE: 'bg-green-100 text-green-700',
-  UPDATE: 'bg-blue-100 text-blue-700',
-  DELETE: 'bg-red-100 text-red-700',
-  VIEW:   'bg-gray-100 text-gray-700',
-  LOGIN:  'bg-purple-100 text-purple-700',
-  LOGOUT: 'bg-yellow-100 text-yellow-700',
-  SUSPEND: 'bg-orange-100 text-orange-700',
-  ACTIVATE: 'bg-teal-100 text-teal-700',
-  EXPORT: 'bg-indigo-100 text-indigo-700',
+  CREATE: 'bg-success-subtle text-success',
+  UPDATE: 'bg-info-subtle text-info',
+  DELETE: 'bg-destructive-subtle text-destructive',
+  VIEW:   'bg-muted text-foreground',
+  LOGIN:  'bg-info-subtle text-info',
+  LOGOUT: 'bg-warning-subtle text-warning',
+  SUSPEND: 'bg-warning-subtle text-warning',
+  ACTIVATE: 'bg-success-subtle text-success',
+  EXPORT: 'bg-info-subtle text-info',
 };
 
 export default function SuperAdminAuditLog() {
@@ -82,8 +82,8 @@ export default function SuperAdminAuditLog() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Audit Log</h1>
-          <p className="text-gray-600 mt-1">Platform-wide activity and security events</p>
+          <h1 className="text-3xl font-bold text-foreground">Audit Log</h1>
+          <p className="text-muted-foreground mt-1">Platform-wide activity and security events</p>
         </div>
         <Button variant="outline" onClick={handleRefresh} disabled={loading}>
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
@@ -149,57 +149,57 @@ export default function SuperAdminAuditLog() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Timestamp</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">User</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Action</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Entity</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Description</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">IP Address</th>
+              <tr className="border-b bg-background-subtle">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground whitespace-nowrap">Timestamp</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">User</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Role</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Action</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Entity</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Description</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">IP Address</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">Loading...</td>
+                  <td colSpan={7} className="text-center py-12 text-muted-foreground">Loading...</td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">
+                  <td colSpan={7} className="text-center py-12 text-muted-foreground">
                     <div className="flex flex-col items-center gap-2">
-                      <Shield className="h-8 w-8 text-gray-300" />
+                      <Shield className="h-8 w-8 text-muted-foreground" />
                       <span>No audit log entries found</span>
                     </div>
                   </td>
                 </tr>
               ) : (
                 logs.map((log: any) => (
-                  <tr key={log.id} className="border-b hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap font-mono text-xs">
+                  <tr key={log.id} className="border-b hover:bg-background-subtle transition-colors">
+                    <td className="px-4 py-3 text-muted-foreground whitespace-nowrap font-mono text-xs">
                       {formatTimestamp(log.timestamp)}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="font-medium text-gray-900 font-mono text-xs">{log.user_id}</span>
+                      <span className="font-medium text-foreground font-mono text-xs">{log.user_id}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge className="bg-gray-100 text-gray-700 capitalize">{log.user_role}</Badge>
+                      <Badge className="bg-muted text-foreground capitalize">{log.user_role}</Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge className={ACTION_COLORS[log.action] ?? 'bg-gray-100 text-gray-700'}>
+                      <Badge className={ACTION_COLORS[log.action] ?? 'bg-muted text-foreground'}>
                         {log.action}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 text-xs">
+                    <td className="px-4 py-3 text-muted-foreground text-xs">
                       <div>{log.entity_type}</div>
                       {log.entity_id && (
-                        <div className="font-mono text-gray-400">{log.entity_id}</div>
+                        <div className="font-mono text-muted-foreground">{log.entity_id}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-700 max-w-[280px]">
+                    <td className="px-4 py-3 text-foreground max-w-[280px]">
                       <span className="line-clamp-2">{log.description ?? '—'}</span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 font-mono text-xs whitespace-nowrap">
+                    <td className="px-4 py-3 text-muted-foreground font-mono text-xs whitespace-nowrap">
                       {log.ip_address ?? '—'}
                     </td>
                   </tr>
@@ -211,8 +211,8 @@ export default function SuperAdminAuditLog() {
 
         {/* Pagination */}
         {!loading && logs.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
-            <p className="text-sm text-gray-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-background-subtle">
+            <p className="text-sm text-muted-foreground">
               Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total} entries
             </p>
             <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ export default function SuperAdminAuditLog() {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-gray-600">Page {page + 1} of {totalPages}</span>
+              <span className="text-sm text-muted-foreground">Page {page + 1} of {totalPages}</span>
               <Button
                 variant="outline"
                 size="sm"

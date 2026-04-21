@@ -146,8 +146,8 @@ export default function CommuteProfile() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Commute Profile</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-3xl font-bold text-foreground">Commute Profile</h1>
+        <p className="text-muted-foreground mt-1">
           Manage your personal commute preferences and settings
         </p>
       </div>
@@ -155,7 +155,7 @@ export default function CommuteProfile() {
       {/* Account Information */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
+          <h2 className="text-lg font-semibold text-foreground">Account Information</h2>
           <Button variant="outline" size="sm" onClick={() => openEditDialog('contact')}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -163,24 +163,24 @@ export default function CommuteProfile() {
         </div>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
+            <div className="w-20 h-20 rounded-full bg-info-subtle flex items-center justify-center text-2xl font-bold text-info">
               {profileData.firstName[0]}{profileData.lastName[0]}
             </div>
             <div>
-              <p className="text-xl font-semibold text-gray-900">
+              <p className="text-xl font-semibold text-foreground">
                 {profileData.firstName} {profileData.lastName}
               </p>
-              <p className="text-sm text-gray-600">{profileData.email}</p>
+              <p className="text-sm text-muted-foreground">{profileData.email}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 pt-4 border-t">
             <div>
-              <Label className="text-sm text-gray-600">Email</Label>
-              <p className="text-gray-900 mt-1">{profileData.email}</p>
+              <Label className="text-sm text-muted-foreground">Email</Label>
+              <p className="text-foreground mt-1">{profileData.email}</p>
             </div>
             <div>
-              <Label className="text-sm text-gray-600">Phone</Label>
-              <p className="text-gray-900 mt-1">{profileData.phone}</p>
+              <Label className="text-sm text-muted-foreground">Phone</Label>
+              <p className="text-foreground mt-1">{profileData.phone}</p>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function CommuteProfile() {
       {/* Basic Information */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Commute Information</h2>
+          <h2 className="text-lg font-semibold text-foreground">Commute Information</h2>
           <Button variant="outline" size="sm" onClick={() => openEditDialog('basic')}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -197,33 +197,33 @@ export default function CommuteProfile() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label className="flex items-center gap-2 text-sm text-gray-600">
+            <Label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Building2 className="h-4 w-4" />
               Office Location
             </Label>
-            <p className="text-gray-900 mt-2 font-medium">{profileData.office}</p>
+            <p className="text-foreground mt-2 font-medium">{profileData.office}</p>
           </div>
           <div>
-            <Label className="flex items-center gap-2 text-sm text-gray-600">
+            <Label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Home className="h-4 w-4" />
               Home Location
             </Label>
-            <p className="text-gray-900 mt-2 font-medium">{profileData.homeAddress}</p>
-            <p className="text-xs text-gray-500 mt-1">For privacy, only city is visible to others</p>
+            <p className="text-foreground mt-2 font-medium">{profileData.homeAddress}</p>
+            <p className="text-xs text-muted-foreground mt-1">For privacy, only city is visible to others</p>
           </div>
           <div>
-            <Label className="flex items-center gap-2 text-sm text-gray-600">
+            <Label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
               Preferred Arrival Time
             </Label>
-            <p className="text-gray-900 mt-2 font-medium">{profileData.arrivalTime}</p>
+            <p className="text-foreground mt-2 font-medium">{profileData.arrivalTime}</p>
           </div>
           <div>
-            <Label className="flex items-center gap-2 text-sm text-gray-600">
+            <Label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
               Preferred Departure Time
             </Label>
-            <p className="text-gray-900 mt-2 font-medium">{profileData.departureTime}</p>
+            <p className="text-foreground mt-2 font-medium">{profileData.departureTime}</p>
           </div>
         </div>
       </Card>
@@ -231,7 +231,7 @@ export default function CommuteProfile() {
       {/* Transport Preferences */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Transport Mode Preferences</h2>
+          <h2 className="text-lg font-semibold text-foreground">Transport Mode Preferences</h2>
           <Button variant="outline" size="sm" onClick={() => openEditDialog('preferences')}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -239,28 +239,28 @@ export default function CommuteProfile() {
         </div>
         <div className="space-y-4">
           <div>
-            <Label className="text-sm text-gray-600 mb-3 block">Preferred Modes</Label>
+            <Label className="text-sm text-muted-foreground mb-3 block">Preferred Modes</Label>
             <div className="flex flex-wrap gap-2">
               {profileData.preferredModes.includes('carpool') && (
-                <Badge className="bg-blue-100 text-blue-700 px-3 py-1">
+                <Badge className="bg-info-subtle text-info px-3 py-1">
                   <Car className="h-3 w-3 mr-1 inline" />
                   Carpool
                 </Badge>
               )}
               {profileData.preferredModes.includes('public-transit') && (
-                <Badge className="bg-green-100 text-green-700 px-3 py-1">
+                <Badge className="bg-success-subtle text-success px-3 py-1">
                   <Bus className="h-3 w-3 mr-1 inline" />
                   Public Transit
                 </Badge>
               )}
               {profileData.preferredModes.includes('bike') && (
-                <Badge className="bg-emerald-100 text-emerald-700 px-3 py-1">
+                <Badge className="bg-success-subtle text-success px-3 py-1">
                   <Bike className="h-3 w-3 mr-1 inline" />
                   Bike
                 </Badge>
               )}
               {profileData.preferredModes.includes('sov') && (
-                <Badge className="bg-gray-100 text-gray-700 px-3 py-1">
+                <Badge className="bg-muted text-foreground px-3 py-1">
                   <Car className="h-3 w-3 mr-1 inline" />
                   Drive Alone
                 </Badge>
@@ -269,23 +269,23 @@ export default function CommuteProfile() {
           </div>
 
           <div className="pt-4 border-t">
-            <Label className="text-sm text-gray-600 mb-3 block">Carpool Preferences</Label>
+            <Label className="text-sm text-muted-foreground mb-3 block">Carpool Preferences</Label>
             <div className="space-y-2">
               {profileData.carpoolPreferences.musicOk && (
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <CheckCircle className="h-4 w-4 text-success" />
                   Music is okay
                 </div>
               )}
               {profileData.carpoolPreferences.conversationOk && (
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <CheckCircle className="h-4 w-4 text-success" />
                   Conversation welcome
                 </div>
               )}
               {!profileData.carpoolPreferences.smokingOk && (
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <CheckCircle className="h-4 w-4 text-success" />
                   No smoking
                 </div>
               )}
@@ -297,7 +297,7 @@ export default function CommuteProfile() {
       {/* Notification Settings */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Notification Settings</h2>
+          <h2 className="text-lg font-semibold text-foreground">Notification Settings</h2>
           <Button variant="outline" size="sm" onClick={() => openEditDialog('notifications')}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -306,10 +306,10 @@ export default function CommuteProfile() {
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5 text-gray-600" />
+              <Bell className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium text-gray-900">Ride Matches</p>
-                <p className="text-sm text-gray-600">Get notified when new rides match your route</p>
+                <p className="font-medium text-foreground">Ride Matches</p>
+                <p className="text-sm text-muted-foreground">Get notified when new rides match your route</p>
               </div>
             </div>
             <Badge variant={profileData.notifications.rideMatches ? 'default' : 'outline'}>
@@ -319,10 +319,10 @@ export default function CommuteProfile() {
 
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-gray-600" />
+              <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium text-gray-900">Trip Reminders</p>
-                <p className="text-sm text-gray-600">Reminders for upcoming carpools</p>
+                <p className="font-medium text-foreground">Trip Reminders</p>
+                <p className="text-sm text-muted-foreground">Reminders for upcoming carpools</p>
               </div>
             </div>
             <Badge variant={profileData.notifications.tripReminders ? 'default' : 'outline'}>
@@ -332,10 +332,10 @@ export default function CommuteProfile() {
 
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-gray-600" />
+              <CheckCircle className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium text-gray-900">Achievements</p>
-                <p className="text-sm text-gray-600">Celebrate milestones and achievements</p>
+                <p className="font-medium text-foreground">Achievements</p>
+                <p className="text-sm text-muted-foreground">Celebrate milestones and achievements</p>
               </div>
             </div>
             <Badge variant={profileData.notifications.achievements ? 'default' : 'outline'}>
@@ -345,10 +345,10 @@ export default function CommuteProfile() {
 
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-gray-600" />
+              <Mail className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="font-medium text-gray-900">Weekly Report</p>
-                <p className="text-sm text-gray-600">Weekly impact summary via email</p>
+                <p className="font-medium text-foreground">Weekly Report</p>
+                <p className="text-sm text-muted-foreground">Weekly impact summary via email</p>
               </div>
             </div>
             <Badge variant={profileData.notifications.weeklyReport ? 'default' : 'outline'}>
@@ -360,7 +360,7 @@ export default function CommuteProfile() {
 
       {/* Security */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Security & Privacy</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">Security & Privacy</h2>
         <div className="space-y-3">
           <Button
             variant="outline"
@@ -372,7 +372,7 @@ export default function CommuteProfile() {
           </Button>
           <Button
             variant="outline"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:border-red-300"
+            className="w-full justify-start text-destructive hover:text-destructive hover:border-destructive/40"
             onClick={() => setIsResetDataOpen(true)}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
@@ -587,7 +587,7 @@ export default function CommuteProfile() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <p className="font-medium">Ride Matches</p>
-                <p className="text-sm text-gray-600">New carpool opportunities</p>
+                <p className="text-sm text-muted-foreground">New carpool opportunities</p>
               </div>
               <Checkbox
                 checked={tempData.notifications.rideMatches}
@@ -602,7 +602,7 @@ export default function CommuteProfile() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <p className="font-medium">Trip Reminders</p>
-                <p className="text-sm text-gray-600">Upcoming ride alerts</p>
+                <p className="text-sm text-muted-foreground">Upcoming ride alerts</p>
               </div>
               <Checkbox
                 checked={tempData.notifications.tripReminders}
@@ -617,7 +617,7 @@ export default function CommuteProfile() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <p className="font-medium">Achievements</p>
-                <p className="text-sm text-gray-600">Milestone celebrations</p>
+                <p className="text-sm text-muted-foreground">Milestone celebrations</p>
               </div>
               <Checkbox
                 checked={tempData.notifications.achievements}
@@ -632,7 +632,7 @@ export default function CommuteProfile() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <p className="font-medium">Weekly Report</p>
-                <p className="text-sm text-gray-600">Impact summary emails</p>
+                <p className="text-sm text-muted-foreground">Impact summary emails</p>
               </div>
               <Checkbox
                 checked={tempData.notifications.weeklyReport}
@@ -741,7 +741,7 @@ export default function CommuteProfile() {
                 value={passwordData.new}
                 onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
               />
-              <p className="text-xs text-gray-500 mt-1">At least 8 characters</p>
+              <p className="text-xs text-muted-foreground mt-1">At least 8 characters</p>
             </div>
             <div>
               <Label htmlFor="confirm-password">Confirm New Password *</Label>
@@ -777,8 +777,8 @@ export default function CommuteProfile() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
+            <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
+              <p className="text-sm text-warning">
                 <strong>Warning:</strong> This action will reset all your preferences, notification settings, and transport mode selections to default values. Your trip history and account information will not be affected.
               </p>
             </div>

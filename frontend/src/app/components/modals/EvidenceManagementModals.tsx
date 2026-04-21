@@ -145,7 +145,7 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5 text-[#00bc7d]" />
+            <Upload className="h-5 w-5 text-brand-500" />
             Upload Evidence
           </DialogTitle>
           <DialogDescription>
@@ -162,14 +162,14 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
             <Label>Select File *</Label>
             {!selectedFile ? (
               <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#00bc7d] transition-colors cursor-pointer"
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-brand-500 transition-colors cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Upload className="h-12 w-12 mx-auto text-gray-400 mb-3" />
-                <p className="text-sm font-medium text-gray-700 mb-1">
+                <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground mb-1">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   PDF, Word, Excel, Image (max 25MB)
                 </p>
                 <input
@@ -181,18 +181,18 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
                 />
               </div>
             ) : (
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between">
+              <div className="p-4 bg-background-subtle border border-border rounded-lg flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {selectedFile.type.includes('image') ? (
-                    <Image className="h-8 w-8 text-blue-600" />
+                    <Image className="h-8 w-8 text-info" />
                   ) : selectedFile.type.includes('pdf') ? (
-                    <FileText className="h-8 w-8 text-red-600" />
+                    <FileText className="h-8 w-8 text-destructive" />
                   ) : (
-                    <File className="h-8 w-8 text-gray-600" />
+                    <File className="h-8 w-8 text-muted-foreground" />
                   )}
                   <div>
-                    <p className="font-medium text-sm text-gray-900">{selectedFile.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-medium text-sm text-foreground">{selectedFile.name}</p>
+                    <p className="text-xs text-muted-foreground">
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -255,11 +255,11 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
             {formData.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {formData.tags.map((tag) => (
-                  <Badge key={tag} variant="outline" className="bg-gray-50">
+                  <Badge key={tag} variant="outline" className="bg-background-subtle">
                     {tag}
                     <button
                       onClick={() => removeTag(tag)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
+                      className="ml-2 text-muted-foreground hover:text-foreground"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -271,12 +271,12 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
 
           {/* Linked Item */}
           {linkedTo && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-3 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <LinkIcon className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <LinkIcon className="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-medium text-blue-900">Linked To</p>
-                  <p className="text-xs text-blue-700 mt-1">
+                  <p className="text-xs font-medium text-info">Linked To</p>
+                  <p className="text-xs text-info mt-1">
                     {linkedTo.type}: {linkedTo.name}
                   </p>
                 </div>
@@ -285,8 +285,8 @@ export function UploadEvidenceModal({ isOpen, onClose, onSubmit, linkedTo }: Upl
           )}
 
           {/* Info */}
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-xs text-amber-800">
+          <div className="p-3 bg-warning-subtle border border-warning/25 rounded-lg">
+            <p className="text-xs text-warning">
               <strong>GDPR Notice:</strong> Ensure uploaded documents do not contain unnecessary personal data. All uploads are logged for audit purposes.
             </p>
           </div>
@@ -399,7 +399,7 @@ export function RequestClarificationModal({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-[#00bc7d]" />
+            <AlertCircle className="h-5 w-5 text-brand-500" />
             Request Clarification
           </DialogTitle>
           <DialogDescription>
@@ -440,9 +440,9 @@ export function RequestClarificationModal({
             <Label className="mb-3 block">Questions to Address</Label>
             <div className="space-y-3">
               {questions.map((question, index) => (
-                <div key={question.id} className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <div key={question.id} className="p-4 bg-background-subtle border border-border rounded-lg">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="text-sm font-medium text-gray-700">Question {index + 1}</span>
+                    <span className="text-sm font-medium text-foreground">Question {index + 1}</span>
                     {questions.length > 1 && (
                       <Button
                         variant="ghost"
@@ -480,7 +480,7 @@ export function RequestClarificationModal({
                       />
                       <label 
                         htmlFor={`required-${question.id}`} 
-                        className="text-sm text-gray-700 cursor-pointer"
+                        className="text-sm text-foreground cursor-pointer"
                       >
                         Response required
                       </label>
@@ -512,12 +512,12 @@ export function RequestClarificationModal({
           </div>
 
           {/* Summary */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900 mb-2">Request Summary</p>
-                <ul className="text-xs text-blue-700 space-y-1">
+                <p className="text-sm font-medium text-info mb-2">Request Summary</p>
+                <ul className="text-xs text-info space-y-1">
                   <li>• {questions.filter(q => q.question.trim()).length} question(s) to be answered</li>
                   <li>• Priority: {priority === 'urgent' ? 'Urgent' : 'Standard'}</li>
                   <li>• Due: {new Date(dueDate).toLocaleDateString('en-IE', { dateStyle: 'medium' })}</li>

@@ -149,16 +149,16 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
   return (
     <div className="space-y-6">
       {/* Profile Header */}
-      <Card className="p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <Card className="p-6 bg-gradient-to-br from-info-subtle via-info-subtle to-info-subtle">
         <div className="flex items-start gap-6">
           {/* Avatar & Level */}
           <div className="relative">
             <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+              <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-info to-info text-white">
                 {userProfile.name.split(' ').map((n) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-2 -right-2 h-12 w-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+            <div className="absolute -bottom-2 -right-2 h-12 w-12 bg-gradient-to-br from-warning to-warning rounded-full flex items-center justify-center border-4 border-white shadow-lg">
               <span className="text-white font-bold text-sm">{userProfile.level}</span>
             </div>
           </div>
@@ -166,35 +166,35 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
           {/* Stats */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-bold text-gray-900">{userProfile.name}</h2>
+              <h2 className="text-2xl font-bold text-foreground">{userProfile.name}</h2>
               <Badge className={getTierColor(userProfile.tier)}>
                 {getTierIcon(userProfile.tier)} {userProfile.tier.toUpperCase()}
               </Badge>
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
+              <Badge variant="outline" className="bg-warning-subtle text-warning">
                 #{userProfile.rank} Rank
               </Badge>
             </div>
 
             <div className="grid grid-cols-4 gap-4 mb-4">
               <div>
-                <p className="text-sm text-gray-600">Points</p>
-                <p className="text-xl font-bold text-blue-600">{formatNumber(userProfile.points)}</p>
+                <p className="text-sm text-muted-foreground">Points</p>
+                <p className="text-xl font-bold text-info">{formatNumber(userProfile.points)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Level</p>
-                <p className="text-xl font-bold text-purple-600">{userProfile.level}</p>
+                <p className="text-sm text-muted-foreground">Level</p>
+                <p className="text-xl font-bold text-info">{userProfile.level}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Achievements</p>
-                <p className="text-xl font-bold text-green-600">
+                <p className="text-sm text-muted-foreground">Achievements</p>
+                <p className="text-xl font-bold text-success">
                   {unlockedCount}/{totalAchievements}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Streak</p>
+                <p className="text-sm text-muted-foreground">Streak</p>
                 <div className="flex items-center gap-1">
-                  <Flame className="h-5 w-5 text-orange-500" />
-                  <p className="text-xl font-bold text-orange-600">{userProfile.streak}</p>
+                  <Flame className="h-5 w-5 text-warning" />
+                  <p className="text-xl font-bold text-warning">{userProfile.streak}</p>
                 </div>
               </div>
             </div>
@@ -202,8 +202,8 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
             {/* Level Progress */}
             <div>
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600">Level {userProfile.level}</span>
-                <span className="text-gray-600">
+                <span className="text-muted-foreground">Level {userProfile.level}</span>
+                <span className="text-muted-foreground">
                   {levelInfo.pointsToNext} points to Level {userProfile.level + 1}
                 </span>
               </div>
@@ -245,19 +245,19 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
       {selectedTab === 'achievements' && (
         <div className="space-y-6">
           {/* Progress Summary */}
-          <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+          <Card className="p-4 bg-gradient-to-r from-info-subtle to-primary-subtle">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Achievement Progress</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground mb-1">Achievement Progress</h3>
+                <p className="text-sm text-muted-foreground">
                   You've unlocked {unlockedCount} out of {totalAchievements} achievements
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-purple-600">
+                <div className="text-3xl font-bold text-info">
                   {Math.round((unlockedCount / totalAchievements) * 100)}%
                 </div>
-                <p className="text-xs text-gray-600">Complete</p>
+                <p className="text-xs text-muted-foreground">Complete</p>
               </div>
             </div>
             <Progress value={(unlockedCount / totalAchievements) * 100} className="mt-4" />
@@ -270,46 +270,46 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
                 key={achievement.id}
                 className={`p-4 transition-all ${
                   achievement.isUnlocked
-                    ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-md'
+                    ? 'bg-gradient-to-br from-warning-subtle to-warning-subtle border-warning/25 shadow-md'
                     : 'opacity-60 grayscale'
                 }`}
               >
                 <div className="flex items-start gap-3 mb-3">
                   <div
                     className={`h-12 w-12 rounded-full flex items-center justify-center text-2xl ${
-                      achievement.isUnlocked ? 'bg-white shadow-md' : 'bg-gray-200'
+                      achievement.isUnlocked ? 'bg-card shadow-md' : 'bg-muted'
                     }`}
                   >
-                    {achievement.isUnlocked ? achievement.icon : <Lock className="h-6 w-6 text-gray-400" />}
+                    {achievement.isUnlocked ? achievement.icon : <Lock className="h-6 w-6 text-muted-foreground" />}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold text-gray-900 text-sm">{achievement.name}</h4>
+                      <h4 className="font-semibold text-foreground text-sm">{achievement.name}</h4>
                       <Badge variant="outline" className={getRarityColor(achievement.rarity)}>
                         {achievement.rarity}
                       </Badge>
                     </div>
-                    <p className="text-xs text-gray-600">{achievement.description}</p>
+                    <p className="text-xs text-muted-foreground">{achievement.description}</p>
                   </div>
                 </div>
 
                 {achievement.isUnlocked ? (
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-green-600">
+                    <div className="flex items-center gap-1 text-success">
                       <CheckCircle className="h-4 w-4" />
                       <span className="text-xs font-medium">Unlocked</span>
                     </div>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                    <Badge variant="outline" className="bg-info-subtle text-info">
                       +{achievement.points} pts
                     </Badge>
                   </div>
                 ) : (
                   <div>
                     <div className="flex items-center justify-between text-xs mb-2">
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">
                         Progress: {achievement.progress}/{achievement.requirement}
                       </span>
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-foreground">
                         {getProgressPercentage(achievement.progress, achievement.requirement)}%
                       </span>
                     </div>
@@ -328,12 +328,12 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
       {/* Challenges Tab */}
       {selectedTab === 'challenges' && (
         <div className="space-y-4">
-          <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+          <Card className="p-4 bg-gradient-to-r from-success-subtle to-success-subtle">
             <div className="flex items-center gap-3">
-              <Target className="h-8 w-8 text-green-600" />
+              <Target className="h-8 w-8 text-success" />
               <div>
-                <h3 className="font-semibold text-gray-900">Active Challenges</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground">Active Challenges</h3>
+                <p className="text-sm text-muted-foreground">
                   Complete challenges to earn bonus points and exclusive badges
                 </p>
               </div>
@@ -343,20 +343,20 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
           {activeChallenges.map((challenge) => (
             <Card key={challenge.id} className="p-6">
               <div className="flex items-start gap-4">
-                <div className="h-16 w-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center text-3xl">
+                <div className="h-16 w-16 bg-gradient-to-br from-info-subtle to-primary-subtle rounded-lg flex items-center justify-center text-3xl">
                   {challenge.reward.badge}
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-900 text-lg">{challenge.name}</h3>
-                    <Badge variant="outline" className="bg-purple-50 text-purple-700">
+                    <h3 className="font-semibold text-foreground text-lg">{challenge.name}</h3>
+                    <Badge variant="outline" className="bg-info-subtle text-info">
                       {challenge.type}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">{challenge.description}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{challenge.description}</p>
 
-                  <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
                     <div className="flex items-center gap-1">
                       <Trophy className="h-3 w-3" />
                       <span>+{challenge.reward.points} points</span>
@@ -373,10 +373,10 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">
                         Progress: {challenge.progress}/{challenge.goal}
                       </span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-foreground">
                         {getProgressPercentage(challenge.progress, challenge.goal)}%
                       </span>
                     </div>
@@ -407,31 +407,31 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
       {selectedTab === 'stats' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-info" />
               Performance Stats
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Total Rides</span>
-                <span className="text-xl font-bold text-gray-900">{userProfile.totalRides}</span>
+                <span className="text-muted-foreground">Total Rides</span>
+                <span className="text-xl font-bold text-foreground">{userProfile.totalRides}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">CO₂ Saved</span>
-                <span className="text-xl font-bold text-green-600">
+                <span className="text-muted-foreground">CO₂ Saved</span>
+                <span className="text-xl font-bold text-success">
                   {userProfile.totalCO2Saved.toFixed(1)} kg
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Current Streak</span>
-                <span className="text-xl font-bold text-orange-600 flex items-center gap-1">
+                <span className="text-muted-foreground">Current Streak</span>
+                <span className="text-xl font-bold text-warning flex items-center gap-1">
                   <Flame className="h-5 w-5" />
                   {userProfile.streak} days
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Longest Streak</span>
-                <span className="text-xl font-bold text-purple-600">
+                <span className="text-muted-foreground">Longest Streak</span>
+                <span className="text-xl font-bold text-info">
                   {userProfile.longestStreak} days
                 </span>
               </div>
@@ -439,32 +439,32 @@ export default function GamificationDashboard({ userProfile, onJoinChallenge }: 
           </Card>
 
           <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-600" />
+            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Crown className="h-5 w-5 text-warning" />
               Milestones
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                <Zap className="h-8 w-8 text-blue-600" />
+              <div className="flex items-center gap-3 p-3 bg-info-subtle rounded-lg">
+                <Zap className="h-8 w-8 text-info" />
                 <div>
-                  <p className="font-medium text-gray-900">Level {userProfile.level}</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="font-medium text-foreground">Level {userProfile.level}</p>
+                  <p className="text-xs text-muted-foreground">
                     {levelInfo.pointsToNext} points to next level
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                <Crown className="h-8 w-8 text-purple-600" />
+              <div className="flex items-center gap-3 p-3 bg-info-subtle rounded-lg">
+                <Crown className="h-8 w-8 text-info" />
                 <div>
-                  <p className="font-medium text-gray-900">{userProfile.tier.toUpperCase()} Tier</p>
-                  <p className="text-xs text-gray-600">Elite status achieved</p>
+                  <p className="font-medium text-foreground">{userProfile.tier.toUpperCase()} Tier</p>
+                  <p className="text-xs text-muted-foreground">Elite status achieved</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <Trophy className="h-8 w-8 text-green-600" />
+              <div className="flex items-center gap-3 p-3 bg-success-subtle rounded-lg">
+                <Trophy className="h-8 w-8 text-success" />
                 <div>
-                  <p className="font-medium text-gray-900">Rank #{userProfile.rank}</p>
-                  <p className="text-xs text-gray-600">Top performer</p>
+                  <p className="font-medium text-foreground">Rank #{userProfile.rank}</p>
+                  <p className="text-xs text-muted-foreground">Top performer</p>
                 </div>
               </div>
             </div>

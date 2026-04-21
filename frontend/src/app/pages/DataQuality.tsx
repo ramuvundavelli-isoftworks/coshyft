@@ -182,8 +182,8 @@ export default function DataQuality() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Quality Management</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Data Quality Management</h1>
+          <p className="text-muted-foreground mt-1">
             Define validation rules and ensure data integrity
           </p>
         </div>
@@ -203,48 +203,48 @@ export default function DataQuality() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Shield className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-info-subtle rounded-lg">
+              <Shield className="h-5 w-5 text-info" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Rules</p>
-              <p className="text-2xl font-bold text-gray-900">{rules.length}</p>
+              <p className="text-sm text-muted-foreground">Total Rules</p>
+              <p className="text-2xl font-bold text-foreground">{rules.length}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-subtle rounded-lg">
+              <CheckCircle className="h-5 w-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Active Rules</p>
-              <p className="text-2xl font-bold text-gray-900">{activeRules}</p>
+              <p className="text-sm text-muted-foreground">Active Rules</p>
+              <p className="text-2xl font-bold text-foreground">{activeRules}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="p-2 bg-warning-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Violations</p>
-              <p className="text-2xl font-bold text-yellow-600">{totalViolations}</p>
+              <p className="text-sm text-muted-foreground">Total Violations</p>
+              <p className="text-2xl font-bold text-warning">{totalViolations}</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="p-2 bg-destructive-subtle rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Critical Errors</p>
-              <p className="text-2xl font-bold text-red-600">{errorViolations}</p>
+              <p className="text-sm text-muted-foreground">Critical Errors</p>
+              <p className="text-2xl font-bold text-destructive">{errorViolations}</p>
             </div>
           </div>
         </Card>
@@ -253,7 +253,7 @@ export default function DataQuality() {
       {/* Validation Rules Table */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-semibold text-gray-900">Validation Rules</h3>
+          <h3 className="font-semibold text-foreground">Validation Rules</h3>
           <Button variant="outline" size="sm">Export Rules</Button>
         </div>
 
@@ -272,7 +272,7 @@ export default function DataQuality() {
           </TableHeader>
           <TableBody>
             {rules.map((rule) => (
-              <TableRow key={rule.id} className="hover:bg-gray-50">
+              <TableRow key={rule.id} className="hover:bg-background-subtle">
                 <TableCell className="font-medium">{rule.name}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="font-mono text-xs">
@@ -286,15 +286,15 @@ export default function DataQuality() {
                     variant="outline"
                     className={
                       rule.severity === 'error'
-                        ? 'bg-red-50 text-red-700 border-red-200'
-                        : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                        ? 'bg-destructive-subtle text-destructive border-destructive/25'
+                        : 'bg-warning-subtle text-warning border-warning/25'
                     }
                   >
                     {rule.severity}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <span className={rule.violations > 0 ? 'font-bold text-red-600' : 'text-gray-600'}>
+                  <span className={rule.violations > 0 ? 'font-bold text-destructive' : 'text-muted-foreground'}>
                     {rule.violations}
                   </span>
                 </TableCell>
@@ -307,8 +307,8 @@ export default function DataQuality() {
                       variant="outline"
                       className={
                         rule.active
-                          ? 'bg-green-50 text-green-700 border-green-200 cursor-pointer'
-                          : 'bg-gray-50 text-gray-700 border-gray-200 cursor-pointer'
+                          ? 'bg-success-subtle text-success border-success/25 cursor-pointer'
+                          : 'bg-background-subtle text-foreground border-border cursor-pointer'
                       }
                     >
                       {rule.active ? 'Active' : 'Inactive'}
@@ -545,8 +545,8 @@ export default function DataQuality() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+              <p className="text-sm text-info">
                 This will run {activeRules} active rules against all commute data. Results will be available after completion.
               </p>
             </div>
@@ -575,20 +575,20 @@ export default function DataQuality() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-3 gap-4">
               <Card className="p-4 text-center">
-                <p className="text-2xl font-bold text-gray-900">1,250</p>
-                <p className="text-sm text-gray-600">Records Checked</p>
+                <p className="text-2xl font-bold text-foreground">1,250</p>
+                <p className="text-sm text-muted-foreground">Records Checked</p>
               </Card>
               <Card className="p-4 text-center">
-                <p className="text-2xl font-bold text-yellow-600">12</p>
-                <p className="text-sm text-gray-600">Warnings</p>
+                <p className="text-2xl font-bold text-warning">12</p>
+                <p className="text-sm text-muted-foreground">Warnings</p>
               </Card>
               <Card className="p-4 text-center">
-                <p className="text-2xl font-bold text-red-600">3</p>
-                <p className="text-sm text-gray-600">Errors</p>
+                <p className="text-2xl font-bold text-destructive">3</p>
+                <p className="text-sm text-muted-foreground">Errors</p>
               </Card>
             </div>
             <div className="space-y-2">
-              <p className="font-medium text-gray-900">Top Violations:</p>
+              <p className="font-medium text-foreground">Top Violations:</p>
               {rules.filter(r => r.violations > 0).map((rule) => (
                 <div key={rule.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <span className="text-sm">{rule.name}</span>
@@ -596,8 +596,8 @@ export default function DataQuality() {
                     variant="outline"
                     className={
                       rule.severity === 'error'
-                        ? 'bg-red-50 text-red-700 border-red-200'
-                        : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                        ? 'bg-destructive-subtle text-destructive border-destructive/25'
+                        : 'bg-warning-subtle text-warning border-warning/25'
                     }
                   >
                     {rule.violations} violations

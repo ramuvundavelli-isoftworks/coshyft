@@ -210,7 +210,7 @@ export function CreateTargetModal({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <TrendingDown className="h-6 w-6 text-[#00bc7d]" />
+            <TrendingDown className="h-6 w-6 text-brand-500" />
             Create Reduction Target
           </DialogTitle>
           <DialogDescription>
@@ -289,7 +289,7 @@ export function CreateTargetModal({
                   <SelectItem key={type.value} value={type.value}>
                     <div className="py-1">
                       <p className="font-medium">{type.label}</p>
-                      <p className="text-xs text-gray-500">{type.description}</p>
+                      <p className="text-xs text-muted-foreground">{type.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -314,7 +314,7 @@ export function CreateTargetModal({
                   <SelectItem key={scope.value} value={scope.value}>
                     <div className="py-1">
                       <p className="font-medium">{scope.label}</p>
-                      <p className="text-xs text-gray-500">{scope.description}</p>
+                      <p className="text-xs text-muted-foreground">{scope.description}</p>
                     </div>
                   </SelectItem>
                 ))}
@@ -338,7 +338,7 @@ export function CreateTargetModal({
               onChange={(e) => setFormData({ ...formData, reductionPercentage: parseInt(e.target.value) })}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
               <span>10%</span>
               <span>50%</span>
               <span>100%</span>
@@ -347,27 +347,27 @@ export function CreateTargetModal({
 
           {/* Target Calculation Display */}
           {baselineEmissions > 0 && (
-            <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg">
+            <div className="p-4 bg-gradient-to-br from-success-subtle to-success-subtle border-2 border-success/25 rounded-lg">
               <div className="grid grid-cols-3 gap-4 mb-3">
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Baseline ({formData.baselineYear})</p>
-                  <p className="text-xl font-bold text-gray-900">{baselineEmissions.toFixed(1)}</p>
-                  <p className="text-xs text-gray-500">tCO₂e</p>
+                  <p className="text-xs text-muted-foreground mb-1">Baseline ({formData.baselineYear})</p>
+                  <p className="text-xl font-bold text-foreground">{baselineEmissions.toFixed(1)}</p>
+                  <p className="text-xs text-muted-foreground">tCO₂e</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Target ({formData.targetYear})</p>
-                  <p className="text-xl font-bold text-green-600">{targetEmissions.toFixed(1)}</p>
-                  <p className="text-xs text-gray-500">tCO₂e</p>
+                  <p className="text-xs text-muted-foreground mb-1">Target ({formData.targetYear})</p>
+                  <p className="text-xl font-bold text-success">{targetEmissions.toFixed(1)}</p>
+                  <p className="text-xs text-muted-foreground">tCO₂e</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Annual Reduction</p>
-                  <p className="text-xl font-bold text-blue-600">{annualReduction.toFixed(1)}%</p>
-                  <p className="text-xs text-gray-500">per year</p>
+                  <p className="text-xs text-muted-foreground mb-1">Annual Reduction</p>
+                  <p className="text-xl font-bold text-info">{annualReduction.toFixed(1)}%</p>
+                  <p className="text-xs text-muted-foreground">per year</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 pt-3 border-t border-green-200">
-                <TrendingDown className="h-5 w-5 text-green-600" />
-                <p className="text-sm text-green-900">
+              <div className="flex items-center gap-2 pt-3 border-t border-success/25">
+                <TrendingDown className="h-5 w-5 text-success" />
+                <p className="text-sm text-success">
                   <strong>{(baselineEmissions - targetEmissions).toFixed(1)} tCO₂e</strong> reduction needed
                 </p>
               </div>
@@ -407,9 +407,9 @@ export function CreateTargetModal({
           {warnings.length > 0 && (
             <div className="space-y-2">
               {warnings.map((warning, idx) => (
-                <div key={idx} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">{warning}</p>
+                <div key={idx} className="p-3 bg-warning-subtle border border-warning/25 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-warning">{warning}</p>
                 </div>
               ))}
             </div>
@@ -417,12 +417,12 @@ export function CreateTargetModal({
 
           {/* SBTi Info */}
           {formData.targetType === 'sbti' && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
               <div className="flex items-start gap-2">
-                <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-blue-900">Science-Based Target Guidelines</p>
-                  <ul className="text-xs text-blue-700 mt-2 space-y-1 ml-4 list-disc">
+                  <p className="text-sm font-medium text-info">Science-Based Target Guidelines</p>
+                  <ul className="text-xs text-info mt-2 space-y-1 ml-4 list-disc">
                     <li>Scope 1+2: Minimum 42% reduction by 2030 (1.5°C pathway)</li>
                     <li>Scope 3: Minimum 25% reduction if &gt;40% of total emissions</li>
                     <li>Long-term: Net-zero by 2050 maximum</li>

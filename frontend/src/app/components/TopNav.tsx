@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import { useAuth } from '../context/AuthContext';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -14,13 +15,15 @@ import {
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Bell, Search, Download, HelpCircle, ChevronDown, Users, Building2, Leaf, Shield, Crown, CheckCircle, LogOut } from 'lucide-react';
+import { ThemeToggle } from './global/ThemeToggle';
 import { mockAlerts } from '../data/mockData';
-import { UserRole } from '../types';
+import type { UserRole } from '../types';
 
 export function TopNav() {
   const { currentUser, switchRole } = useRole();
+  const { logout } = useAuth();
   const [showAlerts, setShowAlerts] = useState(false);
-  
+
   const unresolvedAlerts = mockAlerts.filter(a => !a.resolved);
   const criticalCount = unresolvedAlerts.filter(a => a.severity === 'critical').length;
 
@@ -43,16 +46,27 @@ export function TopNav() {
   const navigate = useNavigate();
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b z-50">
+    <header
+      className="fixed top-0 left-0 right-0 border-b"
+      style={{
+        height:          'var(--ds-topnav-height)',
+        backgroundColor: 'var(--card)',
+        borderColor:     'var(--border)',
+        zIndex:          'var(--ds-z-topnav)',
+      }}
+    >
       <div className="h-full flex items-center justify-between px-6">
         {/* Left */}
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-gradient-to-br from-[#00bc7d] to-[#009689] rounded-lg flex items-center justify-center">
+            <div className="h-8 w-8 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">Co</span>
             </div>
             <div>
-              <div className="font-semibold text-gray-900 text-xl">CoShift</div>
+              <div className="font-semibold text-foreground text-xl">CoShyft</div>
+              {currentUser.tenant_name && (
+                <div className="text-xs text-muted-foreground leading-none">{currentUser.tenant_name}</div>
+              )}
             </div>
           </Link>
         </div>
@@ -60,10 +74,10 @@ export function TopNav() {
         {/* Center - Search */}
         <div className="flex-1 max-w-md mx-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search employees, risks, initiatives, reports..."
-              className="pl-9 bg-gray-50 border-gray-200"
+              className="pl-9 bg-background-subtle border-border"
             />
           </div>
         </div>
@@ -93,7 +107,7 @@ export function TopNav() {
                   <Link
                     key={alert.id}
                     to="/alerts"
-                    className="block px-2 py-3 hover:bg-gray-50 border-b last:border-0"
+                    className="block px-2 py-3 hover:bg-background-subtle border-b last:border-0"
                     onClick={() => setShowAlerts(false)}
                   >
                     <div className="flex items-start gap-2">
@@ -110,8 +124,8 @@ export function TopNav() {
                         {alert.severity}
                       </Badge>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">{alert.title}</p>
-                        <p className="text-xs text-gray-500 mt-1">{alert.description}</p>
+                        <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
                       </div>
                     </div>
                   </Link>
@@ -126,9 +140,9 @@ export function TopNav() {
 
           {/* Compliance Progress */}
           {currentUser.role === 'sustainability' && (
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
-              <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-green-700">87% Complete</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-success-subtle border border-success/25 rounded-lg">
+              <div className="h-2 w-2 bg-success rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-success">87% Complete</span>
             </div>
           )}
 
@@ -152,43 +166,51 @@ export function TopNav() {
             <HelpCircle className="h-5 w-5" />
           </Button>
 
+          {/* Theme toggle */}
+          <ThemeToggle />
+
           {/* Profile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 px-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-blue-600 text-white text-sm">
+                  <AvatarFallback className="bg-info text-white text-sm">
                     {currentUser.name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:block text-left">
                   <div className="text-sm font-medium">{currentUser.name}</div>
-                  <div className="text-xs text-gray-500">{roleLabels[currentUser.role]}</div>
+                  <div className="text-xs text-muted-foreground">{roleLabels[currentUser.role]}</div>
                 </div>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64">
               <DropdownMenuLabel className="pb-3">
-                <div className="text-xs text-gray-500 mb-2">Switch Role (Demo)</div>
-                <div className="text-sm font-semibold text-gray-900">
-                  Current: {roleLabels[currentUser.role]}
-                </div>
+                <div className="text-sm font-semibold text-foreground">{currentUser.name}</div>
+                <div className="text-xs text-muted-foreground">{roleLabels[currentUser.role]}</div>
+                {currentUser.tenant_name && (
+                  <div className="mt-1 text-xs font-medium text-brand-500 flex items-center gap-1">
+                    <Building2 className="h-3 w-3" />
+                    {currentUser.tenant_name}
+                  </div>
+                )}
+                <div className="mt-2 text-xs text-muted-foreground">Switch Role (Demo)</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {(Object.keys(roleLabels) as UserRole[]).map((role) => {
                 const Icon = roleIcons[role];
                 const isActive = currentUser.role === role;
                 return (
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     key={role}
                     onClick={() => switchRole(role)}
-                    className={isActive ? 'bg-blue-50' : ''}
+                    className={isActive ? 'bg-primary-subtle' : ''}
                   >
                     <div className="flex items-center gap-3 w-full">
-                      <Icon className={`h-4 w-4 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                       <span className="flex-1">{roleLabels[role]}</span>
-                      {isActive && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                      {isActive && <CheckCircle className="h-4 w-4 text-info" />}
                     </div>
                   </DropdownMenuItem>
                 );
@@ -196,7 +218,7 @@ export function TopNav() {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/login')}>
+              <DropdownMenuItem onClick={async () => { await logout(); navigate('/login'); }}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </DropdownMenuItem>

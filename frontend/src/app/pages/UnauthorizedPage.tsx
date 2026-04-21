@@ -40,33 +40,33 @@ export default function UnauthorizedPage() {
     <div className="flex items-center justify-center min-h-[70vh]">
       <Card className="max-w-lg w-full p-8 text-center">
         {/* Icon */}
-        <div className="mx-auto w-16 h-16 bg-red-50 border-2 border-red-200 rounded-full flex items-center justify-center mb-6">
-          <ShieldAlert className="h-8 w-8 text-red-500" />
+        <div className="mx-auto w-16 h-16 bg-destructive-subtle border-2 border-destructive/25 rounded-full flex items-center justify-center mb-6">
+          <ShieldAlert className="h-8 w-8 text-destructive" />
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-semibold text-[#101828] mb-2">
+        <h1 className="text-2xl font-semibold text-foreground mb-2">
           Access Restricted
         </h1>
-        <p className="text-[#4a5565] mb-6">
+        <p className="text-muted-foreground mb-6">
           You don't have permission to view this page. Your current role does not include access to this section.
         </p>
 
         {/* Current Role Info */}
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-6 text-left">
+        <div className="p-4 bg-background-subtle border border-border rounded-lg mb-6 text-left">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-[#00bc7d] rounded-lg">
+            <div className="p-2 bg-brand-500 rounded-lg">
               <User className="h-4 w-4 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[#6a7282]">Signed in as</p>
-              <p className="font-semibold text-[#101828]">{currentUser.name}</p>
+              <p className="text-sm text-muted-foreground">Signed in as</p>
+              <p className="font-semibold text-foreground">{currentUser.name}</p>
             </div>
-            <Badge variant="outline" className="ml-auto bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="ml-auto bg-success-subtle text-success border-success/25">
               {roleLabels[role]}
             </Badge>
           </div>
-          <p className="text-sm text-[#6a7282] mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             {roleDescriptions[role]}
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function UnauthorizedPage() {
         </div>
 
         {/* Help Text */}
-        <p className="text-xs text-[#6a7282] mt-6">
+        <p className="text-xs text-muted-foreground mt-6">
           If you believe you should have access, contact your administrator or the sustainability team.
         </p>
       </Card>

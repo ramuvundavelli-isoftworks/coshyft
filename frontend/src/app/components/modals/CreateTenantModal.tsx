@@ -254,7 +254,7 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-[#00bc7d]" />
+            <Building2 className="h-6 w-6 text-brand-500" />
             Create New Tenant
           </DialogTitle>
           <DialogDescription>
@@ -265,7 +265,7 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
         <div className="space-y-5 py-4">
           {/* Company Details */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900">Company Information</h3>
+            <h3 className="text-sm font-semibold text-foreground">Company Information</h3>
             
             <div>
               <Label htmlFor="companyName">
@@ -292,9 +292,9 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
                   placeholder="acme-corp"
                   className="flex-1"
                 />
-                <span className="text-sm text-gray-500">.enwayu.io</span>
+                <span className="text-sm text-muted-foreground">.enwayu.io</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 URL: https://{formData.subdomain || 'your-company'}.enwayu.io
               </p>
             </div>
@@ -362,8 +362,8 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
           </div>
 
           {/* Admin Contact */}
-          <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">Administrator Contact</h3>
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-sm font-semibold text-foreground">Administrator Contact</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -407,8 +407,8 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
           </div>
 
           {/* Billing Plan */}
-          <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">
+          <div className="space-y-4 pt-4 border-t border-border">
+            <h3 className="text-sm font-semibold text-foreground">
               <CreditCard className="h-4 w-4 inline mr-1" />
               Billing Plan
             </h3>
@@ -420,21 +420,21 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
                   onClick={() => setFormData({ ...formData, billingPlan: plan.value as any })}
                   className={`p-4 border-2 rounded-lg transition-all text-left ${
                     formData.billingPlan === plan.value
-                      ? 'border-[#00bc7d] bg-green-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-brand-500 bg-success-subtle'
+                      : 'border-border hover:border-border'
                   }`}
                 >
-                  <p className="font-semibold text-gray-900">{plan.label}</p>
-                  <p className="text-xs text-gray-500 mt-1">{plan.description}</p>
-                  <p className="text-sm font-medium text-[#00bc7d] mt-2">{plan.price}</p>
+                  <p className="font-semibold text-foreground">{plan.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{plan.description}</p>
+                  <p className="text-sm font-medium text-brand-500 mt-2">{plan.price}</p>
                 </button>
               ))}
             </div>
 
             {selectedPlan && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-900 mb-2">Included Features:</p>
-                <ul className="text-xs text-blue-700 space-y-1 ml-4 list-disc">
+              <div className="p-3 bg-info-subtle border border-info/25 rounded-lg">
+                <p className="text-sm font-medium text-info mb-2">Included Features:</p>
+                <ul className="text-xs text-info space-y-1 ml-4 list-disc">
                   {selectedPlan.features.map((feature, idx) => (
                     <li key={idx}>{feature}</li>
                   ))}
@@ -457,7 +457,7 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
                       onChange={() => toggleFeature(feature)}
                       className="rounded"
                     />
-                    <label htmlFor={`feature-${feature}`} className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={`feature-${feature}`} className="text-sm text-foreground cursor-pointer">
                       {feature}
                     </label>
                   </div>
@@ -467,10 +467,10 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
           )}
 
           {/* Trial Option */}
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center justify-between p-4 bg-background-subtle rounded-lg border border-border">
             <div>
-              <p className="text-sm font-medium text-gray-900">Start with 30-day trial</p>
-              <p className="text-xs text-gray-500">Free access for 30 days, then convert to paid plan</p>
+              <p className="text-sm font-medium text-foreground">Start with 30-day trial</p>
+              <p className="text-xs text-muted-foreground">Free access for 30 days, then convert to paid plan</p>
             </div>
             <Switch
               checked={formData.startAsTrial}
@@ -482,21 +482,21 @@ export function CreateTenantModal({ isOpen, onClose, onSubmit }: CreateTenantMod
           {warnings.length > 0 && (
             <div className="space-y-2">
               {warnings.map((warning, idx) => (
-                <div key={idx} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">{warning}</p>
+                <div key={idx} className="p-3 bg-warning-subtle border border-warning/25 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-warning">{warning}</p>
                 </div>
               ))}
             </div>
           )}
 
           {/* Summary */}
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
             <div className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-green-900">Tenant Setup Summary</p>
-                <div className="mt-2 space-y-1 text-xs text-green-700">
+                <p className="text-sm font-medium text-success">Tenant Setup Summary</p>
+                <div className="mt-2 space-y-1 text-xs text-success">
                   <p>• Subdomain: {formData.subdomain || 'not-set'}.enwayu.io</p>
                   <p>• Plan: {selectedPlan?.label} ({selectedPlan?.price})</p>
                   <p>• Status: {formData.startAsTrial ? 'Trial (30 days)' : 'Active'}</p>
