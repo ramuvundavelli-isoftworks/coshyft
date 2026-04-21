@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -43,30 +43,41 @@ import {
   Key
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, commuteApi, authApi } from '../api';
 
 export default function CommuteProfile() {
+  const { data: meResponse } = useApi(() => authApi.getMe());
+  const { data: commuteProfileResponse } = useApi(() => commuteApi.getCommuteProfile());
+
   const [profileData, setProfileData] = useState({
-    office: 'San Francisco HQ',
-    homeAddress: 'Oakland, CA',
+    office: '',
+    homeAddress: '',
     arrivalTime: '09:00',
     departureTime: '17:30',
     preferredModes: ['carpool', 'public-transit'],
-    carpoolPreferences: {
-      musicOk: true,
-      conversationOk: true,
-      smokingOk: false,
-    },
-    notifications: {
-      rideMatches: true,
-      tripReminders: true,
-      achievements: true,
-      weeklyReport: false,
-    },
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@company.com',
-    phone: '+1 (555) 123-4567',
+    carpoolPreferences: { musicOk: true, conversationOk: true, smokingOk: false },
+    notifications: { rideMatches: true, tripReminders: true, achievements: true, weeklyReport: false },
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
   });
+
+  useEffect(() => {
+    const me = meResponse as any;
+    const cp = commuteProfileResponse as any;
+    if (me || cp) {
+      const nameParts = me?.name?.split(' ') || ['', ''];
+      setProfileData(prev => ({
+        ...prev,
+        firstName: nameParts[0] || prev.firstName,
+        lastName: nameParts.slice(1).join(' ') || prev.lastName,
+        email: me?.email || prev.email,
+        homeAddress: cp?.data?.default_origin_address || prev.homeAddress,
+        arrivalTime: cp?.data?.typical_departure_time || prev.arrivalTime,
+      }));
+    }
+  }, [meResponse, commuteProfileResponse]);
 
   const [isEditBasicOpen, setIsEditBasicOpen] = useState(false);
   const [isEditPreferencesOpen, setIsEditPreferencesOpen] = useState(false);
@@ -82,16 +93,25 @@ export default function CommuteProfile() {
     confirm: '',
   });
 
-  const handleSaveBasic = () => {
+  const handleSaveBasic = async () => {
+    const result = await commuteApi.updateCommuteProfile({
+      default_origin_address: tempData.homeAddress,
+      typical_departure_time: tempData.arrivalTime,
+    });
     setProfileData({ ...profileData, ...tempData });
     setIsEditBasicOpen(false);
-    toast.success('Basic information updated');
+    if (result.success) toast.success('Basic information updated');
+    else toast.error('Saved locally — API sync failed');
   };
 
-  const handleSavePreferences = () => {
+  const handleSavePreferences = async () => {
+    const result = await commuteApi.updateCommuteProfile({
+      preferred_transport_mode_id: tempData.preferredModes[0] || undefined,
+    });
     setProfileData({ ...profileData, ...tempData });
     setIsEditPreferencesOpen(false);
-    toast.success('Preferences updated');
+    if (result.success) toast.success('Preferences updated');
+    else toast.error('Saved locally — API sync failed');
   };
 
   const handleSaveNotifications = () => {
@@ -100,13 +120,17 @@ export default function CommuteProfile() {
     toast.success('Notification settings updated');
   };
 
-  const handleSaveContact = () => {
+  const handleSaveContact = async () => {
+    const result = await authApi.updateProfile({
+      name: `${tempData.firstName} ${tempData.lastName}`.trim(),
+    });
     setProfileData({ ...profileData, ...tempData });
     setIsEditContactOpen(false);
-    toast.success('Contact information updated');
+    if (result.success) toast.success('Contact information updated');
+    else toast.error('Saved locally — API sync failed');
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (passwordData.new !== passwordData.confirm) {
       toast.error('Passwords do not match');
       return;
@@ -115,9 +139,14 @@ export default function CommuteProfile() {
       toast.error('Password must be at least 8 characters');
       return;
     }
+    const result = await authApi.changePassword({
+      current_password: passwordData.current,
+      new_password: passwordData.new,
+    });
     setIsChangePasswordOpen(false);
     setPasswordData({ current: '', new: '', confirm: '' });
-    toast.success('Password changed successfully');
+    if (result.success) toast.success('Password changed successfully');
+    else toast.error(result.error?.message || 'Failed to change password');
   };
 
   const handleResetData = () => {

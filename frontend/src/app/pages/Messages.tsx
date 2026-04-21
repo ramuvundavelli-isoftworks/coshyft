@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -26,13 +26,18 @@ import {
   formatMessageTime,
   getMessagePreview,
 } from '../utils/messaging';
-import { mockMessageThreads } from '../data/mockGamificationData';
 import ChatModal from '../components/carpooling/ChatModal';
 import { useApi, useApiMutation } from '../api';
 import { messagingApi } from '../api';
 
 export default function Messages() {
-  const [threads, setThreads] = useState<MessageThread[]>(mockMessageThreads);
+  const { data: apiThreads } = useApi(() => messagingApi.getThreads());
+  const [threads, setThreads] = useState<MessageThread[]>([]);
+
+  useEffect(() => {
+    const items = Array.isArray(apiThreads) ? apiThreads : (apiThreads as any)?.items;
+    if (Array.isArray(items)) setThreads(items);
+  }, [apiThreads]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedThread, setSelectedThread] = useState<MessageThread | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);

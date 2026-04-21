@@ -30,6 +30,7 @@ import {
 } from '../components/ui/table';
 import { Plus, AlertTriangle, CheckCircle, Shield, Play, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 interface ValidationRule {
   id: string;
@@ -76,6 +77,8 @@ const mockRules: ValidationRule[] = [
 ];
 
 export default function DataQuality() {
+  const { data: dqResponse } = useApi(() => sustainabilityApi.getDataQuality());
+  const dqData = (dqResponse as any)?.data;
   const [rules, setRules] = useState<ValidationRule[]>(mockRules);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);

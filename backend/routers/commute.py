@@ -23,8 +23,10 @@ from models.transport import IrishTransportMode
 from schemas.commute import (
     CommuteEntryCreate, CommuteEntryRead, CommuteEntryUpdate,
     CommuteStats, EmissionCalculationRequest, EmissionCalculationResponse,
+    CommuteProfileRead, CommuteProfileUpdate, MonthlyCommuteStats,
 )
 from schemas.common import ApiResponse, PaginatedResponse
+from models.commute import CommuteProfile
 from services.emission_calculator import calculate_emissions
 from services.audit_logger import log_action
 
@@ -301,3 +303,87 @@ async def preview_calculation(
             co2_saved_vs_car=calc["co2_saved_vs_car"],
         ),
     )
+
+
+@router.get("/stats/monthly", response_model=ApiResponse)
+async def get_monthly_stats(
+    year: int = Query(None),
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Monthly commute breakdown for the current user."""
+    target_year = year or datetime.utcnow().year
+    MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    avg_car_factor = 0.178
+    data = []
+
+    for month_num in range(1, 13):
+        stmt = select(CommuteEntry).where(
+            CommuteEntry.user_id == user.id,
+            func.extract("year", CommuteEntry.commute_date) == target_year,
+            func.extract("month", CommuteEntry.commute_date) == month_num,
+        )
+        entries = (await session.execute(stmt)).scalars().all()
+
+        total_dist = sum(e.distance_km for e in entries)
+        total_em = sum(e.emissions_kg_co2 for e in entries)
+        total_pts = sum(e.oxypoints_earned for e in entries)
+        co2_if_car = total_dist * avg_car_factor
+        co2_saved = max(0.0, co2_if_car - total_em)
+
+        data.append(MonthlyCommuteStats(
+            month=month_num,
+            month_name=MONTH_NAMES[month_num - 1],
+            total_commutes=len(entries),
+            total_distance_km=round(total_dist, 1),
+            total_emissions_kg=round(total_em, 2),
+            total_oxypoints=total_pts,
+            co2_saved_vs_car=round(co2_saved, 2),
+        ).model_dump())
+
+    return ApiResponse(success=True, data=data)
+
+
+@router.get("/profile", response_model=ApiResponse[CommuteProfileRead])
+async def get_commute_profile(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get current user's commute profile (home/work addresses, defaults)."""
+    profile = (await session.execute(
+        select(CommuteProfile).where(CommuteProfile.user_id == user.id)
+    )).scalar_one_or_none()
+
+    if profile is None:
+        # Return empty defaults if not yet set up
+        return ApiResponse(success=True, data=CommuteProfileRead(
+            user_id=user.id,
+            updated_at=datetime.utcnow(),
+        ))
+
+    return ApiResponse(success=True, data=CommuteProfileRead.model_validate(profile))
+
+
+@router.put("/profile", response_model=ApiResponse[CommuteProfileRead])
+async def update_commute_profile(
+    update: CommuteProfileUpdate,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Create or update current user's commute profile."""
+    profile = (await session.execute(
+        select(CommuteProfile).where(CommuteProfile.user_id == user.id)
+    )).scalar_one_or_none()
+
+    if profile is None:
+        profile = CommuteProfile(user_id=user.id)
+
+    for key, value in update.model_dump(exclude_unset=True).items():
+        setattr(profile, key, value)
+    profile.updated_at = datetime.utcnow()
+    session.add(profile)
+    await session.flush()
+    await session.refresh(profile)
+
+    return ApiResponse(success=True, data=CommuteProfileRead.model_validate(profile))

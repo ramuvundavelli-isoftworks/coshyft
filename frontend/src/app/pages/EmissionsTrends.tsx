@@ -22,6 +22,7 @@ import { TrendingDown, Download, AlertCircle, Calendar, BarChart3 } from 'lucide
 import { Line, Bar } from 'react-chartjs-2';
 import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi, emissionsApi } from '../api';
 
 const trendData = [
   { month: 'Jan', actual: 245, forecast: 240, lowerBound: 230, upperBound: 250 },
@@ -42,6 +43,8 @@ const yoyData = [
 ];
 
 export default function EmissionsTrends() {
+  const { data: trendsResponse } = useApi(() => emissionsApi.getTrends());
+  const apiTrends = (trendsResponse as any)?.data?.monthly || trendData;
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [isForecastDialogOpen, setIsForecastDialogOpen] = useState(false);
   const [isAnomalyDialogOpen, setIsAnomalyDialogOpen] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -12,12 +12,13 @@ import {
 } from 'lucide-react';
 import GamificationDashboard from '../components/carpooling/GamificationDashboard';
 import Leaderboard from '../components/carpooling/Leaderboard';
-import { mockUserProfile } from '../data/mockGamificationData';
 import { useApi } from '../api';
 import { gamificationApi } from '../api';
 
 export default function RewardsAchievements() {
   const [selectedView, setSelectedView] = useState<'overview' | 'leaderboard'>('overview');
+  const { data: apiProfile } = useApi(() => gamificationApi.getProfile());
+  const userProfile = (apiProfile as any) ?? null;
 
   return (
     <div className="space-y-6">
@@ -55,7 +56,7 @@ export default function RewardsAchievements() {
             <span className="text-sm text-muted-foreground">Total Points</span>
             <Zap className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-info">{mockUserProfile.points.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-info">{userProfile?.points?.toLocaleString() ?? '—'}</p>
           <p className="text-xs text-muted-foreground mt-1">
             +{Math.floor(Math.random() * 100 + 50)} this week
           </p>
@@ -66,9 +67,9 @@ export default function RewardsAchievements() {
             <span className="text-sm text-muted-foreground">Level</span>
             <Trophy className="h-4 w-4 text-info" />
           </div>
-          <p className="text-2xl font-bold text-info">{mockUserProfile.level}</p>
+          <p className="text-2xl font-bold text-info">{userProfile?.level ?? '—'}</p>
           <p className="text-xs text-muted-foreground mt-1">
-            {mockUserProfile.pointsToNextLevel} to Level {mockUserProfile.level + 1}
+            {userProfile?.points_to_next_level ?? userProfile?.pointsToNextLevel ?? ''} to Level {userProfile ? (userProfile.level + 1) : '—'}
           </p>
         </Card>
 
@@ -78,16 +79,13 @@ export default function RewardsAchievements() {
             <Gift className="h-4 w-4 text-success" />
           </div>
           <p className="text-2xl font-bold text-success">
-            {mockUserProfile.achievements.filter((a) => a.isUnlocked).length}/
-            {mockUserProfile.achievements.length}
+            {userProfile?.achievements_unlocked ?? (userProfile?.achievements?.filter((a: any) => a.isUnlocked).length ?? '—')}/
+            {userProfile?.achievements_total ?? (userProfile?.achievements?.length ?? '—')}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            {Math.round(
-              (mockUserProfile.achievements.filter((a) => a.isUnlocked).length /
-                mockUserProfile.achievements.length) *
-                100
-            )}
-            % complete
+            {userProfile?.achievements ? Math.round(
+              (userProfile.achievements.filter((a: any) => a.isUnlocked).length / userProfile.achievements.length) * 100
+            ) : '—'}% complete
           </p>
         </Card>
 
@@ -96,7 +94,7 @@ export default function RewardsAchievements() {
             <span className="text-sm text-muted-foreground">Global Rank</span>
             <TrendingUp className="h-4 w-4 text-warning" />
           </div>
-          <p className="text-2xl font-bold text-warning">#{mockUserProfile.rank}</p>
+          <p className="text-2xl font-bold text-warning">#{userProfile?.rank ?? '—'}</p>
           <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
             <TrendingUp className="h-3 w-3 text-success" />
             Up 2 places
@@ -137,7 +135,7 @@ export default function RewardsAchievements() {
 
       {/* Main Content */}
       {selectedView === 'overview' ? (
-        <GamificationDashboard userProfile={mockUserProfile} />
+        <GamificationDashboard userProfile={userProfile} />
       ) : (
         <Leaderboard currentUserId="user-current" />
       )}

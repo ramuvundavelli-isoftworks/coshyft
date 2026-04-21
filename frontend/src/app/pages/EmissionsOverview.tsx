@@ -32,7 +32,6 @@ import { Line, Doughnut } from 'react-chartjs-2';
 import { lineChartOptions, doughnutChartOptions, colors } from '../utils/chartConfig';
 import { useApi } from '../api';
 import { emissionsApi } from '../api';
-import { mockEmissionData, mockModeDistribution, mockLocationPerformance } from '../data/mockData';
 import { toast } from 'sonner';
 
 export default function EmissionsOverview() {
@@ -50,12 +49,16 @@ export default function EmissionsOverview() {
   const { data: modeSplit } = useApi(() => emissionsApi.getModeSplit());
   const { data: locations } = useApi(() => emissionsApi.getLocationPerformance());
 
-  // Fallback to mock data while loading
-  const emissionData = (trends as any[]) || mockEmissionData;
-  const modeData = (modeSplit as any[]) || mockModeDistribution;
-  const locationData = (locations as any[]) || mockLocationPerformance;
+  const emissionData: any[] = Array.isArray(trends) ? trends : [];
+  const modeData: any[] = Array.isArray(modeSplit) ? modeSplit : [];
+  const locationData: any[] = Array.isArray(locations) ? locations : [];
 
-  const totalEmissions = emissionData.reduce((sum: number, d: any) => sum + (d.actual || 0), 0);
+  const summaryData = summary as any;
+  const totalEmissionsKg = summaryData?.total_emissions_kg ?? 0;
+  const totalEmissionsTons = totalEmissionsKg > 0 ? (totalEmissionsKg / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—';
+  const emissionIntensity = summaryData?.emission_intensity != null ? String(summaryData.emission_intensity) : '—';
+  const dataQualityScore = summaryData?.data_quality_score != null ? String(Math.round(summaryData.data_quality_score)) : '—';
+  const locationsCount = locationData.length > 0 ? String(locationData.length) : (summaryData?.locations_count != null ? String(summaryData.locations_count) : '—');
 
   const handleExport = () => {
     toast.success('Exporting emissions report...');
@@ -113,9 +116,9 @@ export default function EmissionsOverview() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <KPICard
           title="Total Emissions"
-          value="1,850"
+          value={totalEmissionsTons}
           unit="tCO₂e"
-          change={-5.2}
+          change={summaryData?.yoy_change_percent != null ? summaryData.yoy_change_percent : undefined}
           changeLabel="vs baseline"
           icon={Activity}
           trend="down"
@@ -123,21 +126,21 @@ export default function EmissionsOverview() {
         />
         <KPICard
           title="Avg per Employee"
-          value="0.42"
+          value={emissionIntensity}
           unit="tCO₂e/FTE"
           icon={TrendingDown}
           trend="down"
         />
         <KPICard
           title="Data Quality"
-          value="94"
+          value={dataQualityScore}
           unit="%"
           icon={BarChart3}
           status="good"
         />
         <KPICard
           title="Locations"
-          value="4"
+          value={locationsCount}
           icon={MapPin}
         />
       </div>
@@ -172,10 +175,10 @@ export default function EmissionsOverview() {
           <div style={{ height: '320px', width: '100%' }}>
             <Line
               data={{
-                labels: emissionData.slice(0, 8).map(d => d.month),
+                labels: emissionData.slice(0, 8).map(d => d.period ?? d.month),
                 datasets: [{
                   label: 'Actual Emissions',
-                  data: emissionData.slice(0, 8).map(d => d.actual),
+                  data: emissionData.slice(0, 8).map(d => d.actual ?? d.total_emissions_kg),
                   borderColor: colors.chart.blue,
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   fill: true,

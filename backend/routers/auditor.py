@@ -19,7 +19,7 @@ from pydantic import BaseModel
 from database import get_session
 from auth.dependencies import require_role
 from models.user import User
-from models.audit import AuditLog, GDPRAuditLog, EvidenceItem
+from models.audit import AuditLog, GDPRAuditLog, EvidenceItem, AuditFinding, AuditNote
 from models.organization import Baseline, Risk
 from models.emission import EmissionFactor
 from schemas.audit import (
@@ -66,7 +66,7 @@ async def review_emissions(
     from models.commute import CommuteEntry
     total = (await session.execute(
         select(func.coalesce(func.sum(CommuteEntry.emissions_kg_co2), 0))
-        .where(func.extract("year", CommuteEntry.date) == year)
+        .where(func.extract("year", CommuteEntry.commute_date) == year)
     )).scalar_one()
 
     return ApiResponse(success=True, data={
@@ -120,6 +120,42 @@ async def review_risks(
         success=True,
         data=[RiskRead.model_validate(r).model_dump() for r in risks],
     )
+
+
+@router.get("/trail/export", response_model=ApiResponse)
+async def export_audit_trail(
+    start_date: str = Query(None, description="ISO date e.g. 2026-01-01"),
+    end_date: str = Query(None, description="ISO date e.g. 2026-12-31"),
+    action: str = Query(None),
+    entity_type: str = Query(None),
+    user=Depends(require_role("auditor")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Export audit trail as a structured list (CSV download in production)."""
+    stmt = select(AuditLog).order_by(AuditLog.timestamp.asc())
+    if action:
+        stmt = stmt.where(AuditLog.action == action)
+    if entity_type:
+        stmt = stmt.where(AuditLog.entity_type == entity_type)
+    if start_date:
+        stmt = stmt.where(AuditLog.timestamp >= start_date)
+    if end_date:
+        stmt = stmt.where(AuditLog.timestamp <= end_date)
+
+    logs = (await session.execute(stmt)).scalars().all()
+
+    await log_action(
+        session, user.id, user.role.value if hasattr(user.role, 'value') else user.role,
+        "export", "audit_log", "trail-export",
+        description=f"Audit trail exported ({len(logs)} records)",
+    )
+
+    return ApiResponse(success=True, data={
+        "records": [AuditLogRead.model_validate(l).model_dump() for l in logs],
+        "total_records": len(logs),
+        "exported_at": datetime.utcnow().isoformat(),
+        "format": "json",  # In production: stream as CSV via StreamingResponse
+    })
 
 
 @router.get("/trail", response_model=ApiResponse[PaginatedResponse[AuditLogRead]])
@@ -259,18 +295,30 @@ async def add_finding(
     user=Depends(require_role("auditor")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Add an audit finding."""
+    """Add a formal audit finding (persisted to audit_findings table)."""
+    finding = AuditFinding(
+        area=data.area,
+        description=data.description,
+        severity=data.severity or "medium",
+        status="open",
+        created_by=user.id,
+    )
+    session.add(finding)
+    await session.flush()
+    await session.refresh(finding)
+
     await log_action(
         session, user.id, user.role.value if hasattr(user.role, 'value') else user.role,
-        "create", "evidence", f"finding-{data.area}",
-        description=data.description,
+        "create", "evidence", finding.id,
+        description=f"Finding [{data.severity}]: {data.description[:100]}",
     )
     return ApiResponse(success=True, data={
-        "id": f"f-{datetime.utcnow().timestamp()}",
-        "area": data.area,
-        "description": data.description,
-        "severity": data.severity,
-        "created_at": datetime.utcnow().isoformat(),
+        "id": finding.id,
+        "area": finding.area,
+        "description": finding.description,
+        "severity": finding.severity,
+        "status": finding.status,
+        "created_at": finding.created_at.isoformat(),
     })
 
 
@@ -295,13 +343,28 @@ async def add_audit_note(
     user=Depends(require_role("auditor")),
     session: AsyncSession = Depends(get_session),
 ):
-    """Add an audit note."""
+    """Add an audit note (persisted to audit_notes table)."""
+    note = AuditNote(
+        area=data.area,
+        note=data.note,
+        note_type="observation",
+        created_by=user.id,
+    )
+    session.add(note)
+    await session.flush()
+    await session.refresh(note)
+
     await log_action(
         session, user.id, user.role.value if hasattr(user.role, 'value') else user.role,
-        "create", "evidence", f"note-{data.area}",
-        description=data.note,
+        "create", "evidence", note.id,
+        description=f"Note [{data.area}]: {data.note[:100]}",
     )
-    return ApiResponse(success=True, meta={"message": "Audit note added"})
+    return ApiResponse(success=True, data={
+        "id": note.id,
+        "area": note.area,
+        "note": note.note,
+        "created_at": note.created_at.isoformat(),
+    })
 
 
 @router.post("/clarification-requests", response_model=ApiResponse, status_code=201)
@@ -431,3 +494,77 @@ async def approve_factor(
         "approve", "emission_factor", factor_id,
     )
     return ApiResponse(success=True, meta={"message": "Emission factor approved"})
+
+
+# ── Audit Reports ─────────────────────────────────────────────────────────────
+
+class AuditReportCreate(BaseModel):
+    title: str
+    reporting_year: int
+    scope: Optional[str] = "Scope 3 Category 7 — Employee Commuting"
+    findings_summary: Optional[str] = None
+    overall_opinion: Optional[str] = "limited_assurance"   # limited_assurance | reasonable_assurance
+    notes: Optional[str] = None
+
+
+@router.get("/reports", response_model=ApiResponse)
+async def list_audit_reports(
+    user=Depends(require_role("auditor", "sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """List all formal audit reports generated by auditors."""
+    from models.report import Report
+    stmt = select(Report).where(Report.report_type == "audit").order_by(Report.created_at.desc())
+    reports = (await session.execute(stmt)).scalars().all()
+
+    from schemas.report import ReportRead
+    return ApiResponse(
+        success=True,
+        data=[ReportRead.model_validate(r).model_dump() for r in reports],
+    )
+
+
+@router.post("/reports", response_model=ApiResponse, status_code=201)
+async def create_audit_report(
+    data: AuditReportCreate,
+    user=Depends(require_role("auditor")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Generate a formal audit/assurance report."""
+    from models.report import Report
+    from models.audit import EvidenceItem
+
+    evidence_count = (await session.execute(
+        select(func.count(EvidenceItem.id)).where(EvidenceItem.status == "verified")
+    )).scalar_one()
+
+    report = Report(
+        title=data.title,
+        report_type="audit",
+        description=data.findings_summary,
+        period_start=None,
+        period_end=None,
+        format="pdf",
+        status="ready",
+        generated_by=user.id,
+        parameters={
+            "reporting_year": data.reporting_year,
+            "scope": data.scope,
+            "overall_opinion": data.overall_opinion,
+            "verified_evidence_count": evidence_count,
+            "notes": data.notes,
+        },
+        file_url=f"/auditor/reports/{data.reporting_year}-audit-report.pdf",
+    )
+    session.add(report)
+    await session.flush()
+    await session.refresh(report)
+
+    await log_action(
+        session, user.id, user.role.value if hasattr(user.role, 'value') else user.role,
+        "create", "audit_report", report.id,
+        description=f"Audit report created: {data.title}",
+    )
+
+    from schemas.report import ReportRead
+    return ApiResponse(success=True, data=ReportRead.model_validate(report))

@@ -30,6 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog';
+import { useApi, sustainabilityApi } from '../api';
 import {
   Select,
   SelectContent,
@@ -161,8 +162,21 @@ const mockRisks: Risk[] = [
 ];
 
 export default function DPIAModule() {
+  const { data: dpiaResponse } = useApi(() => sustainabilityApi.getDPIA());
+  const dpiaData = (dpiaResponse as any)?.data;
   const [dpias, setDpias] = useState<DPIA[]>(mockDPIAs);
   const [risks, setRisks] = useState<Risk[]>(mockRisks);
+  // Sync DPIA status from API
+  React.useEffect(() => {
+    if (dpiaData) {
+      setDpias(prev => prev.map((d, i) => i === 0 ? {
+        ...d,
+        status: dpiaData.status === 'completed' ? 'approved' : d.status,
+        reviewDate: dpiaData.last_reviewed || d.reviewDate,
+        nextReviewDate: dpiaData.next_review_due || d.nextReviewDate,
+      } : d));
+    }
+  }, [dpiaResponse]);
   const [selectedDPIA, setSelectedDPIA] = useState<DPIA | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);

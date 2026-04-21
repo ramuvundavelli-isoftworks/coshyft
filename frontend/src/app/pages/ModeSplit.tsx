@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -22,8 +22,8 @@ import {
 import { Car, Bus, Bike, TrendingUp, Download, Eye, Target, ArrowRightLeft } from 'lucide-react';
 import { Doughnut, Line } from 'react-chartjs-2';
 import { doughnutChartOptions, lineChartOptions, colors } from '../utils/chartConfig';
-import { mockModeDistribution } from '../data/mockData';
 import { toast } from 'sonner';
+import { useApi, emissionsApi } from '../api';
 
 // Brand-aligned colors: green for sustainable, muted for SOV
 const MODE_COLORS = {
@@ -49,6 +49,14 @@ const modeDetails = [
 ];
 
 export default function ModeSplit() {
+  const { data: modeSplitResponse } = useApi(() => emissionsApi.getModeSplit());
+  const [apiModes, setApiModes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const data = Array.isArray(modeSplitResponse) ? modeSplitResponse : (modeSplitResponse as any)?.data;
+    if (Array.isArray(data)) setApiModes(data);
+  }, [modeSplitResponse]);
+
   const [isViewModeDialogOpen, setIsViewModeDialogOpen] = useState(false);
   const [isShiftAnalysisDialogOpen, setIsShiftAnalysisDialogOpen] = useState(false);
   const [isSetTargetDialogOpen, setIsSetTargetDialogOpen] = useState(false);
@@ -144,19 +152,23 @@ export default function ModeSplit() {
         <Card className="p-6">
           <h3 className="font-semibold text-foreground mb-4">Current Mode Distribution</h3>
           <div style={{ height: '300px', width: '100%' }}>
-            <Doughnut
-              data={{
-                labels: mockModeDistribution.map(d => d.mode),
-                datasets: [
-                  {
-                    data: mockModeDistribution.map(d => d.percentage),
-                    backgroundColor: mockModeDistribution.map(d => d.color),
-                    borderWidth: 0,
-                  },
-                ],
-              }}
-              options={doughnutChartOptions}
-            />
+            {apiModes.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">No mode data available</div>
+            ) : (
+              <Doughnut
+                data={{
+                  labels: apiModes.map((d: any) => d.mode),
+                  datasets: [
+                    {
+                      data: apiModes.map((d: any) => d.percentage ?? d.value),
+                      backgroundColor: apiModes.map((_: any, i: number) => Object.values(MODE_COLORS)[i % 4]),
+                      borderWidth: 0,
+                    },
+                  ],
+                }}
+                options={doughnutChartOptions}
+              />
+            )}
           </div>
         </Card>
 

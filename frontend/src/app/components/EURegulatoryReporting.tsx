@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import { formatDate, formatCurrency, formatEmissions } from '../utils/localization';
 import { toast } from 'sonner';
+import { useApi, reportingApi } from '../api';
 
 interface EUReport {
   id: string;
@@ -178,6 +179,8 @@ const complianceFrameworks: ComplianceFramework[] = [
 ];
 
 export default function EURegulatoryReporting() {
+  const { data: regulatoryResponse } = useApi(() => reportingApi.getRegulatoryStatus());
+  const regulatoryData = (regulatoryResponse as any)?.data;
   const [selectedReport, setSelectedReport] = useState<EUReport | null>(null);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);

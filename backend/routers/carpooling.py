@@ -27,6 +27,7 @@ from schemas.carpooling import (
 from schemas.common import ApiResponse, PaginatedResponse
 from services.carpool_matching import calculate_compatibility_score
 from services.emission_calculator import calculate_carpool_co2_savings
+from services.audit_logger import log_action
 
 router = APIRouter(prefix="/rides", tags=["Carpooling"])
 
@@ -65,6 +66,12 @@ async def offer_ride(
     await session.flush()
     await session.refresh(ride)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "create", "ride", ride.id,
+        description=f"Ride offered: {ride_data.origin} → {ride_data.destination} @ {ride_data.departure_time}",
+    )
     return ApiResponse(success=True, data=RideRead.model_validate(ride))
 
 
@@ -170,6 +177,40 @@ async def get_my_rides(
     return ApiResponse(success=True, data=all_rides)
 
 
+@router.get("/active", response_model=ApiResponse)
+async def get_active_trip(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get the current user's active trip (in-progress ride)."""
+    # Check if user is a driver of an active ride
+    driver_stmt = select(Ride).where(
+        Ride.driver_id == user.id,
+        Ride.status == "active",
+    )
+    driver_result = await session.execute(driver_stmt)
+    active_ride = driver_result.scalar_one_or_none()
+
+    if active_ride is None:
+        # Check as passenger
+        passenger_stmt = select(RideRequest).where(
+            RideRequest.passenger_id == user.id,
+            RideRequest.status == "accepted",
+        )
+        passenger_result = await session.execute(passenger_stmt)
+        passenger_requests = passenger_result.scalars().all()
+        ride_ids = [r.ride_id for r in passenger_requests]
+        if ride_ids:
+            p_stmt = select(Ride).where(Ride.id.in_(ride_ids), Ride.status == "active")
+            p_result = await session.execute(p_stmt)
+            active_ride = p_result.scalar_one_or_none()
+
+    if active_ride is None:
+        return ApiResponse(success=True, data=None)
+
+    return ApiResponse(success=True, data=RideRead.model_validate(active_ride).model_dump())
+
+
 @router.get("/{ride_id}", response_model=ApiResponse[RideRead])
 async def get_ride(
     ride_id: str,
@@ -232,6 +273,12 @@ async def cancel_ride(
     ride.updated_at = datetime.utcnow()
     session.add(ride)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description="Ride cancelled by driver",
+    )
     return ApiResponse(success=True, meta={"message": "Ride cancelled"})
 
 
@@ -293,6 +340,12 @@ async def accept_request(
     session.add(req)
     session.add(ride)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Passenger request {request_id} accepted",
+    )
     return ApiResponse(success=True, meta={"message": "Request accepted"})
 
 
@@ -320,6 +373,12 @@ async def reject_request(
     req.responded_at = datetime.utcnow()
     session.add(req)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Passenger request {request_id} rejected",
+    )
     return ApiResponse(success=True, meta={"message": "Request rejected"})
 
 
@@ -364,6 +423,12 @@ async def complete_ride(
 
     session.add(ride)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Ride completed. CO2 saved: {ride.co2_saved}kg. Passengers: {passengers_count}",
+    )
     return ApiResponse(success=True, meta={"message": "Ride completed", "co2_saved": ride.co2_saved})
 
 

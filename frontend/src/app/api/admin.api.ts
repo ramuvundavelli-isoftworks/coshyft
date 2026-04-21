@@ -22,8 +22,24 @@ export const adminApi = {
     return api.post('/admin/participation/reminder', { department, message });
   },
 
-  async getUsers(params?: any): Promise<ApiResponse> {
+  async getUsers(params?: {
+    page?: number; page_size?: number;
+    role?: string; department?: string;
+    is_active?: boolean; search?: string;
+  }): Promise<ApiResponse> {
     return api.get('/users/', { params });
+  },
+
+  async getUser(userId: string): Promise<ApiResponse> {
+    return api.get(`/users/${userId}`);
+  },
+
+  async createUser(data: {
+    email: string; name: string; password: string;
+    role?: string; department?: string;
+    locale?: string; region?: string; tenant_id?: string;
+  }): Promise<ApiResponse> {
+    return api.post('/users/', data);
   },
 
   async updateUser(userId: string, data: any): Promise<ApiResponse> {
@@ -36,6 +52,10 @@ export const adminApi = {
 
   async deactivateUser(userId: string): Promise<ApiResponse> {
     return api.post(`/users/${userId}/deactivate`);
+  },
+
+  async activateUser(userId: string): Promise<ApiResponse> {
+    return api.post(`/users/${userId}/activate`);
   },
 
   async getRideOperations(params?: any): Promise<ApiResponse> {
@@ -92,5 +112,13 @@ export const adminApi = {
 
   async enableBenefit(data: { benefit_id: string; enabled: boolean }): Promise<ApiResponse> {
     return api.put(`/admin/workplace-benefits/${data.benefit_id}/enable`, { enabled: data.enabled });
+  },
+
+  async getCommuteLogs(params?: {
+    page?: number; page_size?: number;
+    start_date?: string; end_date?: string;
+    transport_mode_id?: string; department?: string;
+  }): Promise<ApiResponse> {
+    return api.get('/admin/commute-logs', { params });
   },
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -29,15 +29,19 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Plus, Edit, AlertTriangle, TrendingUp, Archive, FileText, CheckCircle, XCircle } from 'lucide-react';
-import { mockEmissionFactors } from '../data/mockData';
 import { EmissionFactor } from '../types';
 import { toast } from 'sonner';
-import { useApi } from '../api';
+import { useApi, useApiMutation } from '../api';
 import { emissionFactorsApi } from '../api';
 
 export default function EmissionFactors() {
   const { data: apiFactors } = useApi(() => emissionFactorsApi.getFactors());
-  const [factors, setFactors] = useState<EmissionFactor[]>((apiFactors as any)?.items ?? mockEmissionFactors);
+  const [factors, setFactors] = useState<EmissionFactor[]>([]);
+
+  useEffect(() => {
+    const items = (apiFactors as any)?.items;
+    if (Array.isArray(items)) setFactors(items);
+  }, [apiFactors]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
@@ -58,39 +62,42 @@ export default function EmissionFactors() {
   const pendingFactors = factors.filter(f => f.approvalStatus === 'pending');
   const activeFactors = factors.filter(f => f.approvalStatus === 'approved');
 
-  const handleAddFactor = () => {
-    const newFactor: EmissionFactor = {
-      id: `factor-${Date.now()}`,
+  const handleAddFactor = async () => {
+    const payload = {
       mode: formData.mode,
-      kgCO2perKm: parseFloat(formData.factor),
+      kg_co2_per_km: parseFloat(formData.factor),
       source: formData.source,
       version: formData.version,
-      effectiveDate: formData.effectiveDate,
-      approvalStatus: 'pending',
+      effective_date: formData.effectiveDate,
       methodology: formData.methodology || undefined,
     };
-    setFactors([...factors, newFactor]);
+    const result = await emissionFactorsApi.createFactor(payload);
+    if (result.success) {
+      if (result.data) setFactors(prev => [...prev, result.data as EmissionFactor]);
+      toast.success('Emission factor submitted for approval');
+    } else {
+      toast.error(result.error?.message || 'Failed to create factor');
+    }
     setIsAddDialogOpen(false);
     resetForm();
-    toast.success('Emission factor submitted for approval');
   };
 
-  const handleEditFactor = () => {
+  const handleEditFactor = async () => {
     if (selectedFactor) {
-      const updated = factors.map(f =>
-        f.id === selectedFactor.id
-          ? {
-              ...f,
-              mode: formData.mode,
-              kgCO2perKm: parseFloat(formData.factor),
-              source: formData.source,
-              methodology: formData.methodology || f.methodology,
-            }
-          : f
-      );
-      setFactors(updated);
+      const payload = {
+        mode: formData.mode,
+        kg_co2_per_km: parseFloat(formData.factor),
+        source: formData.source,
+        methodology: formData.methodology || undefined,
+      };
+      const result = await emissionFactorsApi.updateFactor(selectedFactor.id, payload);
+      if (result.success) {
+        setFactors(prev => prev.map(f => f.id === selectedFactor.id ? { ...f, ...result.data } : f));
+        toast.success('Emission factor updated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to update factor');
+      }
       setIsEditDialogOpen(false);
-      toast.success('Emission factor updated successfully');
     }
   };
 
@@ -121,25 +128,30 @@ export default function EmissionFactors() {
     }
   };
 
-  const handleApproveFactor = () => {
+  const handleApproveFactor = async () => {
     if (selectedFactor) {
-      const updated = factors.map(f =>
-        f.id === selectedFactor.id ? { ...f, approvalStatus: 'approved' as const } : f
-      );
-      setFactors(updated);
+      const result = await emissionFactorsApi.approveFactor(selectedFactor.id, true);
+      if (result.success) {
+        setFactors(prev => prev.map(f => f.id === selectedFactor.id ? { ...f, approvalStatus: 'approved' as const } : f));
+        toast.success('Emission factor approved');
+      } else {
+        toast.error(result.error?.message || 'Failed to approve factor');
+      }
       setIsApproveDialogOpen(false);
-      toast.success('Emission factor approved');
     }
   };
 
-  const handleRejectFactor = () => {
+  const handleRejectFactor = async () => {
     if (selectedFactor) {
-      // For rejected factors, we'll remove them from the list
-      const updated = factors.filter(f => f.id !== selectedFactor.id);
-      setFactors(updated);
+      const result = await emissionFactorsApi.approveFactor(selectedFactor.id, false, rejectReason);
+      if (result.success) {
+        setFactors(prev => prev.filter(f => f.id !== selectedFactor.id));
+        toast.success('Emission factor rejected');
+      } else {
+        toast.error(result.error?.message || 'Failed to reject factor');
+      }
       setIsRejectDialogOpen(false);
       setRejectReason('');
-      toast.success('Emission factor rejected');
     }
   };
 

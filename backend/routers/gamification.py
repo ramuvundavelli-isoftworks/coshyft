@@ -22,6 +22,7 @@ from schemas.gamification import (
 )
 from schemas.common import ApiResponse, PaginatedResponse
 from services.gamification_engine import calculate_level, calculate_tier
+from services.audit_logger import log_action
 
 router = APIRouter(prefix="/gamification", tags=["Gamification"])
 
@@ -186,6 +187,12 @@ async def join_challenge(
     challenge.participant_count += 1
     session.add(challenge)
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "create", "commute_entry", challenge_id,
+        description=f"Joined challenge: {challenge.title if hasattr(challenge, 'title') else challenge_id}",
+    )
     return ApiResponse(success=True, meta={"message": "Joined challenge"})
 
 
@@ -232,5 +239,12 @@ async def redeem_points(
         description=f"Redeemed for {request.reward_type}",
     )
     session.add(ledger)
+    await session.flush()
 
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "create", "commute_entry", ledger.id,
+        description=f"Redeemed {request.points} OxyPoints for {request.reward_type}",
+    )
     return ApiResponse(success=True, meta={"message": f"Redeemed {request.points} OxyPoints"})

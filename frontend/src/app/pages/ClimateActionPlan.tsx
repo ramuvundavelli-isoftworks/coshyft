@@ -29,6 +29,7 @@ import {
 } from '../components/ui/dialog';
 import { toast } from 'sonner';
 import { formatEmissions, formatPercentage } from '../utils/localization';
+import { useApi, sustainabilityApi } from '../api';
 
 interface CAPTarget {
   id: string;
@@ -150,6 +151,8 @@ const milestones = [
 ];
 
 export default function ClimateActionPlan() {
+  const { data: capResponse } = useApi(() => sustainabilityApi.getClimateActionPlan());
+  const capData = (capResponse as any)?.data;
   const [selectedTarget, setSelectedTarget] = useState<CAPTarget | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);

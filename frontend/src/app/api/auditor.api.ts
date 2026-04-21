@@ -26,8 +26,18 @@ export const auditorApi = {
     return api.get('/auditor/risks-review');
   },
 
-  async getAuditTrail(params?: any): Promise<ApiResponse> {
+  async getAuditTrail(params?: {
+    page?: number; page_size?: number;
+    user_id?: string; action?: string; entity_type?: string;
+  }): Promise<ApiResponse> {
     return api.get('/auditor/trail', { params });
+  },
+
+  async exportAuditTrail(params?: {
+    start_date?: string; end_date?: string;
+    action?: string; entity_type?: string;
+  }): Promise<ApiResponse> {
+    return api.get('/auditor/trail/export', { params });
   },
 
   async getEvidence(params?: any): Promise<ApiResponse> {
@@ -80,5 +90,20 @@ export const auditorApi = {
 
   async approveFactor(factorId: string): Promise<ApiResponse> {
     return api.put(`/auditor/factors/${factorId}/approve`);
+  },
+
+  async getAuditReports(): Promise<ApiResponse> {
+    return api.get('/auditor/reports');
+  },
+
+  async createAuditReport(data: {
+    title: string;
+    reporting_year: number;
+    scope?: string;
+    findings_summary?: string;
+    overall_opinion?: string;
+    notes?: string;
+  }): Promise<ApiResponse> {
+    return api.post('/auditor/reports', data);
   },
 };

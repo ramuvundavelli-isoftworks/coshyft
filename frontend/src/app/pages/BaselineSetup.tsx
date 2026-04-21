@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -14,13 +14,23 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { Lock, Unlock, AlertTriangle, CheckCircle, History, Building2, Plus, Edit, Calculator } from 'lucide-react';
-import { mockBaseline } from '../data/mockData';
 import { Baseline } from '../types';
 import { toast } from 'sonner';
+import { useApi } from '../api';
+import { sustainabilityApi } from '../api';
 
 export default function BaselineSetup() {
-  const [baselines, setBaselines] = useState<Baseline[]>([mockBaseline]);
-  const [currentBaseline, setCurrentBaseline] = useState(mockBaseline);
+  const { data: apiBaselines } = useApi(() => sustainabilityApi.getBaselines());
+  const [baselines, setBaselines] = useState<Baseline[]>([]);
+  const [currentBaseline, setCurrentBaseline] = useState<Baseline | null>(null);
+
+  useEffect(() => {
+    const items = Array.isArray(apiBaselines) ? apiBaselines : (apiBaselines as any)?.items;
+    if (Array.isArray(items) && items.length > 0) {
+      setBaselines(items);
+      setCurrentBaseline(items[0]);
+    }
+  }, [apiBaselines]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isRecalculateDialogOpen, setIsRecalculateDialogOpen] = useState(false);
@@ -140,6 +150,27 @@ export default function BaselineSetup() {
       emissionFactorVersion: '',
     });
   };
+
+  if (!currentBaseline) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Baseline Setup</h1>
+            <p className="text-muted-foreground mt-1">Define and lock organizational baseline for compliance reporting</p>
+          </div>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Baseline
+          </Button>
+        </div>
+        <Card className="p-12 text-center">
+          <p className="text-muted-foreground">No baselines defined yet. Create your first baseline to get started.</p>
+        </Card>
+        {/* Create Baseline Dialog is rendered below after return — just render the button-only version for now */}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

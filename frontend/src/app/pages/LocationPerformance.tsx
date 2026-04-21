@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -30,8 +30,8 @@ import {
 import { MapPin, Download, Eye, Target, TrendingUp, TrendingDown, Building2 } from 'lucide-react';
 import { Bar, Radar } from 'react-chartjs-2';
 import { barChartOptions, radarChartOptions, colors } from '../utils/chartConfig';
-import { mockLocationPerformance } from '../data/mockData';
 import { toast } from 'sonner';
+import { useApi, emissionsApi } from '../api';
 
 const radarData = [
   { metric: 'Emissions', sfHq: 85, ny: 78, london: 92, tokyo: 88 },
@@ -42,6 +42,14 @@ const radarData = [
 ];
 
 export default function LocationPerformance() {
+  const { data: locationsResponse } = useApi(() => emissionsApi.getLocationPerformance());
+  const [locations, setLocations] = useState<any[]>([]);
+
+  useEffect(() => {
+    const data = Array.isArray(locationsResponse) ? locationsResponse : (locationsResponse as any)?.data;
+    if (Array.isArray(data)) setLocations(data);
+  }, [locationsResponse]);
+
   const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
   const [isSetTargetDialogOpen, setIsSetTargetDialogOpen] = useState(false);
   const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
@@ -89,7 +97,7 @@ export default function LocationPerformance() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Locations</p>
-              <p className="text-2xl font-bold text-foreground">{mockLocationPerformance.length}</p>
+              <p className="text-2xl font-bold text-foreground">{locations.length}</p>
             </div>
           </div>
         </Card>
@@ -177,11 +185,11 @@ export default function LocationPerformance() {
         <div style={{ height: '300px', width: '100%' }}>
           <Bar
             data={{
-              labels: mockLocationPerformance.map(loc => loc.location),
+              labels: locations.map(loc => loc.location),
               datasets: [
                 {
                   label: 'Total Emissions (tCO₂e)',
-                  data: mockLocationPerformance.map(loc => loc.emissions),
+                  data: locations.map(loc => loc.emissions),
                   backgroundColor: colors.chart.blue,
                   borderRadius: 6,
                 },
@@ -208,7 +216,7 @@ export default function LocationPerformance() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockLocationPerformance.map((loc, idx) => (
+            {locations.map((loc, idx) => (
               <TableRow key={loc.location}>
                 <TableCell className="font-bold">#{idx + 1}</TableCell>
                 <TableCell>

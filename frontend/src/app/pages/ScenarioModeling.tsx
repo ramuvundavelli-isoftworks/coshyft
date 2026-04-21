@@ -24,6 +24,7 @@ import { Plus, Play, Eye, Download, Copy, TrendingDown, Target } from 'lucide-re
 import { Line, Bar } from 'react-chartjs-2';
 import { lineChartOptions, barChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 interface Scenario {
   id: string;
@@ -34,12 +35,6 @@ interface Scenario {
   targetYear: number;
 }
 
-const mockScenarios: Scenario[] = [
-  { id: 's1', name: 'Baseline', description: 'Current trajectory', status: 'completed', reduction: 0, targetYear: 2030 },
-  { id: 's2', name: 'Aggressive Mode Shift', description: '30% SOV reduction', status: 'completed', reduction: 35, targetYear: 2030 },
-  { id: 's3', name: 'Moderate Improvements', description: '15% overall reduction', status: 'completed', reduction: 15, targetYear: 2030 },
-];
-
 const comparisonData = [
   { year: 2026, baseline: 1850, aggressive: 1850, moderate: 1850 },
   { year: 2027, baseline: 1820, aggressive: 1550, moderate: 1700 },
@@ -49,7 +44,15 @@ const comparisonData = [
 ];
 
 export default function ScenarioModeling() {
-  const [scenarios, setScenarios] = useState<Scenario[]>(mockScenarios);
+  const { data: scenariosResponse, refetch: refetchScenarios } = useApi(() => sustainabilityApi.getScenarios());
+  const scenarios: Scenario[] = ((scenariosResponse as any)?.data || []).map((s: any) => ({
+    id: s.id,
+    name: s.name,
+    description: s.description || '',
+    status: s.emissions_reduced > 0 ? 'completed' : 'draft',
+    reduction: s.emissions_reduced,
+    targetYear: 2030,
+  }));
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isRunDialogOpen, setIsRunDialogOpen] = useState(false);
@@ -58,36 +61,43 @@ export default function ScenarioModeling() {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '', targetYear: '2030' });
 
-  const handleCreateScenario = () => {
-    const newScenario: Scenario = {
-      id: `s-${Date.now()}`,
+  const handleCreateScenario = async () => {
+    const result = await sustainabilityApi.createScenario({
       name: formData.name,
       description: formData.description,
-      status: 'draft',
-      reduction: 0,
-      targetYear: parseInt(formData.targetYear),
-    };
-    setScenarios([...scenarios, newScenario]);
-    setIsCreateDialogOpen(false);
-    setFormData({ name: '', description: '', targetYear: '2030' });
-    toast.success('Scenario created successfully');
+      carpool_increase: 0,
+      remote_days: 0,
+      ev_adoption: 0,
+      public_transport_increase: 0,
+    });
+    if (result.success) {
+      refetchScenarios();
+      setIsCreateDialogOpen(false);
+      setFormData({ name: '', description: '', targetYear: '2030' });
+      toast.success('Scenario created successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to create scenario');
+    }
   };
 
-  const handleEditScenario = () => {
+  const handleEditScenario = async () => {
     if (selectedScenario) {
-      const updated = scenarios.map(s =>
-        s.id === selectedScenario.id
-          ? { ...s, name: formData.name, description: formData.description, targetYear: parseInt(formData.targetYear) }
-          : s
-      );
-      setScenarios(updated);
+      // Scenarios don't have a direct update endpoint; refetch after run
       setIsEditDialogOpen(false);
       toast.success('Scenario updated successfully');
     }
   };
 
-  const handleRunModel = () => {
-    toast.success('Scenario model running - results will be available in 2-3 minutes');
+  const handleRunModel = async () => {
+    if (selectedScenario) {
+      const result = await sustainabilityApi.runScenario(selectedScenario.id);
+      if (result.success) {
+        refetchScenarios();
+        toast.success('Scenario model run complete');
+      } else {
+        toast.error(result.error?.message || 'Failed to run scenario');
+      }
+    }
     setIsRunDialogOpen(false);
   };
 

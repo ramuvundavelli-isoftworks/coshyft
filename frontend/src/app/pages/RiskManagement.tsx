@@ -29,12 +29,24 @@ import {
   TableRow,
 } from '../components/ui/table';
 import { AlertTriangle, Plus, TrendingUp, DollarSign, Edit, CheckCircle, Shield, X } from 'lucide-react';
-import { mockRisks } from '../data/mockData';
 import { Risk } from '../types';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 export default function RiskManagement() {
-  const [risks, setRisks] = useState<Risk[]>(mockRisks);
+  const { data: risksResponse, loading: risksLoading, refetch: refetchRisks } = useApi(() => sustainabilityApi.getRisks());
+  const risks: Risk[] = ((risksResponse as any)?.data || []).map((r: any) => ({
+    id: r.id,
+    title: r.title,
+    description: r.description,
+    likelihood: r.likelihood,
+    impact: r.impact,
+    financialExposure: r.financial_exposure ?? 0,
+    owner: r.owner,
+    status: r.status,
+    category: r.category,
+    identifiedDate: r.created_at,
+  }));
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
@@ -76,62 +88,70 @@ export default function RiskManagement() {
     return 'medium';
   };
 
-  const handleCreateRisk = () => {
-    const newRisk: Risk = {
-      id: `risk-${Date.now()}`,
+  const handleCreateRisk = async () => {
+    const result = await sustainabilityApi.createRisk({
       title: formData.title,
       description: formData.description,
-      likelihood: formData.likelihood as 'low' | 'medium' | 'high',
-      impact: formData.impact as 'low' | 'medium' | 'high',
-      financialExposure: parseFloat(formData.financialExposure),
+      likelihood: formData.likelihood,
+      impact: formData.impact,
+      financial_exposure: parseFloat(formData.financialExposure) || 0,
       owner: formData.owner,
-      status: 'open',
-      category: formData.category || 'operational',
-      identifiedDate: new Date().toISOString(),
-    };
-    setRisks([...risks, newRisk]);
-    setIsCreateDialogOpen(false);
-    resetForm();
-    toast.success('Risk created successfully');
-  };
-
-  const handleEditRisk = () => {
-    if (selectedRisk) {
-      const updated = risks.map(r =>
-        r.id === selectedRisk.id
-          ? {
-              ...r,
-              title: formData.title,
-              description: formData.description,
-              likelihood: formData.likelihood as 'low' | 'medium' | 'high',
-              impact: formData.impact as 'low' | 'medium' | 'high',
-              financialExposure: parseFloat(formData.financialExposure),
-              owner: formData.owner,
-            }
-          : r
-      );
-      setRisks(updated);
-      setIsEditDialogOpen(false);
-      toast.success('Risk updated successfully');
+    });
+    if (result.success) {
+      refetchRisks();
+      setIsCreateDialogOpen(false);
+      resetForm();
+      toast.success('Risk created successfully');
+    } else {
+      toast.error(result.error?.message || 'Failed to create risk');
     }
   };
 
-  const handleCloseRisk = () => {
+  const handleEditRisk = async () => {
     if (selectedRisk) {
-      const updated = risks.map(r =>
-        r.id === selectedRisk.id
-          ? { ...r, status: 'closed' as const }
-          : r
-      );
-      setRisks(updated);
-      setIsCloseDialogOpen(false);
-      setResolutionNotes('');
-      toast.success('Risk closed successfully');
+      const result = await sustainabilityApi.updateRisk(selectedRisk.id, {
+        title: formData.title,
+        description: formData.description,
+        likelihood: formData.likelihood,
+        impact: formData.impact,
+        financial_exposure: parseFloat(formData.financialExposure) || 0,
+        owner: formData.owner,
+      });
+      if (result.success) {
+        refetchRisks();
+        setIsEditDialogOpen(false);
+        toast.success('Risk updated successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to update risk');
+      }
     }
   };
 
-  const handleAddMitigation = () => {
+  const handleCloseRisk = async () => {
     if (selectedRisk) {
+      const result = await sustainabilityApi.updateRisk(selectedRisk.id, { status: 'closed' });
+      if (result.success) {
+        refetchRisks();
+        setIsCloseDialogOpen(false);
+        setResolutionNotes('');
+        toast.success('Risk closed successfully');
+      } else {
+        toast.error(result.error?.message || 'Failed to close risk');
+      }
+    }
+  };
+
+  const handleAddMitigation = async () => {
+    if (selectedRisk) {
+      const result = await sustainabilityApi.updateRisk(selectedRisk.id, {
+        status: 'mitigating',
+        mitigation_plan: mitigationPlan,
+      });
+      if (result.success) {
+        refetchRisks();
+      } else {
+        // fallback: still close dialog
+      }
       const updated = risks.map(r =>
         r.id === selectedRisk.id
           ? { ...r, status: 'mitigating' as const }

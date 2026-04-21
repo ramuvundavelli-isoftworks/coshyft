@@ -30,6 +30,7 @@ import {
 } from '../components/ui/table';
 import { FileText, Plus, Download, Eye, MessageCircle, CheckCircle, PenTool } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, auditorApi } from '../api';
 
 interface AuditReport {
   id: string;
@@ -40,15 +41,20 @@ interface AuditReport {
   findings: number;
 }
 
-const reports: AuditReport[] = [
-  { id: 'ar1', name: 'Q1 2026 Audit Report', type: 'Quarterly', status: 'signed', date: '2026-04-15', findings: 3 },
-  { id: 'ar2', name: 'Baseline Verification Report', type: 'Baseline', status: 'distributed', date: '2026-02-28', findings: 1 },
-  { id: 'ar3', name: 'Mid-Year Review 2026', type: 'Mid-Year', status: 'review', date: '2026-07-01', findings: 5 },
-  { id: 'ar4', name: 'Factor Validation Report', type: 'Factors', status: 'draft', date: '2026-08-10', findings: 2 },
-];
-
 export default function AuditorReports() {
-  const [auditReports, setAuditReports] = useState<AuditReport[]>(reports);
+  const { data: reportsResponse, refetch: refetchReports } = useApi(() => auditorApi.getAuditReports());
+  const apiReports: AuditReport[] = ((reportsResponse as any)?.data || []).map((r: any) => ({
+    id: r.id,
+    name: r.title,
+    type: r.report_type || 'audit',
+    status: r.status === 'ready' ? 'signed' : r.status || 'draft',
+    date: r.created_at?.split('T')[0] || '',
+    findings: r.parameters?.findings_count || 0,
+  }));
+  const [auditReports, setAuditReports] = useState<AuditReport[]>([]);
+  React.useEffect(() => {
+    if (apiReports.length > 0) setAuditReports(apiReports);
+  }, [reportsResponse]);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
   const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
   const [isResponseDialogOpen, setIsResponseDialogOpen] = useState(false);
@@ -58,20 +64,21 @@ export default function AuditorReports() {
   const [reportName, setReportName] = useState('');
   const [reportType, setReportType] = useState('');
 
-  const handleGenerateReport = () => {
-    const newReport: AuditReport = {
-      id: `ar-${Date.now()}`,
-      name: reportName,
-      type: reportType,
-      status: 'draft',
-      date: new Date().toISOString().split('T')[0],
-      findings: 0,
-    };
-    setAuditReports([...auditReports, newReport]);
-    setIsGenerateDialogOpen(false);
-    setReportName('');
-    setReportType('');
-    toast.success('Audit report generated');
+  const handleGenerateReport = async () => {
+    const result = await auditorApi.createAuditReport({
+      title: reportName,
+      reporting_year: new Date().getFullYear(),
+      overall_opinion: 'limited_assurance',
+    });
+    if (result.success) {
+      refetchReports();
+      setIsGenerateDialogOpen(false);
+      setReportName('');
+      setReportType('');
+      toast.success('Audit report generated');
+    } else {
+      toast.error(result.error?.message || 'Failed to generate report');
+    }
   };
 
   const handleAddResponse = () => {

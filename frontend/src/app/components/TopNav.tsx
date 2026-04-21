@@ -16,16 +16,19 @@ import {
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Bell, Search, Download, HelpCircle, ChevronDown, Users, Building2, Leaf, Shield, Crown, CheckCircle, LogOut } from 'lucide-react';
 import { ThemeToggle } from './global/ThemeToggle';
-import { mockAlerts } from '../data/mockData';
 import type { UserRole } from '../types';
+import { useApi } from '../api';
+import { alertsApi } from '../api';
 
 export function TopNav() {
   const { currentUser, switchRole } = useRole();
   const { logout } = useAuth();
   const [showAlerts, setShowAlerts] = useState(false);
 
-  const unresolvedAlerts = mockAlerts.filter(a => !a.resolved);
-  const criticalCount = unresolvedAlerts.filter(a => a.severity === 'critical').length;
+  const { data: alertStats } = useApi(() => alertsApi.getStats());
+  const { data: alertsData } = useApi(() => alertsApi.getAlerts({ resolved: false, page: 1, page_size: 5 }));
+  const criticalCount = (alertStats as any)?.critical ?? 0;
+  const unresolvedAlerts: any[] = (alertsData as any)?.items ?? [];
 
   const roleLabels = {
     employee: 'Employee',

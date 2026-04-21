@@ -31,12 +31,24 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import { Plus, TrendingDown, DollarSign, Calendar, User, AlertCircle, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { mockInitiatives } from '../data/mockData';
 import { Initiative } from '../types';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 export default function InitiativeTracker() {
-  const [initiatives, setInitiatives] = useState<Initiative[]>(mockInitiatives);
+  const { data: initResponse, loading: initLoading, refetch: refetchInitiatives } = useApi(() => sustainabilityApi.getInitiatives());
+  const initiatives: Initiative[] = ((initResponse as any)?.data || []).map((i: any) => ({
+    id: i.id,
+    name: i.name,
+    description: i.description || '',
+    owner: i.owner,
+    budget: i.budget,
+    expectedReduction: i.expected_reduction,
+    actualReduction: i.actual_reduction,
+    startDate: i.start_date,
+    endDate: i.end_date,
+    status: i.status,
+  }));
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -67,66 +79,71 @@ export default function InitiativeTracker() {
     completed: 'bg-info-subtle text-info border-info/25',
   };
 
-  const handleCreateInitiative = () => {
-    const newInitiative: Initiative = {
-      id: `initiative-${Date.now()}`,
+  const handleCreateInitiative = async () => {
+    const result = await sustainabilityApi.createInitiative({
       name: formData.name,
       description: formData.description,
       owner: formData.owner,
-      budget: parseFloat(formData.budget),
-      expectedReduction: parseFloat(formData.expectedReduction),
-      actualReduction: parseFloat(formData.actualReduction),
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      status: formData.status,
-    };
-    setInitiatives([...initiatives, newInitiative]);
-    setIsCreateDialogOpen(false);
-    toast.success('Initiative created successfully!');
-  };
-
-  const handleEditInitiative = () => {
-    if (selectedInitiative) {
-      const updatedInitiatives = initiatives.map(i =>
-        i.id === selectedInitiative.id ? {
-          ...i,
-          name: formData.name,
-          description: formData.description,
-          owner: formData.owner,
-          budget: parseFloat(formData.budget),
-          expectedReduction: parseFloat(formData.expectedReduction),
-          actualReduction: parseFloat(formData.actualReduction),
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          status: formData.status,
-        } : i
-      );
-      setInitiatives(updatedInitiatives);
-      setIsEditDialogOpen(false);
-      toast.success('Initiative updated successfully!');
+      budget: parseFloat(formData.budget) || 0,
+      expected_reduction: parseFloat(formData.expectedReduction) || 0,
+      start_date: formData.startDate,
+      end_date: formData.endDate,
+    });
+    if (result.success) {
+      refetchInitiatives();
+      setIsCreateDialogOpen(false);
+      toast.success('Initiative created successfully!');
+    } else {
+      toast.error(result.error?.message || 'Failed to create initiative');
     }
   };
 
-  const handleDeleteInitiative = () => {
+  const handleEditInitiative = async () => {
     if (selectedInitiative) {
-      const updatedInitiatives = initiatives.filter(i => i.id !== selectedInitiative.id);
-      setInitiatives(updatedInitiatives);
-      setIsDeleteDialogOpen(false);
-      toast.success('Initiative deleted successfully!');
+      const result = await sustainabilityApi.updateInitiative(selectedInitiative.id, {
+        name: formData.name,
+        description: formData.description,
+        owner: formData.owner,
+        budget: parseFloat(formData.budget) || 0,
+        expected_reduction: parseFloat(formData.expectedReduction) || 0,
+        actual_reduction: parseFloat(formData.actualReduction) || 0,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        status: formData.status,
+      });
+      if (result.success) {
+        refetchInitiatives();
+        setIsEditDialogOpen(false);
+        toast.success('Initiative updated successfully!');
+      } else {
+        toast.error(result.error?.message || 'Failed to update initiative');
+      }
     }
   };
 
-  const handleCloseInitiative = () => {
+  const handleDeleteInitiative = async () => {
     if (selectedInitiative) {
-      const updatedInitiatives = initiatives.map(i =>
-        i.id === selectedInitiative.id ? {
-          ...i,
-          status: 'completed',
-        } : i
-      );
-      setInitiatives(updatedInitiatives);
-      setIsCloseDialogOpen(false);
-      toast.success('Initiative closed successfully!');
+      const result = await sustainabilityApi.deleteInitiative(selectedInitiative.id);
+      if (result.success) {
+        refetchInitiatives();
+        setIsDeleteDialogOpen(false);
+        toast.success('Initiative deleted successfully!');
+      } else {
+        toast.error(result.error?.message || 'Failed to delete initiative');
+      }
+    }
+  };
+
+  const handleCloseInitiative = async () => {
+    if (selectedInitiative) {
+      const result = await sustainabilityApi.updateInitiative(selectedInitiative.id, { status: 'completed' });
+      if (result.success) {
+        refetchInitiatives();
+        setIsCloseDialogOpen(false);
+        toast.success('Initiative closed successfully!');
+      } else {
+        toast.error(result.error?.message || 'Failed to close initiative');
+      }
     }
   };
 

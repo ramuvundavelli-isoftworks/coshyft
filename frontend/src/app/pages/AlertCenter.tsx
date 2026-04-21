@@ -21,7 +21,6 @@ import {
 } from '../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { AlertTriangle, AlertCircle, Info, CheckCircle2, Eye, Download } from 'lucide-react';
-import { mockAlerts } from '../data/mockData';
 import { Alert } from '../types';
 import { toast } from 'sonner';
 import { useApi, useApiMutation } from '../api';
@@ -29,7 +28,7 @@ import { alertsApi } from '../api';
 
 export default function AlertCenter() {
   const { data: apiAlerts } = useApi(() => alertsApi.getAlerts({ resolved: undefined }));
-  const loadedAlerts = (apiAlerts as any)?.items ?? mockAlerts;
+  const loadedAlerts = (apiAlerts as any)?.items ?? [];
   const [alerts, setAlerts] = useState(loadedAlerts);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);

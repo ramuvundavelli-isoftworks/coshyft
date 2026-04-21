@@ -8,25 +8,23 @@ import {
 } from 'lucide-react';
 import { Doughnut } from 'react-chartjs-2';
 import { doughnutChartOptions, colors } from '../utils/chartConfig';
-import { useApi, adminApi } from '../api';
+import { useApi, adminApi, emissionsApi } from '../api';
 
 export default function AdminOverview() {
   const { data: overview, loading } = useApi(() => adminApi.getOverview());
   const { data: participation } = useApi(() => adminApi.getParticipation());
   const { data: locations } = useApi(() => adminApi.getLocations());
+  const { data: modeSplitData } = useApi(() => emissionsApi.getModeSplit());
 
   const depts: any[] = Array.isArray(participation) ? participation : [];
   const locationList: any[] = Array.isArray(locations) ? locations : [];
   const lowDepts = depts.filter(d => d.participation_rate < 75);
 
   const modeColors = [colors.chart.blue, colors.chart.green, '#22c55e', '#ef4444'];
-  // Mode adoption from overview if available, otherwise placeholder
-  const modeData = [
-    { mode: 'Carpool', value: 18 },
-    { mode: 'Public Transit', value: 22 },
-    { mode: 'Bike / Walk', value: 15 },
-    { mode: 'SOV', value: 45 },
-  ];
+  const rawModes: any[] = Array.isArray(modeSplitData) ? modeSplitData : [];
+  const modeData = rawModes.length > 0
+    ? rawModes.map((m: any) => ({ mode: m.mode, value: m.percentage ?? m.value ?? 0 }))
+    : [];
 
   return (
     <div className="space-y-6">
@@ -142,17 +140,21 @@ export default function AdminOverview() {
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-foreground mb-4">Current Mode Adoption</h2>
           <div style={{ height: '220px', width: '100%' }}>
-            <Doughnut
-              data={{
-                labels: modeData.map(d => d.mode),
-                datasets: [{
-                  data: modeData.map(d => d.value),
-                  backgroundColor: modeColors,
-                  borderWidth: 0,
-                }],
-              }}
-              options={doughnutChartOptions}
-            />
+            {modeData.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-sm text-muted-foreground">No mode data yet</div>
+            ) : (
+              <Doughnut
+                data={{
+                  labels: modeData.map(d => d.mode),
+                  datasets: [{
+                    data: modeData.map(d => d.value),
+                    backgroundColor: modeColors,
+                    borderWidth: 0,
+                  }],
+                }}
+                options={doughnutChartOptions}
+              />
+            )}
           </div>
           <div className="mt-4 space-y-2">
             {modeData.map((m, i) => (

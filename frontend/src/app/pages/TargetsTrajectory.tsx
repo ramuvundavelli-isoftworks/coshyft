@@ -35,6 +35,7 @@ import {
 import { toast } from 'sonner';
 import { Line } from 'react-chartjs-2';
 import { lineChartOptions, colors } from '../utils/chartConfig';
+import { useApi, sustainabilityApi } from '../api';
 
 interface TargetScenario {
   id: string;
@@ -88,7 +89,22 @@ const trajectoryData = [
 ];
 
 export default function TargetsTrajectory() {
+  const { data: targetsResponse } = useApi(() => sustainabilityApi.getTargets());
+  const apiTargets = (targetsResponse as any)?.data;
   const [scenarios, setScenarios] = useState<TargetScenario[]>(mockScenarios);
+  React.useEffect(() => {
+    if (apiTargets?.annual_targets) {
+      // Use API target data to patch the default scenario
+      setScenarios(prev => prev.map((s, i) => i === 0 ? {
+        ...s,
+        baselineYear: apiTargets.baseline_year || s.baselineYear,
+        baselineEmissions: apiTargets.baseline_emissions || s.baselineEmissions,
+        targetYear: apiTargets.target_year || s.targetYear,
+        reductionPercent: apiTargets.target_reduction_percent || s.reductionPercent,
+        targetEmissions: apiTargets.target_emissions || s.targetEmissions,
+      } : s));
+    }
+  }, [targetsResponse]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -103,10 +119,17 @@ export default function TargetsTrajectory() {
     status: 'draft' as 'active' | 'draft',
   });
 
-  const handleCreateScenario = () => {
+  const handleCreateScenario = async () => {
+    const result = await sustainabilityApi.createTarget({
+      baseline_year: newScenario.baselineYear,
+      target_year: newScenario.targetYear,
+      target_reduction_percent: newScenario.reductionPercent,
+      methodology: 'SBTi',
+      notes: newScenario.description,
+    });
     const targetEmissions = newScenario.baselineEmissions * (1 - newScenario.reductionPercent / 100);
     const scenario: TargetScenario = {
-      id: `s${scenarios.length + 1}`,
+      id: (result.success && (result.data as any)?.id) ? (result.data as any).id : `s${scenarios.length + 1}`,
       ...newScenario,
       targetEmissions,
       createdDate: new Date().toISOString().split('T')[0],
@@ -114,16 +137,9 @@ export default function TargetsTrajectory() {
     };
     setScenarios([...scenarios, scenario]);
     setIsCreateDialogOpen(false);
-    setNewScenario({
-      name: '',
-      description: '',
-      baselineYear: 2026,
-      baselineEmissions: 2850,
-      targetYear: 2030,
-      reductionPercent: 30,
-      status: 'draft',
-    });
-    toast.success('Target scenario created successfully');
+    setNewScenario({ name: '', description: '', baselineYear: 2026, baselineEmissions: 2850, targetYear: 2030, reductionPercent: 30, status: 'draft' });
+    if (result.success) toast.success('Target scenario created successfully');
+    else toast.error(result.error?.message || 'Saved locally — API sync failed');
   };
 
   const handleEditScenario = () => {

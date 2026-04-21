@@ -30,6 +30,7 @@ import {
 } from '../components/ui/table';
 import { FileText, Upload, Download, Eye, Trash2, Plus, Filter } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, auditorApi } from '../api';
 
 interface Evidence {
   id: string;
@@ -51,7 +52,22 @@ const mockEvidence: Evidence[] = [
 ];
 
 export default function EvidenceRepository() {
+  const { data: evidenceResponse, refetch: refetchEvidence } = useApi(() => auditorApi.getEvidence());
+  const apiEvidence: Evidence[] = ((evidenceResponse as any)?.data || []).map((e: any) => ({
+    id: e.id,
+    name: e.title,
+    type: e.mime_type?.includes('pdf') ? 'document' : 'data',
+    category: e.category,
+    uploadedBy: e.uploaded_by || 'Unknown',
+    uploadDate: e.created_at?.split('T')[0] || '',
+    size: e.file_size_bytes ? `${(e.file_size_bytes / 1024).toFixed(0)} KB` : '0 KB',
+    status: e.status === 'verified' ? 'verified' : e.status === 'rejected' ? 'rejected' : 'pending',
+  }));
   const [evidence, setEvidence] = useState<Evidence[]>(mockEvidence);
+  // Sync API data into local state when it arrives
+  React.useEffect(() => {
+    if (apiEvidence.length > 0) setEvidence(apiEvidence);
+  }, [evidenceResponse]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
@@ -60,28 +76,38 @@ export default function EvidenceRepository() {
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
   const [uploadData, setUploadData] = useState({ name: '', type: 'document', category: 'emissions', description: '' });
 
-  const handleUpload = () => {
-    const newEvidence: Evidence = {
-      id: `e-${Date.now()}`,
-      name: uploadData.name,
-      type: uploadData.type as any,
-      category: uploadData.category as any,
-      uploadedBy: 'Current User',
-      uploadDate: new Date().toISOString().split('T')[0],
-      size: '1.5 MB',
-      status: 'pending',
-    };
-    setEvidence([...evidence, newEvidence]);
-    setIsUploadDialogOpen(false);
-    setUploadData({ name: '', type: 'document', category: 'emissions', description: '' });
-    toast.success('Evidence uploaded successfully');
+  const handleUpload = async () => {
+    const result = await auditorApi.uploadEvidence({
+      title: uploadData.name,
+      description: uploadData.description,
+      category: uploadData.category,
+    });
+    if (result.success) {
+      refetchEvidence();
+      setIsUploadDialogOpen(false);
+      setUploadData({ name: '', type: 'document', category: 'emissions', description: '' });
+      toast.success('Evidence uploaded successfully');
+    } else {
+      toast.error(result.error?.message || 'Upload failed');
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedEvidence) {
+      // Optimistic local remove while no delete endpoint exists yet
       setEvidence(evidence.filter(e => e.id !== selectedEvidence.id));
       setIsDeleteDialogOpen(false);
       toast.success('Evidence deleted');
+    }
+  };
+
+  const handleVerify = async (evidenceId: string) => {
+    const result = await auditorApi.verifyEvidence(evidenceId);
+    if (result.success) {
+      refetchEvidence();
+      toast.success('Evidence verified');
+    } else {
+      toast.error(result.error?.message || 'Verification failed');
     }
   };
 

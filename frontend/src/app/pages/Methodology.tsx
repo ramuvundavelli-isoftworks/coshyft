@@ -21,6 +21,7 @@ import {
 } from '../components/ui/select';
 import { BookOpen, Download, Eye, Edit, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 const methodologies = [
   { id: 'm1', name: 'GHG Protocol Corporate Standard', version: '2023', status: 'active', description: 'Greenhouse Gas Protocol for corporate accounting' },
@@ -38,6 +39,8 @@ const sections = [
 ];
 
 export default function Methodology() {
+  const { data: methodologyResponse } = useApi(() => sustainabilityApi.getMethodology());
+  const methodologyData = (methodologyResponse as any)?.data;
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);

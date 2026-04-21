@@ -31,6 +31,7 @@ import {
 import { formatCurrency, formatEmissions, formatPercentage, formatDate } from '../utils/localization';
 import { Line, Bar, Radar } from 'react-chartjs-2';
 import { lineChartOptions, barChartOptions, radarChartOptions, colors } from '../utils/chartConfig';
+import { useApi, sustainabilityApi } from '../api';
 
 interface CSRDRequirement {
   id: string;
@@ -166,6 +167,8 @@ const emissionsVsTargets = [
 ];
 
 export default function CSRDComplianceDashboard() {
+  const { data: csrdResponse } = useApi(() => sustainabilityApi.getCSRDCompliance());
+  const csrdData = (csrdResponse as any)?.data;
   const [selectedRequirement, setSelectedRequirement] = useState<CSRDRequirement | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 

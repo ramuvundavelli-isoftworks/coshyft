@@ -470,3 +470,53 @@ async def send_participation_reminder(
     return ApiResponse(success=True, meta={
         "message": f"Reminder sent to {data.department} department"
     })
+
+
+# ── Commute Logs (admin view) ─────────────────────────────────────────────────
+
+@router.get("/commute-logs", response_model=ApiResponse)
+async def get_commute_logs(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    start_date: str = Query(None),
+    end_date: str = Query(None),
+    transport_mode_id: str = Query(None),
+    department: str = Query(None),
+    user=Depends(require_role("admin")),
+    session: AsyncSession = Depends(get_session),
+):
+    """
+    Admin view of all commute logs in their tenant.
+    Allows filtering by date range, transport mode, and department.
+    """
+    from datetime import date as DateType
+    tid = user.tenant_id
+
+    # Join through User to apply tenant + department filters
+    stmt = select(CommuteEntry).join(User, CommuteEntry.user_id == User.id)
+    if tid and not _is_superadmin(user):
+        stmt = stmt.where(User.tenant_id == tid)
+    if department:
+        stmt = stmt.where(User.department == department)
+    if start_date:
+        stmt = stmt.where(CommuteEntry.commute_date >= start_date)
+    if end_date:
+        stmt = stmt.where(CommuteEntry.commute_date <= end_date)
+    if transport_mode_id:
+        stmt = stmt.where(CommuteEntry.transport_mode_id == transport_mode_id)
+
+    total = (await session.execute(
+        select(func.count()).select_from(stmt.subquery())
+    )).scalar_one()
+
+    stmt = stmt.order_by(CommuteEntry.commute_date.desc()).offset((page - 1) * page_size).limit(page_size)
+    entries = (await session.execute(stmt)).scalars().all()
+
+    from schemas.commute import CommuteEntryRead
+    return ApiResponse(success=True, data={
+        "items": [CommuteEntryRead.model_validate(e).model_dump() for e in entries],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size,
+    })

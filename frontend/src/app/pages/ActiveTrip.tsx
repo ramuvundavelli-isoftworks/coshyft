@@ -25,60 +25,67 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { ActiveTrip as ActiveTripType, TripSimulator, GPSCoordinate } from '../utils/tripTracking';
-import { mockActiveTrip, mockEmergencyContacts, updateTripProgress } from '../data/mockTripData';
+import { ActiveTrip as ActiveTripType } from '../utils/tripTracking';
 import { calculateTripStats, formatTimeRemaining } from '../utils/tripTracking';
 import LiveTripMap from '../components/carpooling/LiveTripMap';
 import TripStatusTimeline from '../components/carpooling/TripStatusTimeline';
 import SOSEmergencyModal from '../components/carpooling/SOSEmergencyModal';
 import ShareTripModal from '../components/carpooling/ShareTripModal';
+import { useApi } from '../api';
+import { carpoolingApi } from '../api';
 
 export default function ActiveTrip() {
   const navigate = useNavigate();
-  const [trip, setTrip] = useState<ActiveTripType>(mockActiveTrip);
+  const { data: activeTripData, loading: tripLoading } = useApi(() => carpoolingApi.getActiveTrip());
+  const trip: ActiveTripType | null = (activeTripData as any) ?? null;
   const [isSOSOpen, setIsSOSOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [simulator, setSimulator] = useState<TripSimulator | null>(null);
-  const [isSimulating, setIsSimulating] = useState(false);
 
-  // Initialize trip simulator
+  // Keep useEffect for cleanup only
   useEffect(() => {
-    const sim = new TripSimulator(trip.route);
-    setSimulator(sim);
-
-    return () => {
-      sim.stop();
-    };
+    return () => {};
   }, []);
 
-  // Start live simulation
-  const startSimulation = () => {
-    if (simulator && !isSimulating) {
-      setIsSimulating(true);
-      simulator.start(2000, (location: GPSCoordinate, progress: number) => {
-        setTrip((prevTrip) => updateTripProgress(prevTrip, progress));
-      });
-      toast.success('Live tracking started!');
-    }
-  };
+  // Placeholder handlers (no GPS simulator in production)
+  const isSimulating = false;
+  const simulator = null;
+  const startSimulation = () => { toast.info('GPS tracking not available in this environment.'); };
+  const stopSimulation = () => {};
 
-  // Stop simulation
-  const stopSimulation = () => {
-    if (simulator && isSimulating) {
-      simulator.stop();
-      setIsSimulating(false);
-      toast.info('Live tracking paused');
-    }
-  };
+  if (tripLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-3xl font-bold text-foreground">Active Trip</h1>
+        </div>
+        <Card className="p-12 text-center">
+          <p className="text-muted-foreground">Loading trip data...</p>
+        </Card>
+      </div>
+    );
+  }
 
-  // Auto-start simulation on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startSimulation();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [simulator]);
+  if (!trip) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-3xl font-bold text-foreground">Active Trip</h1>
+        </div>
+        <Card className="p-12 text-center">
+          <Car className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">No Active Trip</h2>
+          <p className="text-muted-foreground mb-4">You don't have an active trip right now. Find a ride or offer one to get started.</p>
+          <Button onClick={() => navigate('/employee/find-ride')}>Find a Ride</Button>
+        </Card>
+      </div>
+    );
+  }
 
   const stats = calculateTripStats(trip);
   const currentLocation = trip.status.currentLocation || trip.origin;
@@ -447,7 +454,7 @@ export default function ActiveTrip() {
                 Emergency Contacts on File
               </p>
               <div className="space-y-1">
-                {mockEmergencyContacts.map((contact, index) => (
+                {((trip as any)?.emergencyContacts ?? []).map((contact, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between text-xs"
@@ -558,7 +565,7 @@ export default function ActiveTrip() {
           name: p.name,
           phone: p.phoneNumber,
         }))}
-        emergencyContacts={mockEmergencyContacts}
+        emergencyContacts={((trip as any)?.emergencyContacts ?? [])}
         tripId={trip.id}
       />
 

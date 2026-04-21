@@ -63,6 +63,52 @@ export interface EmissionCalculation {
   co2_saved_vs_car: number;
 }
 
+export interface MonthlyCommuteStats {
+  month: number;
+  month_name: string;
+  total_commutes: number;
+  total_distance_km: number;
+  total_emissions_kg: number;
+  total_oxypoints: number;
+  co2_saved_vs_car: number;
+}
+
+export interface CommuteProfile {
+  user_id: string;
+  default_origin_address?: string;
+  default_origin_lat?: number;
+  default_origin_lng?: number;
+  default_destination_address?: string;
+  default_destination_lat?: number;
+  default_destination_lng?: number;
+  preferred_transport_mode_id?: string;
+  work_days_per_week?: number;
+  remote_days_per_week?: number;
+  typical_departure_time?: string;
+  vehicle_fuel_type?: string;
+  vehicle_make?: string;
+  vehicle_model?: string;
+  vehicle_year?: number;
+  updated_at: string;
+}
+
+export interface CommuteProfileUpdate {
+  default_origin_address?: string;
+  default_origin_lat?: number;
+  default_origin_lng?: number;
+  default_destination_address?: string;
+  default_destination_lat?: number;
+  default_destination_lng?: number;
+  preferred_transport_mode_id?: string;
+  work_days_per_week?: number;
+  remote_days_per_week?: number;
+  typical_departure_time?: string;
+  vehicle_fuel_type?: string;
+  vehicle_make?: string;
+  vehicle_model?: string;
+  vehicle_year?: number;
+}
+
 export const commuteApi = {
   async logCommute(data: CommuteEntryCreate): Promise<ApiResponse<CommuteEntry>> {
     return api.post<CommuteEntry>('/commute', data);
@@ -99,5 +145,17 @@ export const commuteApi = {
 
   async deleteCommute(id: string): Promise<ApiResponse> {
     return api.delete(`/commute/${id}`);
+  },
+
+  async getMonthlyStats(): Promise<ApiResponse<MonthlyCommuteStats[]>> {
+    return api.get<MonthlyCommuteStats[]>('/commute/stats/monthly');
+  },
+
+  async getCommuteProfile(): Promise<ApiResponse<CommuteProfile>> {
+    return api.get<CommuteProfile>('/commute/profile');
+  },
+
+  async updateCommuteProfile(data: CommuteProfileUpdate): Promise<ApiResponse<CommuteProfile>> {
+    return api.put<CommuteProfile>('/commute/profile', data);
   },
 };

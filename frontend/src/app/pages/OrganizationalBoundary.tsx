@@ -30,6 +30,7 @@ import {
 } from '../components/ui/table';
 import { Building2, Plus, Eye, Edit, Trash2, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApi, sustainabilityApi } from '../api';
 
 interface BoundaryEntity {
   id: string;
@@ -51,7 +52,24 @@ const mockBoundaryData: BoundaryEntity[] = [
 ];
 
 export default function OrganizationalBoundary() {
+  const { data: boundaryResponse } = useApi(() => sustainabilityApi.getBoundary());
+  const apiBoundary = (boundaryResponse as any)?.data;
   const [entities, setEntities] = useState<BoundaryEntity[]>(mockBoundaryData);
+  React.useEffect(() => {
+    if (apiBoundary?.included_entities) {
+      const mapped: BoundaryEntity[] = apiBoundary.included_entities.map((e: any, idx: number) => ({
+        id: `api-${idx}`,
+        name: e.name,
+        type: 'office' as const,
+        included: true,
+        control: 'operational' as const,
+        ownership: 100,
+        employees: e.employees || 0,
+        location: e.country || '',
+      }));
+      if (mapped.length > 0) setEntities(mapped);
+    }
+  }, [boundaryResponse]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);

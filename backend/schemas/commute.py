@@ -92,3 +92,45 @@ class CommuteHistoryFilter(BaseModel):
     transport_mode_id: Optional[str] = None
     min_distance: Optional[float] = None
     max_distance: Optional[float] = None
+
+
+class CommuteProfileRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: str
+    default_origin_address: Optional[str] = None
+    default_origin_lat: Optional[float] = None
+    default_origin_lng: Optional[float] = None
+    default_destination_address: Optional[str] = None
+    default_destination_lat: Optional[float] = None
+    default_destination_lng: Optional[float] = None
+    default_transport_mode_id: Optional[str] = None
+    default_distance_km: Optional[float] = None
+    work_days_per_week: int = 5
+    remote_days_per_week: int = 0
+    preferences: Optional[dict] = None
+    updated_at: datetime
+
+
+class CommuteProfileUpdate(BaseModel):
+    default_origin_address: Optional[str] = None
+    default_origin_lat: Optional[float] = None
+    default_origin_lng: Optional[float] = None
+    default_destination_address: Optional[str] = None
+    default_destination_lat: Optional[float] = None
+    default_destination_lng: Optional[float] = None
+    default_transport_mode_id: Optional[str] = None
+    default_distance_km: Optional[float] = Field(default=None, ge=0)
+    work_days_per_week: Optional[int] = Field(default=None, ge=1, le=7)
+    remote_days_per_week: Optional[int] = Field(default=None, ge=0, le=7)
+    preferences: Optional[dict] = None
+
+
+class MonthlyCommuteStats(BaseModel):
+    month: int
+    month_name: str
+    total_commutes: int
+    total_distance_km: float
+    total_emissions_kg: float
+    total_oxypoints: int
+    co2_saved_vs_car: float

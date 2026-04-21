@@ -22,7 +22,6 @@ import {
   Bike,
   Home,
 } from 'lucide-react';
-import { mockRides } from '../data/mockData';
 import { Progress } from '../components/ui/progress';
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
@@ -31,27 +30,6 @@ import { lineChartOptions, doughnutChartOptions, barChartOptions, colors } from 
 import { useApi } from '../api';
 import { commuteApi, gamificationApi, carpoolingApi, useApiMutation } from '../api';
 import type { CommuteEntryCreate, CommuteEntry as ApiCommuteEntry } from '../api/commute.api';
-
-// Mock commute data for February 2026
-const mockCommuteData = [
-  { day: 3, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 4, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 5, mode: 'bus' as const, co2Saved: 3.2, distance: 15 },
-  { day: 6, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 7, mode: 'remote' as const, co2Saved: 0, distance: 0 },
-  { day: 9, mode: 'remote' as const, co2Saved: 0, distance: 0 },
-  { day: 10, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 11, mode: 'bike' as const, co2Saved: 4.5, distance: 12.3 },
-  { day: 12, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 13, mode: 'bus' as const, co2Saved: 3.2, distance: 15 },
-  { day: 14, mode: 'drive' as const, co2Saved: 0, distance: 12.3 },
-  { day: 16, mode: 'remote' as const, co2Saved: 0, distance: 0 },
-  { day: 17, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 18, mode: 'carpool' as const, co2Saved: 2.8, distance: 12.3 },
-  { day: 19, mode: 'walk' as const, co2Saved: 4.8, distance: 5 },
-  { day: 20, mode: 'bus' as const, co2Saved: 3.2, distance: 15 },
-  { day: 21, mode: 'bike' as const, co2Saved: 4.5, distance: 12.3 },
-];
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -63,21 +41,30 @@ export default function EmployeeDashboard() {
   const { data: commuteStats } = useApi(() => commuteApi.getStats());
   const { data: gamificationProfile } = useApi(() => gamificationApi.getProfile());
   const { data: apiRides } = useApi(() => carpoolingApi.getMyRides());
+  const { data: commuteHistory } = useApi(() => commuteApi.getHistory({ page: 1, page_size: 90 }));
+  const { data: monthlyStats } = useApi(() => commuteApi.getMonthlyStats());
 
   // Mutation hook for logging commutes
   const logCommuteMutation = useApiMutation<CommuteEntryCreate, ApiCommuteEntry>(
     (data) => commuteApi.logCommute(data)
   );
 
-  const upcomingRides = ((apiRides as any)?.items ?? mockRides).filter((r: any) => r.status === 'scheduled');
+  const upcomingRides = ((apiRides as any)?.items ?? []).filter((r: any) => r.status === 'scheduled');
 
-  // Weekly impact data for chart
-  const impactData = [
-    { week: 'Week 1', co2: 4.2 },
-    { week: 'Week 2', co2: 6.1 },
-    { week: 'Week 3', co2: 5.8 },
-    { week: 'Week 4', co2: 5.2 },
-  ];
+  // Build calendar data from API history
+  const historyItems: any[] = (commuteHistory as any)?.items ?? [];
+  const calendarDataByDate = historyItems.reduce((acc: Record<string, any>, entry: any) => {
+    const dateStr = entry.commute_date ?? entry.date;
+    if (dateStr) acc[dateStr] = entry;
+    return acc;
+  }, {});
+
+  // Weekly impact data from monthly stats
+  const monthlyStatsList: any[] = Array.isArray(monthlyStats) ? monthlyStats : [];
+  const impactData = monthlyStatsList.slice(-4).map((m: any) => ({
+    week: m.month_name ?? `Month ${m.month}`,
+    co2: m.co2_saved_vs_car ?? 0,
+  }));
 
   const handleLogCommute = async (entry: CommuteEntry) => {
     // Optimistic local update
@@ -413,9 +400,18 @@ export default function EmployeeDashboard() {
                 <div className="flex gap-1">
                   {[...Array(28)].map((_, i) => {
                     const day = i + 1;
-                    const dayData = mockCommuteData.find(d => d.day === day);
-                    
-                    const modeColors = {
+                    const dateKey = `2026-02-${String(day).padStart(2, '0')}`;
+                    const dayData = calendarDataByDate[dateKey];
+                    const modeLabel = dayData?.transport_mode_label?.toLowerCase() ?? '';
+                    const modeKey = modeLabel.includes('carpool') ? 'carpool'
+                      : modeLabel.includes('bike') || modeLabel.includes('cycl') ? 'bike'
+                      : modeLabel.includes('bus') || modeLabel.includes('transit') || modeLabel.includes('train') ? 'bus'
+                      : modeLabel.includes('walk') ? 'walk'
+                      : modeLabel.includes('remote') || modeLabel.includes('work from home') ? 'remote'
+                      : modeLabel.includes('car') || modeLabel.includes('drive') ? 'drive'
+                      : '';
+
+                    const modeColors: Record<string, string> = {
                       carpool: 'bg-brand-500',
                       bike: 'bg-brand-500',
                       bus: 'bg-brand-600',
@@ -423,19 +419,17 @@ export default function EmployeeDashboard() {
                       drive: 'bg-muted-foreground',
                       remote: 'bg-border',
                     };
-                    
+
                     return (
                       <div
                         key={day}
                         className={`w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-125 cursor-pointer ${
-                          dayData
-                            ? modeColors[dayData.mode]
-                            : day === 19
-                            ? 'border-2 border-[#00A63E] bg-card'
+                          dayData && modeKey
+                            ? modeColors[modeKey]
                             : 'bg-muted'
                         }`}
-                        title={dayData ? `Day ${day}: ${dayData.mode} - ${dayData.distance}km` : `Day ${day}`}
-                        onMouseEnter={() => setHoveredDay({ day, mode: dayData?.mode, distance: dayData?.distance, month: 'February 2026' })}
+                        title={dayData ? `Day ${day}: ${dayData.transport_mode_label} - ${dayData.distance_km ?? 0}km` : `Day ${day}`}
+                        onMouseEnter={() => setHoveredDay({ day, mode: modeKey || undefined, distance: dayData?.distance_km, month: 'February 2026' })}
                         onMouseLeave={() => setHoveredDay(null)}
                       />
                     );
@@ -459,27 +453,28 @@ export default function EmployeeDashboard() {
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
                     const day = i + 1;
-                    const hasCommute = [2, 5, 6, 8, 9, 12, 13, 15, 16, 19, 20, 22, 23, 26, 27, 29, 30].includes(day);
-                    const modes: Array<'carpool' | 'bike' | 'bus' | 'walk' | 'drive' | 'remote'> = ['carpool', 'bike', 'bus', 'remote', 'drive'];
-                    const randomMode = modes[day % modes.length];
-                    
-                    const modeColors = {
-                      carpool: 'bg-brand-500',
-                      bike: 'bg-brand-500',
-                      bus: 'bg-brand-600',
-                      walk: 'bg-brand-700',
-                      drive: 'bg-muted-foreground',
-                      remote: 'bg-border',
+                    const dateKey = `2026-01-${String(day).padStart(2, '0')}`;
+                    const dayData = calendarDataByDate[dateKey];
+                    const modeLabel = dayData?.transport_mode_label?.toLowerCase() ?? '';
+                    const modeKey = modeLabel.includes('carpool') ? 'carpool'
+                      : modeLabel.includes('bike') || modeLabel.includes('cycl') ? 'bike'
+                      : modeLabel.includes('bus') || modeLabel.includes('transit') || modeLabel.includes('train') ? 'bus'
+                      : modeLabel.includes('walk') ? 'walk'
+                      : modeLabel.includes('remote') || modeLabel.includes('work from home') ? 'remote'
+                      : modeLabel.includes('car') || modeLabel.includes('drive') ? 'drive'
+                      : '';
+                    const modeColors: Record<string, string> = {
+                      carpool: 'bg-brand-500', bike: 'bg-brand-500', bus: 'bg-brand-600',
+                      walk: 'bg-brand-700', drive: 'bg-muted-foreground', remote: 'bg-border',
                     };
-                    
                     return (
                       <div
                         key={day}
                         className={`w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-125 cursor-pointer ${
-                          hasCommute ? modeColors[randomMode] : 'bg-muted'
+                          dayData && modeKey ? modeColors[modeKey] : 'bg-muted'
                         }`}
-                        title={hasCommute ? `Day ${day}: ${randomMode}` : `Day ${day}`}
-                        onMouseEnter={() => setHoveredDay({ day, mode: randomMode, month: 'January 2026' })}
+                        title={dayData ? `Day ${day}: ${dayData.transport_mode_label}` : `Day ${day}`}
+                        onMouseEnter={() => setHoveredDay({ day, mode: modeKey || undefined, distance: dayData?.distance_km, month: 'January 2026' })}
                         onMouseLeave={() => setHoveredDay(null)}
                       />
                     );
@@ -503,27 +498,28 @@ export default function EmployeeDashboard() {
                 <div className="flex gap-1">
                   {[...Array(31)].map((_, i) => {
                     const day = i + 1;
-                    const hasCommute = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19].includes(day);
-                    const modes: Array<'carpool' | 'bike' | 'bus' | 'walk' | 'drive' | 'remote'> = ['carpool', 'bike', 'bus', 'remote', 'walk'];
-                    const randomMode = modes[(day + 2) % modes.length];
-                    
-                    const modeColors = {
-                      carpool: 'bg-brand-500',
-                      bike: 'bg-brand-500',
-                      bus: 'bg-brand-600',
-                      walk: 'bg-brand-700',
-                      drive: 'bg-muted-foreground',
-                      remote: 'bg-border',
+                    const dateKey = `2025-12-${String(day).padStart(2, '0')}`;
+                    const dayData = calendarDataByDate[dateKey];
+                    const modeLabel = dayData?.transport_mode_label?.toLowerCase() ?? '';
+                    const modeKey = modeLabel.includes('carpool') ? 'carpool'
+                      : modeLabel.includes('bike') || modeLabel.includes('cycl') ? 'bike'
+                      : modeLabel.includes('bus') || modeLabel.includes('transit') || modeLabel.includes('train') ? 'bus'
+                      : modeLabel.includes('walk') ? 'walk'
+                      : modeLabel.includes('remote') || modeLabel.includes('work from home') ? 'remote'
+                      : modeLabel.includes('car') || modeLabel.includes('drive') ? 'drive'
+                      : '';
+                    const modeColors: Record<string, string> = {
+                      carpool: 'bg-brand-500', bike: 'bg-brand-500', bus: 'bg-brand-600',
+                      walk: 'bg-brand-700', drive: 'bg-muted-foreground', remote: 'bg-border',
                     };
-                    
                     return (
                       <div
                         key={day}
                         className={`w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-125 cursor-pointer ${
-                          hasCommute ? modeColors[randomMode] : 'bg-muted'
+                          dayData && modeKey ? modeColors[modeKey] : 'bg-muted'
                         }`}
-                        title={hasCommute ? `Day ${day}: ${randomMode}` : `Day ${day}`}
-                        onMouseEnter={() => setHoveredDay({ day, mode: randomMode, month: 'December 2025' })}
+                        title={dayData ? `Day ${day}: ${dayData.transport_mode_label}` : `Day ${day}`}
+                        onMouseEnter={() => setHoveredDay({ day, mode: modeKey || undefined, distance: dayData?.distance_km, month: 'December 2025' })}
                         onMouseLeave={() => setHoveredDay(null)}
                       />
                     );

@@ -28,6 +28,25 @@ export const sustainabilityApi = {
     return api.get('/sustainability/targets');
   },
 
+  async createTarget(data: {
+    baseline_year: number;
+    target_year: number;
+    target_reduction_percent: number;
+    methodology?: string;
+    notes?: string;
+  }): Promise<ApiResponse> {
+    return api.post('/sustainability/targets', data);
+  },
+
+  async updateTarget(targetId: string, data: {
+    target_reduction_percent?: number;
+    target_year?: number;
+    methodology?: string;
+    notes?: string;
+  }): Promise<ApiResponse> {
+    return api.put(`/sustainability/targets/${targetId}`, data);
+  },
+
   // Scenarios
   async getScenarios(): Promise<ApiResponse> {
     return api.get('/sustainability/scenarios');
@@ -58,6 +77,10 @@ export const sustainabilityApi = {
     return api.put(`/sustainability/initiatives/${id}`, data);
   },
 
+  async deleteInitiative(id: string): Promise<ApiResponse> {
+    return api.delete(`/sustainability/initiatives/${id}`);
+  },
+
   // Risks
   async getRisks(): Promise<ApiResponse> {
     return api.get('/sustainability/risks');
@@ -71,6 +94,10 @@ export const sustainabilityApi = {
     return api.put(`/sustainability/risks/${id}`, data);
   },
 
+  async deleteRisk(id: string): Promise<ApiResponse> {
+    return api.delete(`/sustainability/risks/${id}`);
+  },
+
   // CSRD / Data Quality / Climate Action Plan
   async getCSRDCompliance(): Promise<ApiResponse> {
     return api.get('/sustainability/csrd-compliance');
@@ -82,6 +109,29 @@ export const sustainabilityApi = {
 
   async getClimateActionPlan(): Promise<ApiResponse> {
     return api.get('/sustainability/climate-action-plan');
+  },
+
+  // Organisational Boundary
+  async getBoundary(): Promise<ApiResponse> {
+    return api.get('/sustainability/boundary');
+  },
+
+  async setBoundary(data: {
+    approach: string;
+    included_entities?: any[];
+    excluded_entities?: any[];
+    exclusion_rationale?: string;
+  }): Promise<ApiResponse> {
+    return api.post('/sustainability/boundary', data);
+  },
+
+  // Methodology & DPIA
+  async getMethodology(): Promise<ApiResponse> {
+    return api.get('/sustainability/methodology');
+  },
+
+  async getDPIA(): Promise<ApiResponse> {
+    return api.get('/sustainability/dpia');
   },
 
   // Approvals

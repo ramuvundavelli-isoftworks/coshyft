@@ -22,23 +22,39 @@ import {
 } from '../components/ui/table';
 import { Shield, AlertTriangle, Download, Eye, MessageCircle, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-
-const risks = [
-  { id: 'r1', title: 'Data Collection Gaps', severity: 'high', likelihood: 'medium', impact: 'high', status: 'open', mitigation: 'Automated data collection' },
-  { id: 'r2', title: 'Emission Factor Changes', severity: 'medium', likelihood: 'low', impact: 'medium', status: 'mitigated', mitigation: 'Annual factor review' },
-  { id: 'r3', title: 'Low Employee Participation', severity: 'high', likelihood: 'medium', impact: 'high', status: 'in-progress', mitigation: 'Incentive program' },
-  { id: 'r4', title: 'Calculation Errors', severity: 'medium', likelihood: 'low', impact: 'high', status: 'mitigated', mitigation: 'Automated validation' },
-];
+import { useApi, auditorApi } from '../api';
 
 export default function AuditorRisksReview() {
+  const { data: risksResponse } = useApi(() => auditorApi.reviewRisks());
+  const risks = ((risksResponse as any)?.data || []).map((r: any) => ({
+    id: r.id,
+    title: r.title,
+    severity: r.impact === 'high' ? 'high' : r.impact === 'medium' ? 'medium' : 'low',
+    likelihood: r.likelihood,
+    impact: r.impact,
+    status: r.status === 'closed' ? 'mitigated' : r.status === 'mitigating' ? 'in-progress' : 'open',
+    mitigation: r.mitigation_plan || 'Pending',
+  }));
   const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
   const [isAddFindingDialogOpen, setIsAddFindingDialogOpen] = useState(false);
   const [isRequestPlanDialogOpen, setIsRequestPlanDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [selectedRisk, setSelectedRisk] = useState<any>(null);
 
-  const handleAddFinding = () => {
-    toast.success('Audit finding added');
+  const [findingText, setFindingText] = useState('');
+
+  const handleAddFinding = async () => {
+    const result = await auditorApi.addFinding({
+      area: selectedRisk?.title || 'Risk Review',
+      description: findingText || 'Risk-related audit finding',
+      severity: selectedRisk?.severity || 'medium',
+    });
+    if (result.success) {
+      toast.success('Audit finding added');
+    } else {
+      toast.error(result.error?.message || 'Failed to add finding');
+    }
+    setFindingText('');
     setIsAddFindingDialogOpen(false);
   };
 
@@ -237,6 +253,8 @@ export default function AuditorRisksReview() {
             <Label htmlFor="finding">Finding Description *</Label>
             <Textarea
               id="finding"
+              value={findingText}
+              onChange={(e) => setFindingText(e.target.value)}
               placeholder="Describe audit finding..."
               rows={4}
             />

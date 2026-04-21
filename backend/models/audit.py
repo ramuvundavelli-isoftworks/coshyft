@@ -27,17 +27,30 @@ class AuditActionEnum(str, enum.Enum):
 
 
 class EntityTypeEnum(str, enum.Enum):
+    # Emissions & compliance
     EMISSION_FACTOR = "emission_factor"
     BASELINE = "baseline"
+    TARGET = "target"
+    BOUNDARY = "boundary"
     COMMUTE_ENTRY = "commute_entry"
-    PERSONAL_DATA = "personal_data"
-    REPORT = "report"
+    COMMUTE_PROFILE = "commute_profile"
+    # People & access
     USER_PROFILE = "user_profile"
+    PERSONAL_DATA = "personal_data"
+    # Organisation
+    OFFICE = "office"
+    POLICY = "policy"
+    ADMIN_SETTINGS = "admin_settings"
+    PARTICIPATION = "participation"
+    # Operations
     RIDE = "ride"
     INITIATIVE = "initiative"
-    POLICY = "policy"
     SCENARIO = "scenario"
     RISK = "risk"
+    # Compliance & audit
+    REPORT = "report"
+    AUDIT_REPORT = "audit_report"
+    AUDIT_LOG = "audit_log"
     EVIDENCE = "evidence"
 
 
@@ -67,7 +80,7 @@ class AuditLog(SQLModel, table=True):
     entity_type: EntityTypeEnum = Field(
         sa_column=Column(SAEnum(EntityTypeEnum), nullable=False)
     )
-    entity_id: str = Field(max_length=36)
+    entity_id: str = Field(max_length=255)  # Increased from 36 to handle non-UUID IDs
     description: Optional[str] = Field(default=None, max_length=500)
     changes: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     ip_address: Optional[str] = Field(default=None, max_length=45)
@@ -93,7 +106,7 @@ class GDPRAuditLog(SQLModel, table=True):
     entity_type: EntityTypeEnum = Field(
         sa_column=Column(SAEnum(EntityTypeEnum), nullable=False)
     )
-    entity_id: str = Field(max_length=36)
+    entity_id: str = Field(max_length=255)  # Increased from 36 to handle non-UUID IDs
     changes: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     ip_address: Optional[str] = Field(default=None, max_length=45)
     gdpr_basis: Optional[str] = Field(default=None, max_length=30)

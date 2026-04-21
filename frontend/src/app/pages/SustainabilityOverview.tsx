@@ -38,23 +38,11 @@ import {
   Globe,
   Train,
 } from 'lucide-react';
-import { mockAlerts, mockInitiatives } from '../data/mockData';
 import { Line } from 'react-chartjs-2';
 import { lineChartOptions, colors } from '../utils/chartConfig';
 import { toast } from 'sonner';
 import { useApi } from '../api';
-import { sustainabilityApi, alertsApi } from '../api';
-
-const targetGapData = [
-  { month: 'Jan', actual: 245, target: 230 },
-  { month: 'Feb', actual: 238, target: 225 },
-  { month: 'Mar', actual: 252, target: 235 },
-  { month: 'Apr', actual: 241, target: 230 },
-  { month: 'May', actual: 235, target: 225 },
-  { month: 'Jun', actual: 229, target: 220 },
-  { month: 'Jul', actual: 233, target: 218 },
-  { month: 'Aug', actual: 227, target: 215 },
-];
+import { sustainabilityApi, alertsApi, emissionsApi } from '../api';
 
 export default function SustainabilityOverview() {
   const [period, setPeriod] = useState('ytd-2026');
@@ -65,8 +53,20 @@ export default function SustainabilityOverview() {
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
   const [selectedInitiative, setSelectedInitiative] = useState<any>(null);
 
-  const criticalAlerts = mockAlerts.filter(a => !a.resolved && a.severity === 'critical');
-  const activeInitiatives = mockInitiatives.filter(i => i.status === 'active');
+  const { data: alertsData } = useApi(() => alertsApi.getAlerts({ page: 1, page_size: 20 }));
+  const { data: initiativesData } = useApi(() => sustainabilityApi.getInitiatives());
+  const { data: emissionsSummary } = useApi(() => emissionsApi.getSummary());
+  const { data: trendsData } = useApi(() => emissionsApi.getTrends());
+
+  const criticalAlerts = ((alertsData as any)?.items ?? []).filter((a: any) => !a.resolved && a.severity === 'critical');
+  const activeInitiatives = (Array.isArray(initiativesData) ? initiativesData : []).filter((i: any) => i.status === 'active');
+  const targetGapData = Array.isArray(trendsData) ? trendsData : [];
+
+  const totalEmissionsKg = (emissionsSummary as any)?.total_emissions_kg ?? 0;
+  const totalEmissionsTons = totalEmissionsKg > 0 ? (totalEmissionsKg / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—';
+  const emissionIntensity = (emissionsSummary as any)?.emission_intensity ?? null;
+  const yoyChange = (emissionsSummary as any)?.yoy_change_percent ?? null;
+  const participationRate = (emissionsSummary as any)?.participation_rate ?? null;
 
   const handleRunSimulation = () => {
     toast.success('Simulation started - results will be available in 2-3 minutes');
@@ -130,9 +130,9 @@ export default function SustainabilityOverview() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Emissions"
-          value="1,850"
+          value={totalEmissionsTons}
           unit="tCO₂e"
-          change={-5.2}
+          change={yoyChange != null ? yoyChange : undefined}
           changeLabel="vs baseline"
           icon={Activity}
           trend="down"
@@ -140,25 +140,22 @@ export default function SustainabilityOverview() {
         />
         <KPICard
           title="Emissions Intensity"
-          value="0.42"
+          value={emissionIntensity != null ? String(emissionIntensity) : '—'}
           unit="tCO₂e/FTE"
-          change={-3.8}
-          changeLabel="vs baseline"
           icon={TrendingDown}
           trend="down"
         />
         <KPICard
           title="Reduction vs Baseline"
-          value="35"
+          value={yoyChange != null ? String(Math.abs(yoyChange)) : '—'}
           unit="%"
           icon={Target}
           status="good"
         />
         <KPICard
           title="Participation Rate"
-          value="76"
+          value={participationRate != null ? String(Math.round(participationRate)) : '—'}
           unit="%"
-          change={8.5}
           icon={Users}
           trend="up"
           status="good"
@@ -202,29 +199,33 @@ export default function SustainabilityOverview() {
       <Card className="p-6">
         <h3 className="font-semibold text-foreground mb-4">Target vs Actual Performance</h3>
         <div style={{ height: '300px', width: '100%' }}>
-          <Line
-            data={{
-              labels: targetGapData.map(d => d.month),
-              datasets: [
-                {
-                  label: 'Target',
-                  data: targetGapData.map(d => d.target),
-                  borderColor: colors.chart.red,
-                  borderWidth: 2,
-                  borderDash: [5, 5],
-                  fill: false,
-                },
-                {
-                  label: 'Actual',
-                  data: targetGapData.map(d => d.actual),
-                  borderColor: colors.chart.blue,
-                  borderWidth: 2,
-                  fill: false,
-                },
-              ],
-            }}
-            options={lineChartOptions}
-          />
+          {targetGapData.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">No trend data available</div>
+          ) : (
+            <Line
+              data={{
+                labels: targetGapData.map((d: any) => d.period ?? d.month),
+                datasets: [
+                  {
+                    label: 'Target',
+                    data: targetGapData.map((d: any) => d.target),
+                    borderColor: colors.chart.red,
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                  },
+                  {
+                    label: 'Actual',
+                    data: targetGapData.map((d: any) => d.actual ?? d.total_emissions_kg),
+                    borderColor: colors.chart.blue,
+                    borderWidth: 2,
+                    fill: false,
+                  },
+                ],
+              }}
+              options={lineChartOptions}
+            />
+          )}
         </div>
       </Card>
 

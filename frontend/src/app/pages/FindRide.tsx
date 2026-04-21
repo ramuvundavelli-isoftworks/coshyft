@@ -43,7 +43,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExtendedRide, CommutePreferences, AdvancedFilters } from '../types';
-import { mockExtendedRides, defaultUserPreferences, mockUserRoute } from '../data/mockCarpoolData';
 import {
   calculateCompatibilityScore,
   calculateRouteScore,
@@ -80,7 +79,7 @@ export default function FindRide() {
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   
   // User preferences and filters
-  const [userPreferences, setUserPreferences] = useState<CommutePreferences>(defaultUserPreferences);
+  const [userPreferences, setUserPreferences] = useState<CommutePreferences>({} as CommutePreferences);
   const [activeFilters, setActiveFilters] = useState<AdvancedFilters>({});
   const [sortBy, setSortBy] = useState<'match' | 'time' | 'distance' | 'co2'>('match');
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
@@ -114,39 +113,34 @@ export default function FindRide() {
   );
   const savePreferencesMutation = useApiMutation((data: any) => authApi.updateProfile(data));
 
-  // Initialize rides with calculated compatibility scores
+  // Fetch available rides from API
+  const { data: apiRidesData } = useApi(() => carpoolingApi.getMyRides());
   useEffect(() => {
-    const ridesWithScores = mockExtendedRides.map((ride) => {
+    const apiRidesList: any[] = (apiRidesData as any)?.items ?? (Array.isArray(apiRidesData) ? apiRidesData : []);
+    const ridesWithScores = apiRidesList.map((ride: any) => {
       const userRoute = {
         origin: geocodeAddress(origin),
         destination: geocodeAddress(destination),
         departureTime: departureTime,
         distance: 0,
       };
-
       const rideRoute = {
-        origin: ride.originLocation,
-        destination: ride.destinationLocation,
-        departureTime: ride.departureTime,
-        distance: ride.distance,
+        origin: ride.originLocation ?? { lat: 0, lng: 0 },
+        destination: ride.destinationLocation ?? { lat: 0, lng: 0 },
+        departureTime: ride.departureTime ?? ride.departure_time,
+        distance: ride.distance ?? 0,
       };
-
       const compatibilityScore = calculateCompatibilityScore(
         userRoute,
         rideRoute,
         userPreferences,
-        ride.preferences || defaultUserPreferences,
-        ride.driverRating
+        ride.preferences ?? {} as CommutePreferences,
+        ride.driverRating ?? ride.driver_rating ?? 5
       );
-
-      return {
-        ...ride,
-        matchScore: compatibilityScore,
-      };
+      return { ...ride, matchScore: compatibilityScore };
     });
-
     setRides(ridesWithScores);
-  }, [origin, destination, departureTime, userPreferences]);
+  }, [apiRidesData, origin, destination, departureTime, userPreferences]);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -354,7 +348,7 @@ export default function FindRide() {
       ),
       preferencesScore: calculatePreferencesScore(
         userPreferences,
-        ride.preferences || defaultUserPreferences
+        ride.preferences ?? {} as CommutePreferences
       ),
       ratingScore: ride.driverRating ? (ride.driverRating / 5) * 100 : 80,
     };

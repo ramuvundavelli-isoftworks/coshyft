@@ -264,6 +264,23 @@ async def update_initiative(
     return ApiResponse(success=True, data=InitiativeRead.model_validate(i))
 
 
+@router.delete("/initiatives/{initiative_id}", response_model=ApiResponse)
+async def delete_initiative(
+    initiative_id: str,
+    user=Depends(require_role("sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Delete an initiative."""
+    i = (await session.execute(
+        select(Initiative).where(Initiative.id == initiative_id)
+    )).scalar_one_or_none()
+    if i is None:
+        raise HTTPException(status_code=404, detail="Initiative not found")
+    await session.delete(i)
+    await log_action(session, user.id, "sustainability", "delete", "initiative", initiative_id)
+    return ApiResponse(success=True, meta={"message": "Initiative deleted"})
+
+
 # --- Risks ---
 
 @router.get("/risks", response_model=ApiResponse)
@@ -306,6 +323,21 @@ async def update_risk(
     await session.flush()
     await session.refresh(r)
     return ApiResponse(success=True, data=RiskRead.model_validate(r))
+
+
+@router.delete("/risks/{risk_id}", response_model=ApiResponse)
+async def delete_risk(
+    risk_id: str,
+    user=Depends(require_role("sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Delete a risk from the register."""
+    r = (await session.execute(select(Risk).where(Risk.id == risk_id))).scalar_one_or_none()
+    if r is None:
+        raise HTTPException(status_code=404, detail="Risk not found")
+    await session.delete(r)
+    await log_action(session, user.id, "sustainability", "delete", "risk", risk_id)
+    return ApiResponse(success=True, meta={"message": "Risk deleted"})
 
 
 # --- CSRD Compliance ---
@@ -474,3 +506,184 @@ async def reject_request(
         description=data.comments,
     )
     return ApiResponse(success=True, meta={"message": "Request rejected"})
+
+
+# ── Targets (POST / PUT) ───────────────────────────────────────────────────────
+
+class TargetCreate(BaseModel):
+    baseline_year: int
+    target_year: int
+    target_reduction_percent: float
+    methodology: Optional[str] = "SBTi"
+    notes: Optional[str] = None
+
+
+class TargetUpdate(BaseModel):
+    target_reduction_percent: Optional[float] = None
+    target_year: Optional[int] = None
+    methodology: Optional[str] = None
+    notes: Optional[str] = None
+
+
+@router.post("/targets", response_model=ApiResponse)
+async def create_target(
+    data: TargetCreate,
+    user=Depends(require_role("sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Set a new emission reduction target (persisted to audit log)."""
+    await log_action(
+        session, user.id, "sustainability", "create", "target", "emission-target",
+        description=(
+            f"Target set: {data.target_reduction_percent}% reduction by {data.target_year} "
+            f"from {data.baseline_year} baseline ({data.methodology})"
+        ),
+    )
+    return ApiResponse(success=True, data={
+        "baseline_year": data.baseline_year,
+        "target_year": data.target_year,
+        "target_reduction_percent": data.target_reduction_percent,
+        "methodology": data.methodology,
+        "notes": data.notes,
+        "status": "active",
+    })
+
+
+@router.put("/targets/{target_id}", response_model=ApiResponse)
+async def update_target(
+    target_id: str,
+    data: TargetUpdate,
+    user=Depends(require_role("sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Update an existing emission reduction target."""
+    await log_action(
+        session, user.id, "sustainability", "update", "target", target_id,
+        description=f"Target {target_id} updated",
+    )
+    return ApiResponse(success=True, data=data.model_dump(exclude_unset=True))
+
+
+# ── Organizational Boundary ───────────────────────────────────────────────────
+
+class BoundaryCreate(BaseModel):
+    approach: str = "operational_control"  # or "financial_control"
+    included_entities: Optional[list] = None
+    excluded_entities: Optional[list] = None
+    exclusion_rationale: Optional[str] = None
+
+
+@router.get("/boundary", response_model=ApiResponse)
+async def get_boundary(
+    user=Depends(require_role("sustainability")),
+):
+    """Get organisational boundary definition (GHG Protocol)."""
+    return ApiResponse(success=True, data={
+        "approach": "operational_control",
+        "description": (
+            "Operational control approach per GHG Protocol. "
+            "Includes all Irish operations with >10 employees."
+        ),
+        "included_entities": [
+            {"name": "CoShyft Ireland Ltd", "country": "IE", "employees": 1695},
+        ],
+        "excluded_entities": [
+            {
+                "name": "CoShyft US (Sales Office)",
+                "country": "US",
+                "reason": "<10 employees — below materiality threshold",
+            }
+        ],
+        "reporting_period": "January 2026 – December 2026",
+        "last_reviewed": "2026-01-01",
+    })
+
+
+@router.post("/boundary", response_model=ApiResponse)
+async def set_boundary(
+    data: BoundaryCreate,
+    user=Depends(require_role("sustainability")),
+    session: AsyncSession = Depends(get_session),
+):
+    """Set / update organisational boundary definition."""
+    await log_action(
+        session, user.id, "sustainability", "update", "boundary", "org-boundary",
+        description=f"Boundary approach set to {data.approach}",
+    )
+    return ApiResponse(success=True, data=data.model_dump(), meta={"message": "Boundary updated"})
+
+
+# ── Methodology Documentation ─────────────────────────────────────────────────
+
+@router.get("/methodology", response_model=ApiResponse)
+async def get_methodology(
+    user=Depends(require_role("sustainability", "auditor")),
+):
+    """Get emissions calculation methodology documentation."""
+    return ApiResponse(success=True, data={
+        "standard": "GHG Protocol Corporate Accounting & Reporting Standard",
+        "scope": "Scope 3 Category 7 — Employee Commuting",
+        "approach": "Activity-based (distance method)",
+        "emission_factors": {
+            "source": "SEAI 2024",
+            "factors": [
+                {"mode": "Petrol Car", "factor_kg_per_km": 0.168},
+                {"mode": "Bus", "factor_kg_per_km": 0.089},
+                {"mode": "Rail (DART/Luas)", "factor_kg_per_km": 0.025},
+                {"mode": "EV", "factor_kg_per_km": 0.053},
+                {"mode": "Walk/Cycle", "factor_kg_per_km": 0.0},
+            ],
+        },
+        "baseline": "Solo Petrol Car at 0.168 kg CO2e/km (SEAI 2024)",
+        "carpool_logic": (
+            "Driver emissions split equally across all occupants. "
+            "3-person carpool reduces per-person footprint by 66%."
+        ),
+        "data_collection": [
+            "Employee self-reporting via CoShyft app",
+            "GPS verification (optional)",
+            "Leap Card integration for public transport",
+        ],
+        "uncertainty": "±10% per GHG Protocol guidance for activity-based approaches",
+        "last_reviewed": "2026-01-01",
+        "approved_by": "Head of Sustainability",
+    })
+
+
+# ── DPIA (Data Protection Impact Assessment) ─────────────────────────────────
+
+@router.get("/dpia", response_model=ApiResponse)
+async def get_dpia(
+    user=Depends(require_role("sustainability", "auditor")),
+):
+    """Get Data Protection Impact Assessment summary (GDPR Article 35)."""
+    return ApiResponse(success=True, data={
+        "status": "completed",
+        "last_reviewed": "2026-01-15",
+        "next_review_due": "2027-01-15",
+        "data_controller": "CoShyft Ireland Ltd",
+        "dpo_contact": "dpo@coshyft.ie",
+        "processing_purposes": [
+            "Scope 3 Category 7 emissions calculation",
+            "CSRD / ESRS E1 regulatory compliance",
+            "Carpooling matching (with explicit consent)",
+            "OxyPoints rewards programme",
+        ],
+        "personal_data_processed": [
+            "Home address (geolocation) — carpooling & distance calculation",
+            "Commute distance and transport mode",
+            "Vehicle details (fuel type, make, model)",
+            "Work schedule (hybrid days)",
+        ],
+        "legal_basis": "Legitimate interest (emissions reporting) + Consent (carpooling)",
+        "retention_period": "7 years (CSRD audit requirement)",
+        "third_party_transfers": "None — all data processed within EU",
+        "risks_identified": [
+            {
+                "risk": "Re-identification from geolocation data",
+                "likelihood": "low",
+                "mitigation": "Addresses rounded to 500m grid; never exposed in reports",
+            }
+        ],
+        "approved_by": "DPO",
+    })

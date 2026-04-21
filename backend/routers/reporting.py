@@ -18,8 +18,17 @@ from schemas.report import (
     CSRDExportRequest, CSRDStatusRead, RegulatoryStatusRead,
 )
 from schemas.common import ApiResponse, PaginatedResponse
+from services.audit_logger import log_action
 
 router = APIRouter(prefix="/reports", tags=["Reporting"])
+
+
+def _role(user) -> str:
+    return user.role.value if hasattr(user.role, "value") else user.role
+
+
+def _is_superadmin(user) -> bool:
+    return _role(user) == "superadmin"
 
 
 @router.get("/", response_model=ApiResponse)
@@ -30,8 +39,11 @@ async def list_reports(
     user=Depends(require_role("sustainability", "admin", "auditor")),
     session: AsyncSession = Depends(get_session),
 ):
-    """List generated reports."""
+    """List generated reports. Scoped to caller's tenant."""
     stmt = select(Report)
+    # Tenant isolation: non-superadmins see only their tenant's reports
+    if not _is_superadmin(user) and user.tenant_id:
+        stmt = stmt.where(Report.tenant_id == user.tenant_id)
     if report_type:
         stmt = stmt.where(Report.report_type == report_type)
 
@@ -78,6 +90,7 @@ async def generate_report(
         status="generating",
         parameters=data.parameters,
         generated_by=user.id,
+        tenant_id=user.tenant_id,  # Stamp tenant for isolation
     )
     session.add(report)
     await session.flush()
@@ -91,6 +104,12 @@ async def generate_report(
     await session.flush()
     await session.refresh(report)
 
+    await log_action(
+        session, user.id,
+        _role(user),
+        "create", "report", report.id,
+        description=f"Generated {report.report_type} report: {report.title}",
+    )
     return ApiResponse(success=True, data=ReportRead.model_validate(report))
 
 
@@ -135,9 +154,12 @@ async def export_csrd(
 ):
     """Export CSRD/ESRS E1 package."""
     # Check for existing submission
-    existing = (await session.execute(
-        select(CSRDSubmission).where(CSRDSubmission.reporting_year == data.reporting_year)
-    )).scalar_one_or_none()
+    existing_stmt = select(CSRDSubmission).where(
+        CSRDSubmission.reporting_year == data.reporting_year
+    )
+    if not _is_superadmin(user) and user.tenant_id:
+        existing_stmt = existing_stmt.where(CSRDSubmission.tenant_id == user.tenant_id)
+    existing = (await session.execute(existing_stmt)).scalar_one_or_none()
 
     if existing:
         existing.status = "in_progress"
@@ -145,6 +167,12 @@ async def export_csrd(
         session.add(existing)
         await session.flush()
         await session.refresh(existing)
+        await log_action(
+            session, user.id,
+            _role(user),
+            "update", "report", existing.id,
+            description=f"Re-exported CSRD package for year {data.reporting_year}",
+        )
         return ApiResponse(success=True, data=CSRDStatusRead.model_validate(existing))
 
     submission = CSRDSubmission(
@@ -154,11 +182,18 @@ async def export_csrd(
         data_quality_score=76.0,
         disclosures_completed=7,
         disclosures_total=9,
+        tenant_id=user.tenant_id,
     )
     session.add(submission)
     await session.flush()
     await session.refresh(submission)
 
+    await log_action(
+        session, user.id,
+        _role(user),
+        "create", "report", submission.id,
+        description=f"Created CSRD export package for year {data.reporting_year}",
+    )
     return ApiResponse(success=True, data=CSRDStatusRead.model_validate(submission))
 
 

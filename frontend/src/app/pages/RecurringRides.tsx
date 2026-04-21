@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -44,14 +44,19 @@ import {
   exportTemplate,
   generateRidesFromTemplate,
 } from '../utils/recurringRides';
-import { mockRecurringTemplates } from '../data/mockRecurringData';
 import CreateRecurringRideModal from '../components/carpooling/CreateRecurringRideModal';
 import ScheduleCalendarView from '../components/carpooling/ScheduleCalendarView';
 import { useApi, useApiMutation } from '../api';
 import { carpoolingApi } from '../api';
 
 export default function RecurringRides() {
-  const [templates, setTemplates] = useState<RecurringRideTemplate[]>(mockRecurringTemplates);
+  const { data: apiTemplates } = useApi(() => carpoolingApi.getRecurringTemplates());
+  const [templates, setTemplates] = useState<RecurringRideTemplate[]>([]);
+
+  useEffect(() => {
+    const items = Array.isArray(apiTemplates) ? apiTemplates : (apiTemplates as any)?.items;
+    if (Array.isArray(items)) setTemplates(items);
+  }, [apiTemplates]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'paused' | 'cancelled'>('all');
   const [patternFilter, setPatternFilter] = useState<'all' | 'daily' | 'weekly' | 'biweekly' | 'monthly'>('all');
