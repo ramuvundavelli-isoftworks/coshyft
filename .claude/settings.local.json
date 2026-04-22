@@ -14,7 +14,10 @@
       "Bash(sed -i 's/from datetime import datetime, date, time, timezone/from datetime import datetime, date, time/g' models/carpooling.py)",
       "Bash(xargs grep:*)",
       "Bash(grep -r \"getAuditLog\\\\|AuditLog\" /f/coshyft/frontend/src/app/pages --include=*.tsx)",
-      "Bash(grep -rn \"superadminApi\\\\.\" /f/coshyft/frontend/src/app/pages/Super*.tsx)"
+      "Bash(grep -rn \"superadminApi\\\\.\" /f/coshyft/frontend/src/app/pages/Super*.tsx)",
+      "Bash(npm install *)",
+      "Bash(npx expo *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

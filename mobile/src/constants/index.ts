@@ -1,0 +1,49 @@
+export const COLORS = {
+  primary: '#10B981',
+  primaryDark: '#059669',
+  primaryLight: '#34D399',
+  background: '#F8FAFC',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F1F5F9',
+  border: '#E2E8F0',
+  borderLight: '#CBD5E1',
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  success: '#059669',
+  warning: '#D97706',
+  error: '#DC2626',
+  info: '#2563EB',
+  accent: '#2563EB',
+  // Transport mode colors
+  bus: '#D97706',
+  rail: '#2563EB',
+  ev: '#059669',
+  car: '#DC2626',
+  cycle: '#7C3AED',
+  walk: '#0891B2',
+  carpool: '#EA580C',
+} as const;
+
+export const TRANSPORT_MODES = [
+  { id: 'bus', label: 'Bus', icon: 'bus', color: COLORS.bus, emissionFactor: 0.089 },
+  { id: 'rail', label: 'Rail / DART / Luas', icon: 'train', color: COLORS.rail, emissionFactor: 0.025 },
+  { id: 'ev', label: 'Electric Vehicle', icon: 'car', color: COLORS.ev, emissionFactor: 0.053 },
+  { id: 'petrol_car', label: 'Petrol Car', icon: 'car', color: COLORS.car, emissionFactor: 0.168 },
+  { id: 'diesel_car', label: 'Diesel Car', icon: 'car', color: COLORS.car, emissionFactor: 0.171 },
+  { id: 'carpool', label: 'Carpool', icon: 'car', color: COLORS.carpool, emissionFactor: 0.084 },
+  { id: 'cycling', label: 'Cycling', icon: 'bicycle', color: COLORS.cycle, emissionFactor: 0 },
+  { id: 'walking', label: 'Walking', icon: 'walk', color: COLORS.walk, emissionFactor: 0 },
+  { id: 'remote', label: 'Work From Home', icon: 'home', color: COLORS.primary, emissionFactor: 0 },
+] as const;
+
+export const OXYPOINTS_RATES = {
+  bus: 8,
+  rail: 12,
+  ev: 6,
+  cycling: 20,
+  walking: 25,
+  carpool: 10,
+  petrol_car: 0,
+  remote: 5,
+} as const;

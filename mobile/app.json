@@ -1,0 +1,68 @@
+{
+  "expo": {
+    "name": "CoShift",
+    "slug": "coshift",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "coshift",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F172A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.coshift.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "CoShift needs your location to track commutes and find nearby rides.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "CoShift needs your location in the background to track active commutes.",
+        "NSFaceIDUsageDescription": "Use Face ID for quick, secure sign-in.",
+        "NSCameraUsageDescription": "Used to upload profile photos and receipt images."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "package": "com.coshift.mobile",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow CoShift to use your location."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#10B981"
+        }
+      ],
+      "expo-local-authentication"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "coshift-mobile"
+      }
+    }
+  }
+}
