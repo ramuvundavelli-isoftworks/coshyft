@@ -26,12 +26,17 @@ export default function Card({ children, style, title, subtitle }: CardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 18,
     borderWidth: 1,
     borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 5,
   },
-  header: { marginBottom: 12 },
-  title: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary },
-  subtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
+  header: { marginBottom: 14 },
+  title: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
+  subtitle: { fontSize: 13, color: COLORS.textSecondary, marginTop: 4 },
 });

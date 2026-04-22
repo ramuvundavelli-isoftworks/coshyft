@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
@@ -7,6 +7,7 @@ import { COLORS } from '../../constants';
 import ScreenHeader from '../../components/layout/ScreenHeader';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -14,12 +15,13 @@ export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [locationTracking, setLocationTracking] = useState(false);
   const [biometrics, setBiometrics] = useState(false);
+  const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
 
-  const handleLogout = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: logout },
-    ]);
+  const handleLogout = () => setLogoutDialogVisible(true);
+  const closeLogoutDialog = () => setLogoutDialogVisible(false);
+  const confirmLogout = () => {
+    closeLogoutDialog();
+    logout();
   };
 
   return (
@@ -84,6 +86,16 @@ export default function SettingsScreen() {
           <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
 
+        <ConfirmDialog
+          visible={logoutDialogVisible}
+          title="Sign Out"
+          message="Are you sure you want to sign out?"
+          confirmLabel="Sign Out"
+          cancelLabel="Cancel"
+          onConfirm={confirmLogout}
+          onCancel={closeLogoutDialog}
+        />
+
         <Text style={styles.footer}>
           CoShift · CSRD Compliant · SEAI 2024 Emission Factors · GDPR Compliant
         </Text>
@@ -117,13 +129,13 @@ function SettingRow({ label, icon, onPress, danger }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   content: { padding: 16, paddingBottom: 40, gap: 8 },
-  profileCard: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 8 },
-  profileAvatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: COLORS.primary + '30', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: COLORS.primary },
-  profileAvatarText: { fontSize: 22, fontWeight: '800', color: COLORS.primary },
-  profileInfo: { flex: 1, gap: 3 },
-  profileName: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
+  profileCard: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 12, backgroundColor: COLORS.primary + '08', borderColor: 'transparent' },
+  profileAvatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 5 },
+  profileAvatarText: { fontSize: 24, fontWeight: '800', color: '#FFFFFF' },
+  profileInfo: { flex: 1, gap: 5 },
+  profileName: { fontSize: 18, fontWeight: '800', color: COLORS.textPrimary },
   profileEmail: { fontSize: 13, color: COLORS.textSecondary },
-  profileBadges: { flexDirection: 'row', gap: 6, marginTop: 4 },
+  profileBadges: { flexDirection: 'row', gap: 6, marginTop: 6 },
   sectionTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 8, marginBottom: 4 },
   divider: { height: 1, backgroundColor: COLORS.border, marginVertical: 2 },
   settingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12 },

@@ -7,6 +7,7 @@ interface ButtonProps {
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
@@ -14,7 +15,7 @@ interface ButtonProps {
 }
 
 export default function Button({
-  title, onPress, variant = 'primary', size = 'md',
+  title, onPress, variant = 'primary', size = 'md', fullWidth = false,
   disabled, loading, style, textStyle,
 }: ButtonProps) {
   const variantStyles: Record<string, ViewStyle> = {
@@ -32,9 +33,9 @@ export default function Button({
   };
 
   const sizeStyles: Record<string, ViewStyle> = {
-    sm: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-    md: { paddingVertical: 12, paddingHorizontal: 20, borderRadius: 10 },
-    lg: { paddingVertical: 16, paddingHorizontal: 24, borderRadius: 12 },
+    sm: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 14 },
+    md: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 16 },
+    lg: { paddingVertical: 18, paddingHorizontal: 24, borderRadius: 18 },
   };
 
   const textSizes: Record<string, TextStyle> = {
@@ -51,6 +52,7 @@ export default function Button({
         styles.base,
         variantStyles[variant],
         sizeStyles[size],
+        fullWidth && styles.fullWidth,
         (disabled || loading) && styles.disabled,
         style,
       ]}
@@ -68,7 +70,17 @@ export default function Button({
 }
 
 const styles = StyleSheet.create({
-  base: { alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
-  text: { fontWeight: '600' },
+  base: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  fullWidth: { width: '100%' },
+  text: { fontWeight: '700' },
   disabled: { opacity: 0.5 },
 });

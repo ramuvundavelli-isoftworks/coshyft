@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { adminApi } from '../../api';
 import { COLORS } from '../../constants';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import Input from '../../components/ui/Input';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +13,14 @@ export default function AdminSettingsScreen() {
   const { logout } = useAuth();
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
+
+  const handleLogout = () => setLogoutDialogVisible(true);
+  const closeLogoutDialog = () => setLogoutDialogVisible(false);
+  const confirmLogout = () => {
+    closeLogoutDialog();
+    logout();
+  };
 
   useEffect(() => {
     adminApi.getSettings().then(r => { if (r.success) setSettings(r.data); setLoading(false); });
@@ -34,7 +43,17 @@ export default function AdminSettingsScreen() {
         <Text style={styles.noData}>Configure commute policies, participation targets, and workplace benefits in the web portal for full functionality.</Text>
       </Card>
 
-      <Button title="Sign Out" onPress={() => Alert.alert('Sign Out?', 'Are you sure?', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign Out', style: 'destructive', onPress: logout }])} variant="danger" />
+      <Button title="Sign Out" onPress={handleLogout} variant="danger" />
+
+      <ConfirmDialog
+        visible={logoutDialogVisible}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmLabel="Sign Out"
+        cancelLabel="Cancel"
+        onConfirm={confirmLogout}
+        onCancel={closeLogoutDialog}
+      />
     </ScrollView>
   );
 }
