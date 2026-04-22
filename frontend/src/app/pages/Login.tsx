@@ -7,14 +7,24 @@ import { Label } from '../components/ui/label';
 import { useRole } from '../context/RoleContext';
 import { useAuth } from '../context/AuthContext';
 import { Role } from '../types';
-import { Leaf, Users, Shield, Building2, Crown, Loader2 } from 'lucide-react';
+import { Leaf, Users, Shield, Building2, Crown, Loader2, CheckCircle } from 'lucide-react';
 
-const roleOptions: { role: Role; label: string; description: string; icon: any; color: string }[] = [
+const DEMO_PASSWORD = 'Password123!';
+
+const roleOptions: {
+  role: Role;
+  label: string;
+  description: string;
+  icon: any;
+  email: string;
+  color: string;
+}[] = [
   {
     role: 'employee',
     label: 'Employee',
     description: 'Access personal commute tracking and carpooling',
     icon: Users,
+    email: 'ciara.brennan@acme.com',
     color: 'bg-info-subtle border-info/25 hover:bg-info-subtle',
   },
   {
@@ -22,6 +32,7 @@ const roleOptions: { role: Role; label: string; description: string; icon: any; 
     label: 'Corporate Admin',
     description: 'Manage operations, users, and participation',
     icon: Building2,
+    email: 'james.obrien@acme.com',
     color: 'bg-info-subtle border-info/25 hover:bg-info-subtle',
   },
   {
@@ -29,6 +40,7 @@ const roleOptions: { role: Role; label: string; description: string; icon: any; 
     label: 'Sustainability Manager',
     description: 'Full compliance and emissions management',
     icon: Leaf,
+    email: 'aoife.kelly@acme.com',
     color: 'bg-success-subtle border-success/25 hover:bg-success-subtle',
   },
   {
@@ -36,6 +48,7 @@ const roleOptions: { role: Role; label: string; description: string; icon: any; 
     label: 'Auditor',
     description: 'Read-only access to compliance data',
     icon: Shield,
+    email: 'declan.ryan@acme.com',
     color: 'bg-warning-subtle border-warning/25 hover:bg-warning-subtle',
   },
   {
@@ -43,48 +56,51 @@ const roleOptions: { role: Role; label: string; description: string; icon: any; 
     label: 'Super Admin',
     description: 'Platform-wide system management',
     icon: Crown,
+    email: 'superadmin@coshyft.io',
     color: 'bg-destructive-subtle border-destructive/25 hover:bg-destructive-subtle',
   },
 ];
 
+const roleRoutes: Record<Role, string> = {
+  employee: '/employee',
+  admin: '/admin',
+  sustainability: '/',
+  auditor: '/auditor',
+  superadmin: '/superadmin',
+};
+
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<Role>('sustainability');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { switchRole, refreshUser } = useRole();
+  const { switchRole } = useRole();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if user was redirected here from a protected route
   const from = (location.state as any)?.from?.pathname;
 
-  const roleRoutes: Record<Role, string> = {
-    employee: '/employee',
-    admin: '/admin',
-    sustainability: '/',
-    auditor: '/auditor',
-    superadmin: '/superadmin',
+  const selectedOption = roleOptions.find((o) => o.role === selectedRole)!;
+
+  const handleRoleSelect = (role: Role) => {
+    setSelectedRole(role);
+    setLoginError(null);
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setLoginError(null);
 
     try {
-      const result = await login(email || `${selectedRole}@company.ie`, password || 'password123');
+      const result = await login(selectedOption.email, DEMO_PASSWORD);
 
       if (result.success) {
-        // Get real role from backend — this is the source of truth
-        const realRole = await refreshUser();
-        if (realRole) {
-          // Real backend login: navigate based on actual role
+        const realRole = (result.role as Role) || null;
+        if (realRole && realRole in roleRoutes) {
+          switchRole(realRole);
           navigate(from || roleRoutes[realRole], { replace: true });
         } else {
-          // Demo / mock mode: use the role picker selection
           switchRole(selectedRole);
           navigate(from || roleRoutes[selectedRole], { replace: true });
         }
@@ -101,6 +117,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-info-subtle via-background to-success-subtle flex items-center justify-center p-6">
       <div className="w-full max-w-5xl">
+        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-12 w-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
@@ -114,7 +131,7 @@ export default function Login() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Login Form */}
+          {/* Left — Login Form */}
           <Card className="p-8">
             <h2 className="text-2xl font-bold text-foreground mb-6">Sign In</h2>
             <form onSubmit={handleLogin} className="space-y-6">
@@ -124,9 +141,9 @@ export default function Login() {
                   id="email"
                   type="email"
                   placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2"
+                  value={selectedOption.email}
+                  readOnly
+                  className="mt-2 bg-background-subtle cursor-default"
                 />
               </div>
               <div>
@@ -134,10 +151,9 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2"
+                  value={DEMO_PASSWORD}
+                  readOnly
+                  className="mt-2 bg-background-subtle cursor-default"
                 />
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -171,36 +187,33 @@ export default function Login() {
             </div>
           </Card>
 
-          {/* Role Selection */}
+          {/* Right — Role Selection */}
           <Card className="p-8">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Select Your Role</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Select Your Role</h2>
             <p className="text-sm text-muted-foreground mb-6">
               Choose which role to sign in as for this demo session
             </p>
             <div className="space-y-3">
               {roleOptions.map((option) => {
                 const Icon = option.icon;
+                const isActive = selectedRole === option.role;
                 return (
                   <button
                     key={option.role}
                     type="button"
-                    onClick={() => setSelectedRole(option.role)}
+                    onClick={() => handleRoleSelect(option.role)}
                     className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
-                      selectedRole === option.role
-                        ? 'border-info bg-info-subtle shadow-sm'
-                        : option.color
+                      isActive ? 'border-info bg-info-subtle shadow-sm' : option.color
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${selectedRole === option.role ? 'bg-info-subtle' : 'bg-card'}`}>
-                        <Icon className={`h-5 w-5 ${selectedRole === option.role ? 'text-info' : 'text-muted-foreground'}`} />
+                      <div className={`p-2 rounded-lg ${isActive ? 'bg-info-subtle' : 'bg-card'}`}>
+                        <Icon className={`h-5 w-5 ${isActive ? 'text-info' : 'text-muted-foreground'}`} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-foreground">{option.label}</span>
-                          {selectedRole === option.role && (
-                            <div className="h-2 w-2 bg-info rounded-full" />
-                          )}
+                          {isActive && <CheckCircle className="h-4 w-4 text-info" />}
                         </div>
                         <p className="text-sm text-muted-foreground">{option.description}</p>
                       </div>
@@ -219,9 +232,8 @@ export default function Login() {
             <div>
               <h3 className="font-semibold text-info mb-1">Demo Mode</h3>
               <p className="text-sm text-info">
-                This is a demonstration platform. Use any email/password combination to sign in, 
-                then select your role to explore different user experiences. You can switch roles 
-                anytime from the profile menu in the top-right corner.
+                This is a demonstration platform. Select a role on the right to auto-fill the
+                credentials, then click Sign In to access the respective dashboard.
               </p>
             </div>
           </div>

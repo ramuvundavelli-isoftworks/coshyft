@@ -23,9 +23,16 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     department: undefined,
   });
 
+  // Keep isRoleLoading true until we've synced currentUser from the auth user.
+  // Using a separate state (not authLoading) so RoleGuard only unblocks AFTER
+  // the useEffect below has applied the real role — prevents stale-default redirects.
+  const [isRoleReady, setIsRoleReady] = useState(false);
+
   // Sync currentUser from AuthContext whenever the auth user changes.
-  // This eliminates the second /auth/me call that was previously here.
   useEffect(() => {
+    // Wait until AuthContext has finished its initial /auth/me fetch.
+    if (authLoading) return;
+
     if (user) {
       setCurrentUser({
         id: user.id,
@@ -39,7 +46,9 @@ export function RoleProvider({ children }: { children: ReactNode }) {
         tenant_name: user.tenant_name,
       });
     }
-  }, [user]);
+    // Mark ready in the same batch so RoleGuard sees the correct role immediately.
+    setIsRoleReady(true);
+  }, [user, authLoading]);
 
   /** Demo-only: override the displayed role without a real auth change. */
   const switchRole = (role: Role) => {
@@ -64,7 +73,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <RoleContext.Provider value={{ currentUser, isRoleLoading: authLoading, switchRole, refreshUser }}>
+    <RoleContext.Provider value={{ currentUser, isRoleLoading: !isRoleReady, switchRole, refreshUser }}>
       {children}
     </RoleContext.Provider>
   );

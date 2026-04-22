@@ -52,23 +52,24 @@ export function RoleGuard({ allowedRoles }: RoleGuardProps) {
 }
 
 /**
- * Factory helpers for common role guards.
- * These are used as route Components in routes.ts.
+ * Factory helpers for role guards.
+ * Each guard allows ONLY its own role — no cross-role access.
+ * Attempting to navigate to another role's route redirects to your own dashboard.
  */
 export function SustainabilityGuard() {
-  return <RoleGuard allowedRoles={['sustainability', 'superadmin']} />;
+  return <RoleGuard allowedRoles={['sustainability']} />;
 }
 
 export function EmployeeGuard() {
-  return <RoleGuard allowedRoles={['employee', 'sustainability', 'admin', 'superadmin']} />;
+  return <RoleGuard allowedRoles={['employee']} />;
 }
 
 export function AdminGuard() {
-  return <RoleGuard allowedRoles={['admin', 'superadmin']} />;
+  return <RoleGuard allowedRoles={['admin']} />;
 }
 
 export function AuditorGuard() {
-  return <RoleGuard allowedRoles={['auditor', 'superadmin']} />;
+  return <RoleGuard allowedRoles={['auditor']} />;
 }
 
 export function SuperAdminGuard() {

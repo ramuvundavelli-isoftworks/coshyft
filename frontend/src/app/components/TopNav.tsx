@@ -14,14 +14,13 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Bell, Search, Download, HelpCircle, ChevronDown, Users, Building2, Leaf, Shield, Crown, CheckCircle, LogOut } from 'lucide-react';
+import { Bell, Search, Download, HelpCircle, ChevronDown, Building2, LogOut } from 'lucide-react';
 import { ThemeToggle } from './global/ThemeToggle';
-import type { UserRole } from '../types';
 import { useApi } from '../api';
 import { alertsApi } from '../api';
 
 export function TopNav() {
-  const { currentUser, switchRole } = useRole();
+  const { currentUser } = useRole();
   const { logout } = useAuth();
   const [showAlerts, setShowAlerts] = useState(false);
 
@@ -30,20 +29,12 @@ export function TopNav() {
   const criticalCount = (alertStats as any)?.critical ?? 0;
   const unresolvedAlerts: any[] = (alertsData as any)?.items ?? [];
 
-  const roleLabels = {
+  const roleLabels: Record<string, string> = {
     employee: 'Employee',
     admin: 'Corporate Admin',
     sustainability: 'Sustainability Manager',
     auditor: 'Auditor',
     superadmin: 'Super Admin',
-  };
-
-  const roleIcons = {
-    employee: Users,
-    admin: Building2,
-    sustainability: Leaf,
-    auditor: Shield,
-    superadmin: Crown,
   };
 
   const navigate = useNavigate();
@@ -198,29 +189,11 @@ export function TopNav() {
                     {currentUser.tenant_name}
                   </div>
                 )}
-                <div className="mt-2 text-xs text-muted-foreground">Switch Role (Demo)</div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {(Object.keys(roleLabels) as UserRole[]).map((role) => {
-                const Icon = roleIcons[role];
-                const isActive = currentUser.role === role;
-                return (
-                  <DropdownMenuItem
-                    key={role}
-                    onClick={() => switchRole(role)}
-                    className={isActive ? 'bg-primary-subtle' : ''}
-                  >
-                    <div className="flex items-center gap-3 w-full">
-                      <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className="flex-1">{roleLabels[role]}</span>
-                      {isActive && <CheckCircle className="h-4 w-4 text-info" />}
-                    </div>
-                  </DropdownMenuItem>
-                );
-              })}
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={async () => { await logout(); navigate('/login'); }}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout

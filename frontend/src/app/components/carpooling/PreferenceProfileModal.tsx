@@ -60,9 +60,10 @@ export default function PreferenceProfileModal({
   currentPreferences,
   isDriverMode = false,
 }: PreferenceProfileModalProps) {
-  const [preferences, setPreferences] = useState<CommutePreferences>(
-    currentPreferences || defaultPreferences
-  );
+  const [preferences, setPreferences] = useState<CommutePreferences>({
+    ...defaultPreferences,
+    ...(currentPreferences ?? {}),
+  });
 
   const handleSave = () => {
     onSave(preferences);
@@ -335,10 +336,10 @@ export default function PreferenceProfileModal({
                 <p className="text-sm font-medium text-info mb-1">Preference Summary</p>
                 <div className="text-xs text-info space-y-1">
                   <p>
-                    • Music: <strong>{preferences.musicPreference.replace('-', ' ')}</strong>
+                    • Music: <strong>{(preferences.musicPreference ?? 'no-preference').replace(/-/g, ' ')}</strong>
                   </p>
                   <p>
-                    • Conversation: <strong>{preferences.conversationLevel.replace('-', ' ')}</strong>
+                    • Conversation: <strong>{(preferences.conversationLevel ?? 'no-preference').replace(/-/g, ' ')}</strong>
                   </p>
                   <p>
                     • Pickup radius: <strong>±{preferences.flexibleRadius} km</strong>
