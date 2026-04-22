@@ -61,6 +61,8 @@ import SystemHealth from './pages/SystemHealth';
 import SuperAdminSettings from './pages/SuperAdminSettings';
 import SuperAdminAuditLog from './pages/SuperAdminAuditLog';
 import PlaceholderPage from './pages/PlaceholderPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ServerErrorPage from './pages/ServerErrorPage';
 import LogCommuteDemo from './pages/LogCommuteDemo';
 import ChartJSExample from './pages/ChartJSExample';
 import CSRDCompliance from './pages/CSRDCompliance';
@@ -79,9 +81,12 @@ export const router = createBrowserRouter([
   { path: '/login', Component: Login },
   // Demo Route (outside RootLayout for clean display)
   { path: '/demo/log-commute', Component: LogCommuteDemo },
+  // Standalone error pages (outside RootLayout so they render even if auth fails)
+  { path: '/500', Component: ServerErrorPage },
   {
     path: '/',
     Component: RootLayout,
+    ErrorBoundary: ServerErrorPage,
     children: [
       // Unauthorized page (accessible to all authenticated users)
       { path: 'unauthorized', Component: UnauthorizedPage },
@@ -190,8 +195,8 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // 404
-      { path: '*', Component: PlaceholderPage },
+      // 404 — unknown routes inside the authenticated shell
+      { path: '*', Component: NotFoundPage },
     ],
   },
 ]);

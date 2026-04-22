@@ -9,7 +9,17 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import type { ApiResponse } from './client';
+
+/** Returns true for error codes that warrant a redirect to the error page */
+function isServerError(code?: string): boolean {
+  if (!code) return false;
+  return (
+    code === 'NETWORK_ERROR' ||
+    /^HTTP_5\d\d$/.test(code)
+  );
+}
 
 interface UseApiOptions {
   /** Skip initial fetch (useful for conditional loading) */
@@ -38,6 +48,7 @@ export function useApi<T>(
   const [loading, setLoading] = useState(!skip);
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
+  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     if (skip) return;
@@ -51,6 +62,10 @@ export function useApi<T>(
       if (result.success && result.data !== undefined) {
         setData(result.data);
       } else if (result.error) {
+        if (isServerError(result.error.code)) {
+          navigate('/500');
+          return;
+        }
         setError(result.error.message);
       }
     } catch (err: any) {
@@ -62,7 +77,7 @@ export function useApi<T>(
         setLoading(false);
       }
     }
-  }, [skip, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [skip, navigate, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     mountedRef.current = true;

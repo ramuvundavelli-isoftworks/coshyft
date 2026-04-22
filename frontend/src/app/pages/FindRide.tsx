@@ -40,6 +40,7 @@ import {
   Zap,
   Repeat,
   BarChart3,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExtendedRide, CommutePreferences, AdvancedFilters } from '../types';
@@ -55,7 +56,7 @@ import AdvancedSearchModal from '../components/carpooling/AdvancedSearchModal';
 import PreferenceProfileModal from '../components/carpooling/PreferenceProfileModal';
 import CompatibilityScore from '../components/carpooling/CompatibilityScore';
 import RouteMapVisualization from '../components/carpooling/RouteMapVisualization';
-import { useApi, useApiMutation } from '../api';
+import { useApiMutation } from '../api';
 import { carpoolingApi } from '../api';
 import { messagingApi } from '../api';
 import { authApi } from '../api';
@@ -63,10 +64,10 @@ import { authApi } from '../api';
 export default function FindRide() {
   const [rides, setRides] = useState<ExtendedRide[]>([]);
   const [filteredRides, setFilteredRides] = useState<ExtendedRide[]>([]);
-  const [origin, setOrigin] = useState('Oakland');
-  const [destination, setDestination] = useState('San Francisco HQ');
-  const [date, setDate] = useState('2026-02-20');
-  const [departureTime, setDepartureTime] = useState('08:00');
+  const [origin, setOrigin] = useState('Griffith Avenue');
+  const [destination, setDestination] = useState('Acme Dublin HQ');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [departureTime, setDepartureTime] = useState('08:15');
   const [selectedRide, setSelectedRide] = useState<ExtendedRide | null>(null);
   
   // Modal states
@@ -93,7 +94,7 @@ export default function FindRide() {
   
   const [offerData, setOfferData] = useState({
     origin: '',
-    destination: 'San Francisco HQ',
+    destination: 'Acme Dublin HQ',
     departureTime: '',
     seatsAvailable: '3',
     vehicleType: '',
@@ -113,34 +114,70 @@ export default function FindRide() {
   );
   const savePreferencesMutation = useApiMutation((data: any) => authApi.updateProfile(data));
 
-  // Fetch available rides from API
-  const { data: apiRidesData } = useApi(() => carpoolingApi.getMyRides());
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Convert API ride match result to ExtendedRide
+  const mapApiRide = (item: any): ExtendedRide => {
+    const ride = item.ride ?? item;
+    const originCoords = { lat: ride.origin_lat ?? 53.3498, lng: ride.origin_lng ?? -6.2603 };
+    const destCoords = { lat: ride.destination_lat ?? 53.3340, lng: ride.destination_lng ?? -6.2535 };
+    const depTime = ride.departure_time
+      ? (typeof ride.departure_time === 'string'
+          ? ride.departure_time.substring(11, 16)   // ISO datetime → HH:mm
+          : String(ride.departure_time))
+      : '08:00';
+    return {
+      id: ride.id,
+      driver: ride.driver_name ?? 'Driver',
+      driverId: ride.driver_id ?? '',
+      origin: ride.origin ?? '',
+      originLocation: { ...originCoords, address: ride.origin ?? '' },
+      destination: ride.destination ?? '',
+      destinationLocation: { ...destCoords, address: ride.destination ?? '' },
+      departureTime: depTime,
+      distance: ride.distance_km ?? ride.distance ?? 0,
+      seatsAvailable: ride.seats_available ?? ride.seatsAvailable ?? 1,
+      co2Saved: ride.co2_saved ?? ride.co2Saved ?? 0,
+      matchScore: Math.round((item.match_score ?? item.matchScore ?? 70) * 100),
+      vehicleType: (ride.vehicle_type ?? '').toLowerCase() || undefined,
+      vehicleMake: ride.vehicle_make ?? ride.vehicleMake ?? undefined,
+      verifiedDriver: true,
+      trustScore: 85,
+      recurring: ride.is_recurring ?? false,
+    };
+  };
+
+  // Search for available rides
+  const handleSearch = async () => {
+    setIsSearching(true);
+    const originCoords = geocodeAddress(origin);
+    const destCoords = geocodeAddress(destination);
+    try {
+      const result = await carpoolingApi.findRides({
+        origin_lat: originCoords.lat,
+        origin_lng: originCoords.lng,
+        destination_lat: destCoords.lat,
+        destination_lng: destCoords.lng,
+        departure_time: departureTime,
+      });
+      if (result.success && result.data) {
+        const list: any[] = Array.isArray(result.data) ? result.data : [];
+        setRides(list.map(mapApiRide));
+      } else {
+        setRides([]);
+      }
+    } catch {
+      setRides([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Auto-search on mount
   useEffect(() => {
-    const apiRidesList: any[] = (apiRidesData as any)?.items ?? (Array.isArray(apiRidesData) ? apiRidesData : []);
-    const ridesWithScores = apiRidesList.map((ride: any) => {
-      const userRoute = {
-        origin: geocodeAddress(origin),
-        destination: geocodeAddress(destination),
-        departureTime: departureTime,
-        distance: 0,
-      };
-      const rideRoute = {
-        origin: ride.originLocation ?? { lat: 0, lng: 0 },
-        destination: ride.destinationLocation ?? { lat: 0, lng: 0 },
-        departureTime: ride.departureTime ?? ride.departure_time,
-        distance: ride.distance ?? 0,
-      };
-      const compatibilityScore = calculateCompatibilityScore(
-        userRoute,
-        rideRoute,
-        userPreferences,
-        ride.preferences ?? {} as CommutePreferences,
-        ride.driverRating ?? ride.driver_rating ?? 5
-      );
-      return { ...ride, matchScore: compatibilityScore };
-    });
-    setRides(ridesWithScores);
-  }, [apiRidesData, origin, destination, departureTime, userPreferences]);
+    handleSearch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -289,7 +326,7 @@ export default function FindRide() {
   const resetOfferForm = () => {
     setOfferData({
       origin: '',
-      destination: 'San Francisco HQ',
+      destination: 'Acme Dublin HQ',
       departureTime: '',
       seatsAvailable: '3',
       vehicleType: '',
@@ -417,8 +454,12 @@ export default function FindRide() {
             />
           </div>
           <div className="flex items-end">
-            <Button className="w-full">
-              <Filter className="h-4 w-4 mr-2" />
+            <Button className="w-full" onClick={handleSearch} disabled={isSearching}>
+              {isSearching ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Filter className="h-4 w-4 mr-2" />
+              )}
               Search
             </Button>
           </div>

@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router';
 import { ThemeProvider } from './context/ThemeContext';
 import { RoleProvider } from './context/RoleContext';
 import { AuthProvider } from './context/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { router } from './routes';
 
 export default function App() {
@@ -13,11 +14,13 @@ export default function App() {
        * It applies class="dark" to <html> via next-themes.
        */}
       <ThemeProvider>
-        <AuthProvider>
-          <RoleProvider>
-            <RouterProvider router={router} />
-          </RoleProvider>
-        </AuthProvider>
+        <ErrorBoundary fullScreen>
+          <AuthProvider>
+            <RoleProvider>
+              <RouterProvider router={router} />
+            </RoleProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </ThemeProvider>
     </StrictMode>
   );

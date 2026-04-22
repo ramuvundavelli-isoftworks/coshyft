@@ -329,17 +329,30 @@ export function applyAdvancedFilters<T extends { distance: number; departureTime
 export function geocodeAddress(address: string): Location {
   // Mock geocoding - in production, use Google Maps API or similar
   const locations: Record<string, { lat: number; lng: number }> = {
-    'San Francisco HQ': { lat: 37.7749, lng: -122.4194 },
-    'Downtown SF': { lat: 37.7897, lng: -122.3972 },
-    'Mission District': { lat: 37.7599, lng: -122.4148 },
-    'Oakland': { lat: 37.8044, lng: -122.2712 },
-    'Berkeley': { lat: 37.8715, lng: -122.2730 },
-    'San Jose': { lat: 37.3382, lng: -121.8863 },
-    'Palo Alto': { lat: 37.4419, lng: -122.1430 },
-    'Mountain View': { lat: 37.3861, lng: -122.0839 },
+    // Dublin / Ireland
+    'Acme Dublin HQ': { lat: 53.3498, lng: -6.2603 },
+    'Acme Dublin HQ, Dublin 2': { lat: 53.3498, lng: -6.2603 },
+    'Dublin City Centre': { lat: 53.3498, lng: -6.2603 },
+    'Dublin 2': { lat: 53.3340, lng: -6.2535 },
+    'Griffith Avenue DART Stop, Dublin 9': { lat: 53.3736, lng: -6.2521 },
+    'Griffith Avenue': { lat: 53.3736, lng: -6.2521 },
+    'Sandyford': { lat: 53.2745, lng: -6.2157 },
+    'Salthill Road, Galway': { lat: 53.2635, lng: -9.0850 },
+    'Acme Galway Campus, Galway': { lat: 53.2707, lng: -9.0568 },
+    'Acme Galway Campus': { lat: 53.2707, lng: -9.0568 },
+    'Acme Cork Office, Cork': { lat: 51.8979, lng: -8.4706 },
+    'Leopardstown': { lat: 53.2745, lng: -6.2157 },
+    'Clonskeagh': { lat: 53.3047, lng: -6.2325 },
+    'Ranelagh': { lat: 53.3250, lng: -6.2594 },
+    // London / UK
+    'London Office': { lat: 51.5074, lng: -0.1278 },
+    'Canary Wharf': { lat: 51.5049, lng: -0.0236 },
+    // Default (Dublin centre)
+    'Home': { lat: 53.3498, lng: -6.2603 },
+    'Work': { lat: 53.3340, lng: -6.2535 },
   };
 
-  const coords = locations[address] || { lat: 37.7749, lng: -122.4194 };
+  const coords = locations[address] || { lat: 53.3498, lng: -6.2603 };
 
   return {
     ...coords,
