@@ -50,7 +50,7 @@ import {
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
 import { useApi, useApiMutation } from '../api';
-import { commuteApi } from '../api';
+import { carpoolingApi, commuteApi } from '../api';
 
 type SortField = 'date' | 'mode' | 'distance' | 'co2Saved';
 type SortDirection = 'asc' | 'desc';
@@ -67,6 +67,8 @@ interface Trip {
   status: 'completed' | 'upcoming' | 'cancelled';
   office: string;
   passengers: number;
+  userRole?: 'driver' | 'passenger' | 'passenger_pending';
+  requestId?: string;
 }
 
 const mockTrips: Trip[] = [
@@ -85,6 +87,34 @@ export default function MyTrips() {
     { deps: [] }
   );
 
+  const { data: rideHistoryData } = useApi(() => carpoolingApi.getMyRides(), { deps: [] });
+
+  const rideItems: any[] = Array.isArray(rideHistoryData)
+    ? (rideHistoryData as any)
+    : Array.isArray((rideHistoryData as any)?.items)
+    ? (rideHistoryData as any).items
+    : [];
+
+  const rideTrips: Trip[] = rideItems.map((ride: any) => ({
+    id: ride.id,
+    date: ride.departure_time?.substring(0, 10) ?? '',
+    mode: 'Carpool',
+    driver: ride.driver_name ?? 'Driver',
+    distance: ride.distance_km ?? 0,
+    co2Saved: Math.max(0, ride.co2_saved ?? 0),
+    emissions: 0,
+    status:
+      ride.status === 'scheduled' || ride.status === 'active'
+        ? 'upcoming'
+        : ride.status === 'completed'
+        ? 'completed'
+        : 'cancelled',
+    office: `${ride.origin ?? ''} → ${ride.destination ?? ''}`,
+    passengers: Math.max(0, (ride.seats_total ?? 1) - (ride.seats_available ?? 1)),
+    userRole: ride.user_role,
+    requestId: ride.request_id,
+  }));
+
   // Map API commute entries to Trip shape; fall back to mock until data loads
   const apiTrips: Trip[] = ((historyData as any)?.items ?? []).map((e: any) => ({
     id: e.id,
@@ -102,8 +132,11 @@ export default function MyTrips() {
   const [trips, setTrips] = useState<Trip[]>(mockTrips);
 
   useEffect(() => {
-    if (apiTrips.length > 0) setTrips(apiTrips);
-  }, [historyData]);
+    const combined = [...apiTrips, ...rideTrips];
+    if (historyData || rideHistoryData) {
+      setTrips(combined);
+    }
+  }, [historyData, rideHistoryData]);
 
   const deleteMutation = useApiMutation((id: string) => commuteApi.deleteCommute(id));
   const editMutation = useApiMutation((d: { id: string; data: any }) =>
@@ -132,6 +165,9 @@ export default function MyTrips() {
     notes: '',
   });
   const [exportFormat, setExportFormat] = useState('csv');
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelNote, setCancelNote] = useState('');
+  const [isCancellingApi, setIsCancellingApi] = useState(false);
 
   // Filter trips
   let filteredTrips = trips.filter(trip => {
@@ -225,16 +261,38 @@ export default function MyTrips() {
     }
   };
 
-  const handleCancelTrip = () => {
-    if (selectedTrip) {
-      const updated = trips.map(t =>
-        t.id === selectedTrip.id
-          ? { ...t, status: 'cancelled' as const }
-          : t
-      );
-      setTrips(updated);
-      setIsCancelDialogOpen(false);
-      toast.success('Trip cancelled');
+  const handleCancelTrip = async () => {
+    if (!selectedTrip) return;
+    if (!cancelReason) { toast.error('Please select a reason'); return; }
+    if (cancelReason === 'Others' && !cancelNote.trim()) {
+      toast.error('Please describe the reason in the note');
+      return;
+    }
+
+    setIsCancellingApi(true);
+    try {
+      const payload = { reason: cancelReason, note: cancelNote || undefined };
+      let result: any;
+
+      if (selectedTrip.mode === 'Carpool') {
+        if (selectedTrip.userRole === 'driver') {
+          result = await carpoolingApi.cancelRide(selectedTrip.id, payload);
+        } else if (selectedTrip.requestId) {
+          result = await carpoolingApi.cancelRequest(selectedTrip.id, selectedTrip.requestId, payload);
+        }
+      }
+
+      // For non-carpool trips or if API call was skipped, just update locally
+      if (!result || result.success) {
+        setTrips(prev => prev.map(t => t.id === selectedTrip.id ? { ...t, status: 'cancelled' as const } : t));
+        setIsCancelDialogOpen(false);
+        toast.success('Trip cancelled');
+        if (result?.success) refetchHistory();
+      } else {
+        toast.error(result.error?.message ?? 'Failed to cancel trip');
+      }
+    } finally {
+      setIsCancellingApi(false);
     }
   };
 
@@ -504,6 +562,8 @@ export default function MyTrips() {
                         size="sm"
                         onClick={() => {
                           setSelectedTrip(trip);
+                          setCancelReason('');
+                          setCancelNote('');
                           setIsCancelDialogOpen(true);
                         }}
                       >
@@ -808,20 +868,72 @@ export default function MyTrips() {
           <DialogHeader>
             <DialogTitle>Cancel Trip</DialogTitle>
             <DialogDescription>
-              Cancel your upcoming trip for {selectedTrip && new Date(selectedTrip.date).toLocaleDateString()}
+              {selectedTrip?.mode} trip on {selectedTrip && new Date(selectedTrip.date).toLocaleDateString()}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              This will cancel your {selectedTrip?.mode} trip. If you're carpooling, the driver will be notified.
-            </p>
+          <div className="space-y-4 py-4">
+            {selectedTrip?.mode === 'Carpool' && (
+              <div className="flex items-start gap-2 p-3 bg-warning-subtle border border-warning/25 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+                <p className="text-sm text-warning">
+                  {selectedTrip.userRole === 'driver'
+                    ? 'All confirmed passengers will be notified of this cancellation.'
+                    : 'The driver will be notified that you are no longer joining.'}
+                </p>
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="trip-cancel-reason">Reason for cancellation *</Label>
+              <Select value={cancelReason} onValueChange={setCancelReason}>
+                <SelectTrigger id="trip-cancel-reason" className="mt-1">
+                  <SelectValue placeholder="Select a reason…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(selectedTrip?.mode === 'Carpool' && selectedTrip?.userRole === 'driver'
+                    ? [
+                        'Schedule change',
+                        'Vehicle issue or breakdown',
+                        'Personal emergency',
+                        'Weather conditions',
+                        'No passengers requested',
+                        'Others',
+                      ]
+                    : [
+                        'Schedule change',
+                        'Found alternative transport',
+                        'Personal emergency',
+                        'No longer commuting that day',
+                        'Plans changed',
+                        'Others',
+                      ]
+                  ).map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="trip-cancel-note">
+                {cancelReason === 'Others' ? 'Note (required)' : 'Note (optional)'}
+              </Label>
+              <Textarea
+                id="trip-cancel-note"
+                className="mt-1"
+                value={cancelNote}
+                onChange={(e) => setCancelNote(e.target.value)}
+                placeholder={cancelReason === 'Others' ? 'Please explain…' : 'Any additional context…'}
+                rows={3}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCancelDialogOpen(false)}>
               Keep Trip
             </Button>
-            <Button variant="destructive" onClick={handleCancelTrip}>
-              Cancel Trip
+            <Button variant="destructive" onClick={handleCancelTrip} disabled={!cancelReason || isCancellingApi}>
+              {isCancellingApi ? 'Cancelling…' : 'Cancel Trip'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -59,4 +59,8 @@ export const carpoolingApi = {
   async resumeTemplate(templateId: string): Promise<ApiResponse> {
     return api.post(`/rides/recurring/${templateId}/resume`);
   },
+
+  async getRideRequests(rideId: string): Promise<ApiResponse> {
+    return api.get(`/rides/${rideId}/requests`);
+  },
 };

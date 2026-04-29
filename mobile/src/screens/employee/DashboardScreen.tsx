@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import {
+  View, Text, StyleSheet, TouchableOpacity,
+  ScrollView, RefreshControl, StatusBar,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../../context/AuthContext';
-import { commuteApi, gamificationApi } from '../../api';
-import { COLORS } from '../../constants';
-import type { EmployeeStackParamList } from '../../types';
-import Card from '../../components/ui/Card';
-import StatCard from '../../components/ui/StatCard';
-import Badge from '../../components/ui/Badge';
+import { commuteApi, gamificationApi, carpoolingApi } from '../../api';
+import { THEME, gs } from '../../styles/theme';
+import type { EmployeeStackParamList, EmployeeTabParamList } from '../../types';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
-type Nav = NativeStackNavigationProp<EmployeeStackParamList>;
+type Nav = NativeStackNavigationProp<EmployeeStackParamList> & BottomTabNavigationProp<EmployeeTabParamList>;
 
 export default function DashboardScreen() {
   const { user } = useAuth();
@@ -20,15 +21,20 @@ export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const [stats, setStats] = useState<any>(null);
   const [gamification, setGamification] = useState<any>(null);
+  const [activeTrip, setActiveTrip] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
-    const [statsRes, gamRes] = await Promise.all([
+    const [statsRes, gamRes, tripRes] = await Promise.all([
       commuteApi.getStats(),
       gamificationApi.getProfile(),
+      carpoolingApi.getActiveTrip(),
     ]);
     if (statsRes.success) setStats(statsRes.data);
     if (gamRes.success) setGamification(gamRes.data);
+    // Only set active trip if one actually exists
+    if (tripRes.success && tripRes.data) setActiveTrip(tripRes.data);
+    else setActiveTrip(null);
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
@@ -40,198 +46,469 @@ export default function DashboardScreen() {
   };
 
   const firstName = user?.name?.split(' ')[0] ?? 'there';
-  const today = new Date().toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const totalCommutes   = stats?.total_commutes ?? 127;
+  const co2Saved        = stats?.co2_saved_vs_car?.toFixed(1) ?? '43.2';
+  const carpoolRides    = stats?.carpool_rides ?? 34;
+  const monthlyGoal     = 160;
+  const monthlyProgress = stats?.monthly_co2_saved ?? 142.5;
+  const progressPct     = Math.min((monthlyProgress / monthlyGoal) * 100, 100);
+
+  // Parse active trip for display
+  const isDriver         = !activeTrip?.driver_id || activeTrip?.is_driver;
+  const tripTime         = activeTrip?.departure_time
+    ? new Date(activeTrip.departure_time).toLocaleTimeString('en-IE', { hour: '2-digit', minute: '2-digit' })
+    : '8:30 AM';
+  const tripRoute        = activeTrip
+    ? `${activeTrip.origin ?? activeTrip.origin_address ?? 'Origin'} → ${activeTrip.destination ?? activeTrip.destination_address ?? 'Destination'}`
+    : '';
+  const tripPassengers   = activeTrip?.passengers ?? activeTrip?.passenger_count ?? 3;
+  const tripPassengerNames = activeTrip?.passenger_names?.join(', ') ?? 'Passengers';
+  const tripCo2          = activeTrip?.co2_saved?.toFixed(1) ?? '2.5';
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>{greeting}, {firstName} 👋</Text>
-          <Text style={styles.date}>{today}</Text>
+    <View style={[gs.flex1, styles.container]}>
+      <StatusBar barStyle="light-content" backgroundColor={THEME.headerBg} />
+
+      {/* ── Header ─────────────────────────────────────────── */}
+      <View style={[gs.header, { paddingTop: insets.top + 10 }]}>
+        <View style={gs.headerRow}>
+          <Text style={gs.headerAppTitle}>CoShyft</Text>
+          <BellButton count={2} />
         </View>
-        <TouchableOpacity style={styles.avatarBtn} onPress={() => navigation.navigate('Settings')}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{(user?.name ?? 'U')[0].toUpperCase()}</Text>
-          </View>
-        </TouchableOpacity>
+        <Text style={gs.headerWelcome}>
+          Welcome back, <Text style={gs.headerBoldName}>{firstName}</Text>
+        </Text>
+        {/* Search bar */}
+        <View style={gs.searchBar}>
+          <Ionicons name="search" size={18} color={THEME.textMuted} />
+          <Text style={gs.searchPlaceholder}>Search rides, trips, colleagues...</Text>
+        </View>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} colors={[COLORS.primary]} />}
-        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={THEME.primary}
+            colors={[THEME.primary]}
+          />
+        }
+        contentContainerStyle={styles.scrollContent}
       >
-        {/* OxyPoints Banner */}
+        {/* ── Horizontal stats row ───────────────────────────── */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.statsScroll}
+        >
+          <StatCard label="TOTAL COMMUTES" value={String(totalCommutes)} trend="+12%" />
+          <StatCard label="CO₂ SAVED" value={`${co2Saved} kg`} trend="+8%" />
+          <StatCard label="CARPOOL RIDES" value={String(carpoolRides)} trend="+18%" />
+        </ScrollView>
+
+        {/* ── Active trip card (only when there's an active trip) ── */}
+        {activeTrip ? (
+          <View style={gs.card}>
+            <View style={[gs.rowBetween, gs.gap12]}>
+              <View style={styles.tripIconWrap}>
+                <Ionicons name="people" size={22} color={THEME.primary} />
+              </View>
+              <Text style={styles.tripTitle}>
+                {isDriver ? "You're driving today" : "You're a passenger today"}
+              </Text>
+              <View style={gs.pillActive}>
+                <Text style={gs.pillActiveText}>Active</Text>
+              </View>
+            </View>
+
+            <View style={[gs.row, styles.tripMeta]}>
+              <View style={[gs.row, gs.gap4]}>
+                <Ionicons name="time-outline" size={14} color={THEME.textMuted} />
+                <Text style={gs.textBase}>{tripTime} departure</Text>
+              </View>
+              <View style={[gs.row, gs.gap4]}>
+                <Ionicons name="location-outline" size={14} color={THEME.textMuted} />
+                <Text style={gs.textBase}>{tripRoute}</Text>
+              </View>
+            </View>
+
+            <View style={[gs.chip, styles.passengerChip]}>
+              <Text style={gs.chipText}>{tripPassengers} passenger{tripPassengers !== 1 ? 's' : ''}</Text>
+            </View>
+            <Text style={styles.passengerNames}>{tripPassengerNames}</Text>
+
+            <View style={gs.divider} />
+
+            <View style={gs.rowBetween}>
+              <View style={[gs.row, gs.gap6]}>
+                <Ionicons name="leaf" size={16} color={THEME.primary} />
+                <Text style={styles.co2Label}>
+                  <Text style={gs.textGreen}>+{tripCo2} kg</Text>
+                  {'  '}CO₂ saved
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.startBtn}
+                onPress={() => navigation.navigate('ActiveTrip')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.startBtnText}>View Trip</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          /* ── No active trip – quick action card ────────────── */
+          <View style={[gs.card, styles.noTripCard]}>
+            <View style={[gs.row, gs.gap12]}>
+              <View style={styles.tripIconWrap}>
+                <Ionicons name="car-outline" size={22} color={THEME.textMuted} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.noTripTitle}>No active trip today</Text>
+                <Text style={gs.textBase}>Find a ride or log your commute to get started.</Text>
+              </View>
+            </View>
+            <View style={[gs.row, styles.noTripActions]}>
+              <TouchableOpacity
+                style={styles.findRideBtn}
+                onPress={() => (navigation as any).navigate('Rides')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.findRideBtnText}>Find a Ride</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.logBtn}
+                onPress={() => (navigation as any).navigate('LogCommute')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.logBtnText}>Log Commute</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* ── Monthly CO₂ progress card ──────────────────────── */}
+        <View style={[gs.card, styles.progressCard]}>
+          <View style={gs.rowBetween}>
+            <View>
+              <Text style={styles.progressValue}>{monthlyProgress} kg</Text>
+              <Text style={gs.textBase}>CO₂ saved this month</Text>
+            </View>
+            <Ionicons name="trending-up" size={28} color={THEME.primary} />
+          </View>
+
+          <View style={styles.progressRow}>
+            <Text style={gs.textSm}>Monthly goal</Text>
+            <Text style={gs.textSm}>{monthlyGoal} kg</Text>
+          </View>
+          <View style={gs.progressTrack}>
+            <View style={[gs.progressFill, { width: `${progressPct}%` as any }]} />
+          </View>
+
+          <View style={styles.progressFooter}>
+            <Text style={gs.textSm}>
+              {Math.round((stats?.co2_saved_vs_car ?? 142.5) / 21.77)} trees equivalent
+            </Text>
+            <Text style={[gs.textSm, gs.textGreen]}>{progressPct.toFixed(0)}% complete</Text>
+          </View>
+        </View>
+
+        {/* ── OxyPoints banner ───────────────────────────────── */}
         {gamification && (
-          <TouchableOpacity style={styles.pointsBanner} onPress={() => navigation.navigate('Rewards')} activeOpacity={0.85}>
-            <View style={styles.pointsBannerLeft}>
+          <TouchableOpacity
+            style={styles.pointsBanner}
+            onPress={() => (navigation as any).navigate('Rewards')}
+            activeOpacity={0.85}
+          >
+            <View style={[gs.row, gs.gap12]}>
               <View style={styles.pointsIconBg}>
-                <Ionicons name="leaf" size={20} color={COLORS.primary} />
+                <Ionicons name="star" size={20} color={THEME.primary} />
               </View>
               <View>
                 <Text style={styles.pointsLabel}>OxyPoints Balance</Text>
-                <Text style={styles.pointsValue}>{gamification.total_points?.toLocaleString() ?? '0'} pts</Text>
+                <Text style={styles.pointsValue}>
+                  {(gamification.total_points ?? 0).toLocaleString()} pts
+                </Text>
               </View>
             </View>
-            <View style={styles.pointsRight}>
+            <View style={[gs.row, gs.gap6]}>
               <View style={styles.levelBadge}>
                 <Text style={styles.levelText}>Lv {gamification.level ?? 1}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
+              <Ionicons name="chevron-forward" size={16} color={THEME.primary} />
             </View>
           </TouchableOpacity>
         )}
 
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActions}>
-            <QuickAction icon="add-circle" label="Log Trip" color={COLORS.primary} onPress={() => navigation.navigate('EmployeeTabs')} />
-            <QuickAction icon="search" label="Find Ride" color={COLORS.accent} onPress={() => navigation.navigate('EmployeeTabs')} />
-            <QuickAction icon="car" label="Offer Ride" color={COLORS.carpool} onPress={() => navigation.navigate('OfferRide')} />
-            <QuickAction icon="time" label="My Trips" color={COLORS.info} onPress={() => navigation.navigate('MyTrips')} />
-          </View>
-        </View>
-
-        {/* Stats */}
-        {stats && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>This Month</Text>
-            <View style={styles.statsRow}>
-              <StatCard label="CO₂ Saved" value={stats.co2_saved_vs_car?.toFixed(1) ?? '0'} unit="kg" icon="leaf" iconColor={COLORS.success} style={styles.halfCard} />
-              <StatCard label="Commutes" value={String(stats.total_commutes ?? 0)} icon="bicycle" iconColor={COLORS.accent} style={styles.halfCard} />
+        {/* ── My Impact shortcut ─────────────────────────────── */}
+        <TouchableOpacity
+          style={styles.impactLink}
+          onPress={() => navigation.navigate('MyImpact')}
+          activeOpacity={0.85}
+        >
+          <View style={[gs.row, gs.gap10]}>
+            <View style={styles.impactIcon}>
+              <Ionicons name="leaf" size={18} color={THEME.primary} />
             </View>
-            <View style={styles.statsRow}>
-              <StatCard label="Distance" value={stats.total_distance_km?.toFixed(0) ?? '0'} unit="km" icon="navigate" iconColor={COLORS.warning} style={styles.halfCard} />
-              <StatCard label="Streak" value={String(stats.streak ?? 0)} unit="days" icon="flame" iconColor={COLORS.error} style={styles.halfCard} />
-            </View>
-          </View>
-        )}
-
-        {/* Active Trip */}
-        <TouchableOpacity style={styles.activeTripCard} onPress={() => navigation.navigate('ActiveTrip')} activeOpacity={0.85}>
-          <View style={styles.activeTripLeft}>
-            <View style={styles.activeDot} />
             <View>
-              <Text style={styles.activeTripTitle}>Check Active Trip</Text>
-              <Text style={styles.activeTripSub}>View your current journey status</Text>
+              <Text style={styles.impactLinkTitle}>View My Impact Report</Text>
+              <Text style={gs.textSm}>Full CO₂ savings & trends breakdown</Text>
             </View>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
+          <Ionicons name="chevron-forward" size={18} color={THEME.textMuted} />
         </TouchableOpacity>
-
-        {/* CSRD Compliance */}
-        <Card>
-          <View style={styles.complianceHeader}>
-            <View style={styles.complianceIconBg}>
-              <Ionicons name="shield-checkmark" size={16} color={COLORS.primary} />
-            </View>
-            <Text style={styles.complianceTitle}>CSRD Compliant Tracking</Text>
-          </View>
-          <Text style={styles.complianceText}>
-            Your commutes contribute to your company's Scope 3 Category 7 emissions reporting under ESRS E1 guidelines.
-          </Text>
-          <View style={styles.complianceBadges}>
-            <Badge label="SEAI 2024" variant="success" />
-            <Badge label="Audit Grade" variant="info" />
-            <Badge label="GDPR Safe" variant="default" />
-          </View>
-        </Card>
       </ScrollView>
     </View>
   );
 }
 
-function QuickAction({ icon, label, color, onPress }: { icon: any; label: string; color: string; onPress: () => void }) {
+function BellButton({ count }: { count: number }) {
   return (
-    <TouchableOpacity style={styles.quickAction} onPress={onPress} activeOpacity={0.75}>
-      <View style={[styles.quickActionIcon, { backgroundColor: color + '18' }]}>
-        <Ionicons name={icon} size={24} color={color} />
-      </View>
-      <Text style={styles.quickActionLabel}>{label}</Text>
+    <TouchableOpacity style={gs.bellBtn}>
+      <Ionicons name="notifications-outline" size={20} color="#fff" />
+      {count > 0 && (
+        <View style={gs.bellBadgeWrap}>
+          <Text style={gs.bellBadgeText}>{count}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
 
+function StatCard({ label, value, trend }: { label: string; value: string; trend: string }) {
+  return (
+    <View style={styles.statCard}>
+      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statTrend}>{trend}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-
-  // Header
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 14,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1, borderBottomColor: COLORS.border,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 2,
+  container: {
+    backgroundColor: THEME.background,
   },
-  headerLeft: { flex: 1 },
-  greeting: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
-  date: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
-  avatarBtn: {},
-  avatar: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: COLORS.primary + '20',
-    justifyContent: 'center', alignItems: 'center',
-    borderWidth: 2, borderColor: COLORS.primary + '40',
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 32,
+    gap: 14,
   },
-  avatarText: { fontSize: 16, fontWeight: '700', color: COLORS.primary },
 
-  content: { padding: 16, paddingBottom: 32, gap: 16 },
+  // Horizontal stats
+  statsScroll: {
+    gap: 12,
+    paddingRight: 4,
+  },
+  statCard: {
+    backgroundColor: THEME.surface,
+    borderRadius: 16,
+    padding: 16,
+    minWidth: 140,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  statLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: THEME.textMuted,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  statValue: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: THEME.textPrimary,
+    marginTop: 4,
+  },
+  statTrend: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: THEME.success,
+    marginTop: 4,
+  },
 
-  // OxyPoints
+  // Trip card
+  tripIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: THEME.successBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tripTitle: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '700',
+    color: THEME.textPrimary,
+  },
+  tripMeta: {
+    marginTop: 12,
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+  passengerChip: {
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: THEME.primary + '40',
+    backgroundColor: THEME.successBg,
+  },
+  passengerNames: {
+    fontSize: 13,
+    color: THEME.textSecondary,
+    marginTop: 6,
+  },
+  co2Label: {
+    fontSize: 14,
+    color: THEME.textSecondary,
+  },
+  startBtn: {
+    backgroundColor: THEME.primary,
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 24,
+  },
+  startBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff',
+  },
+
+  // No active trip card
+  noTripCard: {
+    gap: 14,
+  },
+  noTripTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: THEME.textPrimary,
+  },
+  noTripActions: {
+    gap: 10,
+  },
+  findRideBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 24,
+    backgroundColor: THEME.primary,
+    alignItems: 'center',
+  },
+  findRideBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  logBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: THEME.border,
+    alignItems: 'center',
+  },
+  logBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: THEME.textPrimary,
+  },
+
+  // Monthly progress card
+  progressCard: {
+    backgroundColor: '#F0FAF5',
+    borderWidth: 1,
+    borderColor: '#C6E8D8',
+    gap: 10,
+  },
+  progressValue: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: THEME.textPrimary,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  progressFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+
+  // OxyPoints banner
   pointsBanner: {
-    backgroundColor: '#ECFDF5',
-    borderRadius: 14, padding: 14,
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    borderWidth: 1, borderColor: '#A7F3D0',
+    backgroundColor: '#F0FDF9',
+    borderRadius: 16,
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
   },
-  pointsBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   pointsIconBg: {
-    width: 40, height: 40, borderRadius: 12,
-    backgroundColor: COLORS.primary + '15',
-    justifyContent: 'center', alignItems: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: THEME.primary + '15',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  pointsLabel: { fontSize: 11, color: COLORS.success, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
-  pointsValue: { fontSize: 22, fontWeight: '800', color: COLORS.textPrimary, marginTop: 1 },
-  pointsRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  levelBadge: { backgroundColor: COLORS.primary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  levelText: { fontSize: 12, color: '#fff', fontWeight: '700' },
-
-  // Sections
-  section: { gap: 12 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
-
-  // Quick Actions
-  quickActions: { flexDirection: 'row', justifyContent: 'space-between' },
-  quickAction: { alignItems: 'center', flex: 1 },
-  quickActionIcon: { width: 54, height: 54, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
-  quickActionLabel: { fontSize: 11, color: COLORS.textSecondary, fontWeight: '600', textAlign: 'center' },
-
-  // Stats
-  statsRow: { flexDirection: 'row', gap: 12 },
-  halfCard: { flex: 1 },
-
-  // Active Trip
-  activeTripCard: {
-    backgroundColor: COLORS.surface, borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: COLORS.border,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+  pointsLabel: {
+    fontSize: 11,
+    color: THEME.success,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  activeTripLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  activeDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.success },
-  activeTripTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
-  activeTripSub: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
+  pointsValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: THEME.textPrimary,
+    marginTop: 2,
+  },
+  levelBadge: {
+    backgroundColor: THEME.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  levelText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: '700',
+  },
 
-  // Compliance
-  complianceHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  complianceIconBg: { width: 28, height: 28, borderRadius: 8, backgroundColor: COLORS.primary + '15', justifyContent: 'center', alignItems: 'center' },
-  complianceTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
-  complianceText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 10 },
-  complianceBadges: { flexDirection: 'row', gap: 6 },
+  // Impact link
+  impactLink: {
+    backgroundColor: THEME.surface,
+    borderRadius: 14,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  impactIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: THEME.successBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  impactLinkTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: THEME.textPrimary,
+  },
 });

@@ -86,6 +86,8 @@ class Ride(SQLModel, table=True):
     preferences: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     preferences_tags: Optional[list] = Field(default=None, sa_column=Column(JSON))
     share_code: Optional[str] = Field(default=None, max_length=10)
+    cancellation_reason: Optional[str] = Field(default=None, max_length=200)
+    cancellation_note: Optional[str] = Field(default=None, max_length=500)
     created_at: datetime = Field(default_factory=lambda: datetime.utcnow())
     updated_at: datetime = Field(default_factory=lambda: datetime.utcnow())
 
@@ -113,6 +115,10 @@ class RideRequest(SQLModel, table=True):
     message: Optional[str] = Field(default=None, max_length=300)
     requested_at: datetime = Field(default_factory=lambda: datetime.utcnow())
     responded_at: Optional[datetime] = Field(default=None)
+    cancellation_reason: Optional[str] = Field(default=None, max_length=200)
+    cancellation_note: Optional[str] = Field(default=None, max_length=500)
+    rejection_reason: Optional[str] = Field(default=None, max_length=200)
+    rejection_note: Optional[str] = Field(default=None, max_length=500)
 
 
 class RecurringRideTemplate(SQLModel, table=True):

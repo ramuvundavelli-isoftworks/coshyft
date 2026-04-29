@@ -102,11 +102,15 @@ async function apiFetch<T>(
         clearTokens();
       }
 
+      const detail = data?.detail;
+      const detailMessage = Array.isArray(detail)
+        ? detail.map((e: any) => e.msg ?? String(e)).join('; ')
+        : typeof detail === 'string' ? detail : undefined;
       return {
         success: false,
         error: {
           code: data?.error?.code || `HTTP_${response.status}`,
-          message: data?.error?.message || data?.detail || 'Request failed',
+          message: data?.error?.message || detailMessage || 'Request failed',
         },
       };
     }

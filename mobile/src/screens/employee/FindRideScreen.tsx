@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, FlatList, TouchableOpacity, Alert,
+  View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal, ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { carpoolingApi } from '../../api';
 import { COLORS } from '../../constants';
 import Button from '../../components/ui/Button';
@@ -19,30 +20,73 @@ export default function FindRideScreen() {
   const [rides, setRides] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Booking modal
+  const [bookingRide, setBookingRide] = useState<any | null>(null);
+  const [bookingSeats, setBookingSeats] = useState('1');
+  const [pickupLocation, setPickupLocation] = useState('');
+  const [bookingLoading, setBookingLoading] = useState(false);
+
+  const handleUseLocation = async () => {
+    setIsLocating(true);
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Location permission is required to detect your position.');
+      setIsLocating(false);
+      return;
+    }
+    try {
+      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const { latitude, longitude } = loc.coords;
+      setUserCoords({ lat: latitude, lng: longitude });
+      setOrigin(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+    } catch {
+      Alert.alert('Error', 'Could not get your location. Please enter it manually.');
+    } finally {
+      setIsLocating(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (!origin.trim() || !destination.trim()) {
-      Alert.alert('Enter both origin and destination');
+      Alert.alert('Missing Info', 'Enter both origin and destination');
       return;
     }
     setLoading(true);
     setSearched(true);
-    // Using Dublin area coords as defaults for demo
+    const originCoords = userCoords ?? { lat: 53.3498, lng: -6.2603 };
     const result = await carpoolingApi.findRides({
-      origin_lat: 53.3498, origin_lng: -6.2603,
-      destination_lat: 53.3389, destination_lng: -6.2572,
+      origin_lat: originCoords.lat,
+      origin_lng: originCoords.lng,
+      destination_lat: 53.3389,
+      destination_lng: -6.2572,
       max_distance_km: 5,
     });
     setLoading(false);
     if (result.success) setRides(result.data as any[] ?? []);
   };
 
-  const handleRequest = async (rideId: string) => {
-    const result = await carpoolingApi.requestRide(rideId, { message: 'Hi, I would like to join your ride.' });
+  const handleBookRide = async () => {
+    if (!bookingRide) return;
+    if (!pickupLocation.trim()) {
+      Alert.alert('Required', 'Please enter your pickup location.');
+      return;
+    }
+    setBookingLoading(true);
+    const result = await carpoolingApi.requestRide(bookingRide.id, {
+      pickup_address: pickupLocation,
+    });
+    setBookingLoading(false);
     if (result.success) {
-      Alert.alert('Request Sent', 'Your ride request has been sent to the driver.');
+      const driver = bookingRide.driver;
+      setBookingRide(null);
+      setPickupLocation('');
+      setBookingSeats('1');
+      Alert.alert('Ride Booked!', `Your ride with ${driver} has been requested.`);
     } else {
-      Alert.alert('Error', result.error?.message ?? 'Failed to send request');
+      Alert.alert('Error', result.error?.message ?? 'Failed to book ride');
     }
   };
 
@@ -54,19 +98,36 @@ export default function FindRideScreen() {
       </View>
 
       <View style={styles.searchBox}>
-        <Input
-          placeholder="Your origin (e.g. Tallaght)"
-          value={origin}
-          onChangeText={setOrigin}
-          leftIcon="location-outline"
-          style={styles.searchInput}
-        />
+        {/* Origin with GPS button */}
+        <View style={styles.originRow}>
+          <View style={styles.originInput}>
+            <Input
+              placeholder="Your origin (e.g. Tallaght)"
+              value={origin}
+              onChangeText={(t) => { setOrigin(t); setUserCoords(null); }}
+              leftIcon="location-outline"
+            />
+          </View>
+          <TouchableOpacity
+            style={[styles.gpsBtn, isLocating && styles.gpsBtnDisabled]}
+            onPress={handleUseLocation}
+            disabled={isLocating}
+          >
+            <Ionicons
+              name={isLocating ? 'hourglass-outline' : 'navigate-outline'}
+              size={20}
+              color={isLocating ? COLORS.textMuted : COLORS.primary}
+            />
+          </TouchableOpacity>
+        </View>
+        {userCoords && (
+          <Text style={styles.gpsDetected}>📍 GPS location detected</Text>
+        )}
         <Input
           placeholder="Destination (e.g. Grand Canal Dock)"
           value={destination}
           onChangeText={setDestination}
           leftIcon="business-outline"
-          style={styles.searchInput}
         />
         <Button title="Search Rides" onPress={handleSearch} loading={loading} />
       </View>
@@ -140,8 +201,8 @@ export default function FindRideScreen() {
               {item.verifiedDriver && <Badge label="Verified Driver" variant="success" />}
               {item.recurring && <Badge label="Recurring" variant="info" />}
               <Button
-                title="Request Ride"
-                onPress={() => handleRequest(item.id)}
+                title="Book Ride"
+                onPress={() => setBookingRide(item)}
                 size="sm"
                 style={styles.requestBtn}
               />
@@ -149,6 +210,83 @@ export default function FindRideScreen() {
           </Card>
         )}
       />
+
+      {/* Booking Modal */}
+      <Modal
+        visible={!!bookingRide}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setBookingRide(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Book Ride</Text>
+              <TouchableOpacity onPress={() => setBookingRide(null)}>
+                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
+              <View style={styles.rideInfoBox}>
+                <Text style={styles.rideInfoDriver}>{bookingRide?.driver}</Text>
+                <Text style={styles.rideInfoSub}>
+                  {bookingRide?.departureTime} · {bookingRide?.seatsAvailable} seats available
+                </Text>
+                <Text style={styles.rideInfoSub}>
+                  {bookingRide?.origin} → {bookingRide?.destination}
+                </Text>
+              </View>
+
+              <Text style={styles.fieldLabel}>Number of Seats</Text>
+              <View style={styles.seatsRow}>
+                {['1', '2', '3', '4'].map((n) => (
+                  <TouchableOpacity
+                    key={n}
+                    style={[styles.seatBtn, bookingSeats === n && styles.seatBtnActive]}
+                    onPress={() => setBookingSeats(n)}
+                  >
+                    <Text style={[styles.seatBtnText, bookingSeats === n && styles.seatBtnTextActive]}>
+                      {n}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.fieldLabel}>Pickup Location *</Text>
+              <Input
+                placeholder="Enter your pickup address"
+                value={pickupLocation}
+                onChangeText={setPickupLocation}
+                leftIcon="location-outline"
+              />
+
+              {bookingRide?.co2Saved > 0 && (
+                <View style={styles.co2Box}>
+                  <Text style={styles.co2Text}>
+                    🌱 You'll save {bookingRide.co2Saved?.toFixed(1)} kg CO₂ on this trip!
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <Button
+                title="Cancel"
+                onPress={() => setBookingRide(null)}
+                variant="secondary"
+                style={styles.footerBtn}
+              />
+              <Button
+                title="Confirm Booking"
+                onPress={handleBookRide}
+                loading={bookingLoading}
+                style={styles.footerBtn}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -161,14 +299,24 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
   headerSub: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
-  searchBox: { padding: 16, backgroundColor: COLORS.surface, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  searchInput: { marginBottom: 4 },
+  searchBox: {
+    padding: 16, backgroundColor: COLORS.surface,
+    borderBottomWidth: 1, borderBottomColor: COLORS.border, gap: 8,
+  },
+  originRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  originInput: { flex: 1 },
+  gpsBtn: {
+    width: 48, height: 48, borderRadius: 12, backgroundColor: COLORS.primary + '15',
+    justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1, borderColor: COLORS.primary + '30',
+  },
+  gpsBtnDisabled: { opacity: 0.5 },
+  gpsDetected: { fontSize: 12, color: COLORS.success },
   list: { padding: 16, gap: 12 },
   emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
   emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary },
   emptyText: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 20 },
 
-  // Ride Card
   rideCard: { gap: 12 },
   rideHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   driverInfo: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -196,4 +344,43 @@ const styles = StyleSheet.create({
 
   rideFooter: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
   requestBtn: { marginLeft: 'auto' },
+
+  // Booking Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: {
+    backgroundColor: COLORS.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    maxHeight: '85%',
+  },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    padding: 20, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+  },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
+  modalBody: { padding: 20 },
+  rideInfoBox: {
+    backgroundColor: COLORS.primary + '10', borderRadius: 12, padding: 14,
+    marginBottom: 20, borderWidth: 1, borderColor: COLORS.primary + '25',
+    gap: 4,
+  },
+  rideInfoDriver: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  rideInfoSub: { fontSize: 13, color: COLORS.textSecondary },
+  fieldLabel: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 10 },
+  seatsRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+  seatBtn: {
+    width: 52, height: 52, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
+    justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background,
+  },
+  seatBtnActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  seatBtnText: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary },
+  seatBtnTextActive: { color: '#fff' },
+  co2Box: {
+    backgroundColor: COLORS.success + '15', borderRadius: 10, padding: 12, marginTop: 16,
+    borderWidth: 1, borderColor: COLORS.success + '30',
+  },
+  co2Text: { fontSize: 13, color: COLORS.success, fontWeight: '500' },
+  modalFooter: {
+    flexDirection: 'row', gap: 12, padding: 20,
+    borderTopWidth: 1, borderTopColor: COLORS.border,
+  },
+  footerBtn: { flex: 1 },
 });

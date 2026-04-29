@@ -7,16 +7,26 @@ from datetime import datetime, date
 from pydantic import BaseModel, Field
 
 
+class CancelBody(BaseModel):
+    reason: str
+    note: Optional[str] = None
+
+
+class RejectBody(BaseModel):
+    reason: Optional[str] = None
+    note: Optional[str] = None
+
+
 class RideCreate(BaseModel):
     origin: str
-    origin_lat: float
-    origin_lng: float
+    origin_lat: float = 53.3498   # Default: Dublin city centre
+    origin_lng: float = -6.2603
     destination: str
-    destination_lat: float
-    destination_lng: float
+    destination_lat: float = 53.3389  # Default: Dublin Docklands
+    destination_lng: float = -6.2572
     departure_time: datetime
-    distance_km: float = Field(ge=0)
-    seats_total: int = Field(ge=1)
+    distance_km: float = Field(default=10.0, ge=0)
+    seats_total: int = Field(default=4, ge=1)
     vehicle_type: str = "sedan"
     vehicle_make: Optional[str] = None
     preferences: Optional[dict] = None
@@ -44,6 +54,8 @@ class RideRead(BaseModel):
     is_recurring: bool
     preferences_tags: Optional[List[str]] = None
     share_code: Optional[str] = None
+    cancellation_reason: Optional[str] = None
+    cancellation_note: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -71,7 +83,6 @@ class RideMatchResult(BaseModel):
 
 
 class RideRequestCreate(BaseModel):
-    ride_id: str
     pickup_address: Optional[str] = None
     pickup_lat: Optional[float] = None
     pickup_lng: Optional[float] = None
@@ -87,6 +98,10 @@ class RideRequestRead(BaseModel):
     pickup_address: Optional[str] = None
     message: Optional[str] = None
     requested_at: datetime
+    cancellation_reason: Optional[str] = None
+    cancellation_note: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    rejection_note: Optional[str] = None
 
     class Config:
         from_attributes = True

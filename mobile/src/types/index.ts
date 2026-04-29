@@ -154,10 +154,10 @@ export type AuthStackParamList = {
 
 export type EmployeeTabParamList = {
   Dashboard: undefined;
+  Rides: undefined;
   LogCommute: undefined;
-  FindRide: undefined;
-  MyImpact: undefined;
-  More: undefined;
+  Rewards: undefined;
+  Profile: undefined;
 };
 
 export type EmployeeStackParamList = {
@@ -165,7 +165,7 @@ export type EmployeeStackParamList = {
   OfferRide: undefined;
   ActiveTrip: undefined;
   MyTrips: undefined;
-  Rewards: undefined;
+  MyImpact: undefined;
   RecurringRides: undefined;
   Messages: undefined;
   CommuteProfile: undefined;

@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Alert, StyleSheet } from 'react-native';
+import { ScrollView, Alert, StyleSheet, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { commuteApi } from '../../api';
-import { COLORS } from '../../constants';
+import { THEME, gs } from '../../styles/theme';
 import ScreenHeader from '../../components/layout/ScreenHeader';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
+function SectionHeader({ title }: { title: string }) {
+  return <Text style={styles.sectionHeader}>{title}</Text>;
+}
+
 export default function CommuteProfileScreen() {
   const navigation = useNavigation();
-  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [origin, setOrigin] = useState('');
@@ -25,7 +28,6 @@ export default function CommuteProfileScreen() {
     commuteApi.getCommuteProfile().then(res => {
       if (res.success && res.data) {
         const d = res.data;
-        setProfile(d);
         setOrigin(d.default_origin_address ?? '');
         setDestination(d.default_destination_address ?? '');
         setWorkDays(String(d.work_days_per_week ?? 5));
@@ -59,22 +61,95 @@ export default function CommuteProfileScreen() {
   return (
     <>
       <ScreenHeader title="Commute Profile" onBack={() => navigation.goBack()} />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Input label="Home address (default origin)" value={origin} onChangeText={setOrigin} placeholder="e.g. Tallaght, Dublin 24" leftIcon="home-outline" />
-        <Input label="Work address (default destination)" value={destination} onChangeText={setDestination} placeholder="e.g. Grand Canal Dock, Dublin 2" leftIcon="business-outline" />
-        <Input label="Work days per week" value={workDays} onChangeText={setWorkDays} keyboardType="numeric" placeholder="5" leftIcon="calendar-outline" />
-        <Input label="Remote/WFH days per week" value={remoteDays} onChangeText={setRemoteDays} keyboardType="numeric" placeholder="0" leftIcon="laptop-outline" />
-        <Input label="Typical departure time" value={departureTime} onChangeText={setDepartureTime} placeholder="HH:MM" leftIcon="time-outline" />
-        <Input label="Vehicle make (optional)" value={vehicleMake} onChangeText={setVehicleMake} placeholder="e.g. Toyota" leftIcon="car-outline" />
-        <Input label="Vehicle model (optional)" value={vehicleModel} onChangeText={setVehicleModel} placeholder="e.g. Corolla" leftIcon="car-sport-outline" />
-        <Button title="Save Profile" onPress={handleSave} loading={saving} size="lg" style={styles.saveBtn} />
+      <ScrollView style={gs.screenBg} contentContainerStyle={styles.content}>
+
+        {/* Locations */}
+        <View style={[gs.card, styles.section]}>
+          <SectionHeader title="Locations" />
+          <Input
+            label="Home address"
+            value={origin}
+            onChangeText={setOrigin}
+            placeholder="e.g. Tallaght, Dublin 24"
+            leftIcon="home-outline"
+          />
+          <Input
+            label="Work address"
+            value={destination}
+            onChangeText={setDestination}
+            placeholder="e.g. Grand Canal Dock, Dublin 2"
+            leftIcon="business-outline"
+          />
+        </View>
+
+        {/* Schedule */}
+        <View style={[gs.card, styles.section]}>
+          <SectionHeader title="Schedule" />
+          <Input
+            label="Typical departure time"
+            value={departureTime}
+            onChangeText={setDepartureTime}
+            placeholder="HH:MM"
+            leftIcon="time-outline"
+          />
+          <Input
+            label="Work days per week"
+            value={workDays}
+            onChangeText={setWorkDays}
+            keyboardType="numeric"
+            placeholder="5"
+            leftIcon="calendar-outline"
+          />
+          <Input
+            label="Remote / WFH days per week"
+            value={remoteDays}
+            onChangeText={setRemoteDays}
+            keyboardType="numeric"
+            placeholder="0"
+            leftIcon="laptop-outline"
+          />
+        </View>
+
+        {/* Vehicle */}
+        <View style={[gs.card, styles.section]}>
+          <SectionHeader title="Vehicle (optional)" />
+          <Input
+            label="Make"
+            value={vehicleMake}
+            onChangeText={setVehicleMake}
+            placeholder="e.g. Toyota"
+            leftIcon="car-outline"
+          />
+          <Input
+            label="Model"
+            value={vehicleModel}
+            onChangeText={setVehicleModel}
+            placeholder="e.g. Corolla"
+            leftIcon="car-sport-outline"
+          />
+        </View>
+
+        <Button title="Save Profile" onPress={handleSave} loading={saving} size="lg" />
       </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  content: { padding: 16, paddingBottom: 40, gap: 4 },
-  saveBtn: { marginTop: 8 },
+  content: {
+    padding: 16,
+    paddingBottom: 40,
+    gap: 12,
+  },
+  section: {
+    gap: 4,
+  },
+  sectionHeader: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: THEME.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
 });

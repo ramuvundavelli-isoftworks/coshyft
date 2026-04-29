@@ -539,7 +539,7 @@ async def seed():
             Ride(id=ride5_id, driver_id=U_ACME_EMP1,
                  origin="Griffith Ave, Dublin 9", origin_lat=53.3736, origin_lng=-6.2521,
                  destination="Acme Dublin HQ", destination_lat=53.3498, destination_lng=-6.2603,
-                 departure_time=utc(1, -8), distance_km=8.2, seats_available=2, seats_total=3,
+                 departure_time=utc(-1, -8), distance_km=8.2, seats_available=2, seats_total=3,
                  co2_saved=0.0, vehicle_type=VehicleTypeEnum.SEDAN, vehicle_make="VW Golf",
                  status=RideStatusEnum.SCHEDULED, is_recurring=False,
                  share_code="ACDUB02",

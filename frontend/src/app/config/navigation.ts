@@ -58,7 +58,7 @@ export function getNavigationForRole(role: Role): NavSection[] {
             { label: 'Offer Ride', path: '/employee/offer-ride', icon: Car },
             { label: 'Find Ride', path: '/employee/find-ride', icon: Car },
             { label: 'Active Trip', path: '/employee/active-trip', icon: Activity },
-            { label: 'Trip History', path: '/employee/trips', icon: MapPin },
+            { label: 'My Trips', path: '/employee/trips', icon: MapPin },
           ],
         },
         {

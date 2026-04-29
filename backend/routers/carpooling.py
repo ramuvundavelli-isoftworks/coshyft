@@ -1,11 +1,11 @@
 """
 Carpooling Router
-POST /rides, GET /rides/find, GET /rides/my, GET /rides/{id}
-PUT /rides/{id}, DELETE /rides/{id}
+POST /rides, GET /rides/find, GET /rides/my, GET /rides/active
+GET /rides/recurring, POST /rides/recurring, PUT/DELETE/pause/resume/exception /rides/recurring/{id}
+GET /rides/{id}, PUT /rides/{id}, DELETE /rides/{id}
+GET /rides/{id}/requests
 POST /rides/{id}/request, PUT /rides/{id}/request/{reqId}/accept|reject
 POST /rides/{id}/start, POST /rides/{id}/complete
-GET /rides/active
-Recurring: POST/GET/PUT/DELETE /rides/recurring, pause/resume/exception
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -22,7 +22,7 @@ from schemas.carpooling import (
     RideCreate, RideRead, RideUpdate, RideFindParams, RideMatchResult,
     RideRequestCreate, RideRequestRead,
     RecurringTemplateCreate, RecurringTemplateRead, RecurringTemplateUpdate,
-    RideExceptionCreate, ActiveTripStatus,
+    RideExceptionCreate, ActiveTripStatus, CancelBody, RejectBody,
 )
 from schemas.common import ApiResponse, PaginatedResponse
 from services.carpool_matching import calculate_compatibility_score
@@ -92,10 +92,18 @@ async def find_rides(
         Ride.status == "scheduled",
         Ride.seats_available >= min_seats,
         Ride.driver_id != user.id,
+        Ride.departure_time > datetime.utcnow(),
     )
 
     if max_distance_km:
         statement = statement.where(Ride.distance_km <= max_distance_km)
+
+    # Scope to same tenant so employees only see rides from their own company
+    if user.tenant_id:
+        tenant_driver_ids = (await session.execute(
+            select(User.id).where(User.tenant_id == user.tenant_id)
+        )).scalars().all()
+        statement = statement.where(Ride.driver_id.in_(tenant_driver_ids))
 
     result = await session.execute(statement)
     rides = result.scalars().all()
@@ -149,15 +157,18 @@ async def get_my_rides(
     driver_result = await session.execute(driver_stmt)
     driver_rides = driver_result.scalars().all()
 
-    # As passenger (accepted requests)
+    # As passenger (accepted + pending requests)
     passenger_stmt = select(RideRequest).where(
         RideRequest.passenger_id == user.id,
-        RideRequest.status == "accepted",
+        RideRequest.status.in_(["accepted", "pending"]),
     )
     passenger_result = await session.execute(passenger_stmt)
     passenger_requests = passenger_result.scalars().all()
 
     passenger_ride_ids = [r.ride_id for r in passenger_requests]
+    request_status_by_ride = {r.ride_id: r.status for r in passenger_requests}
+    request_id_by_ride = {r.ride_id: r.id for r in passenger_requests}
+
     passenger_rides = []
     if passenger_ride_ids:
         p_stmt = select(Ride).where(Ride.id.in_(passenger_ride_ids))
@@ -166,13 +177,32 @@ async def get_my_rides(
         p_result = await session.execute(p_stmt)
         passenger_rides = p_result.scalars().all()
 
-    all_rides = [
-        {**RideRead.model_validate(r).model_dump(), "user_role": "driver"}
-        for r in driver_rides
-    ] + [
-        {**RideRead.model_validate(r).model_dump(), "user_role": "passenger"}
-        for r in passenger_rides
-    ]
+    # Collect all driver IDs to fetch names in bulk
+    all_driver_ids = list({r.driver_id for r in list(driver_rides) + list(passenger_rides)})
+    driver_map = {}
+    if all_driver_ids:
+        d_result = await session.execute(select(User).where(User.id.in_(all_driver_ids)))
+        for d in d_result.scalars().all():
+            driver_map[d.id] = d.name
+
+    def ride_dict(r: Ride, role: str, request_id: str = None) -> dict:
+        rd = RideRead.model_validate(r).model_dump()
+        rd["driver_name"] = driver_map.get(r.driver_id)
+        rd["user_role"] = role
+        rd["request_id"] = request_id
+        return rd
+
+    all_rides = (
+        [ride_dict(r, "driver") for r in driver_rides]
+        + [
+            ride_dict(
+                r,
+                "passenger" if request_status_by_ride.get(r.id) == "accepted" else "passenger_pending",
+                request_id=request_id_by_ride.get(r.id),
+            )
+            for r in passenger_rides
+        ]
+    )
 
     return ApiResponse(success=True, data=all_rides)
 
@@ -211,228 +241,9 @@ async def get_active_trip(
     return ApiResponse(success=True, data=RideRead.model_validate(active_ride).model_dump())
 
 
-@router.get("/{ride_id}", response_model=ApiResponse[RideRead])
-async def get_ride(
-    ride_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Get ride details."""
-    ride = (await session.execute(select(Ride).where(Ride.id == ride_id))).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found")
-
-    ride_read = RideRead.model_validate(ride)
-    driver = (await session.execute(select(User).where(User.id == ride.driver_id))).scalar_one_or_none()
-    ride_read.driver_name = driver.name if driver else None
-
-    return ApiResponse(success=True, data=ride_read)
-
-
-@router.put("/{ride_id}", response_model=ApiResponse[RideRead])
-async def update_ride(
-    ride_id: str,
-    update: RideUpdate,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Update ride (driver only)."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
-
-    for key, value in update.model_dump(exclude_unset=True).items():
-        setattr(ride, key, value)
-    ride.updated_at = datetime.utcnow()
-
-    session.add(ride)
-    await session.flush()
-    await session.refresh(ride)
-
-    return ApiResponse(success=True, data=RideRead.model_validate(ride))
-
-
-@router.delete("/{ride_id}", response_model=ApiResponse)
-async def cancel_ride(
-    ride_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Cancel a ride (driver only)."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
-
-    ride.status = "cancelled"
-    ride.updated_at = datetime.utcnow()
-    session.add(ride)
-
-    await log_action(
-        session, user.id,
-        user.role.value if hasattr(user.role, "value") else user.role,
-        "update", "ride", ride_id,
-        description="Ride cancelled by driver",
-    )
-    return ApiResponse(success=True, meta={"message": "Ride cancelled"})
-
-
-@router.post("/{ride_id}/request", response_model=ApiResponse[RideRequestRead], status_code=201)
-async def request_ride(
-    ride_id: str,
-    request_data: RideRequestCreate,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Request to join a ride as passenger."""
-    ride = (await session.execute(select(Ride).where(Ride.id == ride_id))).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found")
-    if ride.seats_available <= 0:
-        raise HTTPException(status_code=400, detail="No seats available")
-    if ride.driver_id == user.id:
-        raise HTTPException(status_code=400, detail="Cannot request your own ride")
-
-    req = RideRequest(
-        ride_id=ride_id,
-        passenger_id=user.id,
-        pickup_address=request_data.pickup_address,
-        pickup_lat=request_data.pickup_lat,
-        pickup_lng=request_data.pickup_lng,
-        message=request_data.message,
-    )
-    session.add(req)
-    await session.flush()
-    await session.refresh(req)
-
-    return ApiResponse(success=True, data=RideRequestRead.model_validate(req))
-
-
-@router.put("/{ride_id}/request/{request_id}/accept", response_model=ApiResponse)
-async def accept_request(
-    ride_id: str,
-    request_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Accept a passenger request (driver only)."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
-
-    req = (await session.execute(
-        select(RideRequest).where(RideRequest.id == request_id, RideRequest.ride_id == ride_id)
-    )).scalar_one_or_none()
-    if req is None:
-        raise HTTPException(status_code=404, detail="Request not found")
-
-    req.status = "accepted"
-    req.responded_at = datetime.utcnow()
-    ride.seats_available = max(0, ride.seats_available - 1)
-
-    session.add(req)
-    session.add(ride)
-
-    await log_action(
-        session, user.id,
-        user.role.value if hasattr(user.role, "value") else user.role,
-        "update", "ride", ride_id,
-        description=f"Passenger request {request_id} accepted",
-    )
-    return ApiResponse(success=True, meta={"message": "Request accepted"})
-
-
-@router.put("/{ride_id}/request/{request_id}/reject", response_model=ApiResponse)
-async def reject_request(
-    ride_id: str,
-    request_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Reject a passenger request (driver only)."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
-
-    req = (await session.execute(
-        select(RideRequest).where(RideRequest.id == request_id, RideRequest.ride_id == ride_id)
-    )).scalar_one_or_none()
-    if req is None:
-        raise HTTPException(status_code=404, detail="Request not found")
-
-    req.status = "rejected"
-    req.responded_at = datetime.utcnow()
-    session.add(req)
-
-    await log_action(
-        session, user.id,
-        user.role.value if hasattr(user.role, "value") else user.role,
-        "update", "ride", ride_id,
-        description=f"Passenger request {request_id} rejected",
-    )
-    return ApiResponse(success=True, meta={"message": "Request rejected"})
-
-
-@router.post("/{ride_id}/start", response_model=ApiResponse)
-async def start_ride(
-    ride_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Start a ride (driver only)."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found")
-
-    ride.status = "active"
-    ride.updated_at = datetime.utcnow()
-    session.add(ride)
-
-    return ApiResponse(success=True, meta={"message": "Ride started"})
-
-
-@router.post("/{ride_id}/complete", response_model=ApiResponse)
-async def complete_ride(
-    ride_id: str,
-    user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
-    """Complete a ride. Triggers OxyPoints award."""
-    ride = (await session.execute(
-        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
-    )).scalar_one_or_none()
-    if ride is None:
-        raise HTTPException(status_code=404, detail="Ride not found")
-
-    ride.status = "completed"
-    ride.updated_at = datetime.utcnow()
-
-    passengers_count = ride.seats_total - ride.seats_available - 1
-    ride.co2_saved = calculate_carpool_co2_savings(ride.distance_km, max(passengers_count, 1))
-
-    session.add(ride)
-
-    await log_action(
-        session, user.id,
-        user.role.value if hasattr(user.role, "value") else user.role,
-        "update", "ride", ride_id,
-        description=f"Ride completed. CO2 saved: {ride.co2_saved}kg. Passengers: {passengers_count}",
-    )
-    return ApiResponse(success=True, meta={"message": "Ride completed", "co2_saved": ride.co2_saved})
-
-
 # --- Recurring Templates ---
+# IMPORTANT: These fixed-path routes must come before /{ride_id} to avoid
+# FastAPI matching "recurring" as a ride_id parameter.
 
 @router.post("/recurring", response_model=ApiResponse[RecurringTemplateRead], status_code=201)
 async def create_recurring_template(
@@ -607,3 +418,337 @@ async def add_exception(
     session.add(exception)
 
     return ApiResponse(success=True, meta={"message": "Exception added"})
+
+
+# --- Single Ride Routes (parameterized — must come after all fixed-path routes) ---
+
+@router.get("/{ride_id}", response_model=ApiResponse[RideRead])
+async def get_ride(
+    ride_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Get ride details."""
+    ride = (await session.execute(select(Ride).where(Ride.id == ride_id))).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    ride_read = RideRead.model_validate(ride)
+    driver = (await session.execute(select(User).where(User.id == ride.driver_id))).scalar_one_or_none()
+    ride_read.driver_name = driver.name if driver else None
+
+    return ApiResponse(success=True, data=ride_read)
+
+
+@router.put("/{ride_id}", response_model=ApiResponse[RideRead])
+async def update_ride(
+    ride_id: str,
+    update: RideUpdate,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Update ride (driver only)."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+
+    for key, value in update.model_dump(exclude_unset=True).items():
+        setattr(ride, key, value)
+    ride.updated_at = datetime.utcnow()
+
+    session.add(ride)
+    await session.flush()
+    await session.refresh(ride)
+
+    return ApiResponse(success=True, data=RideRead.model_validate(ride))
+
+
+@router.delete("/{ride_id}", response_model=ApiResponse)
+async def cancel_ride_legacy(
+    ride_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Cancel a ride (driver only) — legacy endpoint, use POST /{ride_id}/cancel instead."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+
+    ride.status = "cancelled"
+    ride.updated_at = datetime.utcnow()
+    session.add(ride)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description="Ride cancelled by driver",
+    )
+    return ApiResponse(success=True, meta={"message": "Ride cancelled"})
+
+
+@router.get("/{ride_id}/requests", response_model=ApiResponse)
+async def get_ride_requests(
+    ride_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """List all passenger requests for a ride (driver only)."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+
+    requests = (await session.execute(
+        select(RideRequest).where(RideRequest.ride_id == ride_id)
+    )).scalars().all()
+
+    results = []
+    for req in requests:
+        passenger = (await session.execute(
+            select(User).where(User.id == req.passenger_id)
+        )).scalar_one_or_none()
+        req_read = RideRequestRead.model_validate(req)
+        req_read.passenger_name = passenger.name if passenger else None
+        results.append(req_read.model_dump())
+
+    return ApiResponse(success=True, data=results)
+
+
+@router.post("/{ride_id}/cancel", response_model=ApiResponse)
+async def cancel_ride(
+    ride_id: str,
+    body: CancelBody,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Cancel a ride (driver only) with a reason."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+    if ride.status not in ("scheduled", "active"):
+        raise HTTPException(status_code=400, detail="Only scheduled or active rides can be cancelled")
+
+    ride.status = "cancelled"
+    ride.cancellation_reason = body.reason
+    ride.cancellation_note = body.note
+    ride.updated_at = datetime.utcnow()
+    session.add(ride)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Ride cancelled by driver. Reason: {body.reason}",
+    )
+    return ApiResponse(success=True, meta={"message": "Ride cancelled"})
+
+
+@router.post("/{ride_id}/request", response_model=ApiResponse[RideRequestRead], status_code=201)
+async def request_ride(
+    ride_id: str,
+    request_data: RideRequestCreate,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Request to join a ride as passenger."""
+    ride = (await session.execute(select(Ride).where(Ride.id == ride_id))).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found")
+    if ride.seats_available <= 0:
+        raise HTTPException(status_code=400, detail="No seats available")
+    if ride.driver_id == user.id:
+        raise HTTPException(status_code=400, detail="Cannot request your own ride")
+
+    req = RideRequest(
+        ride_id=ride_id,
+        passenger_id=user.id,
+        pickup_address=request_data.pickup_address,
+        pickup_lat=request_data.pickup_lat,
+        pickup_lng=request_data.pickup_lng,
+        message=request_data.message,
+    )
+    session.add(req)
+    await session.flush()
+    await session.refresh(req)
+
+    return ApiResponse(success=True, data=RideRequestRead.model_validate(req))
+
+
+@router.put("/{ride_id}/request/{request_id}/accept", response_model=ApiResponse)
+async def accept_request(
+    ride_id: str,
+    request_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Accept a passenger request (driver only)."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+
+    req = (await session.execute(
+        select(RideRequest).where(RideRequest.id == request_id, RideRequest.ride_id == ride_id)
+    )).scalar_one_or_none()
+    if req is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    if req.status != "pending":
+        raise HTTPException(status_code=400, detail="Only pending requests can be accepted")
+
+    req.status = "accepted"
+    req.responded_at = datetime.utcnow()
+    ride.seats_available = max(0, ride.seats_available - 1)
+
+    session.add(req)
+    session.add(ride)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Passenger request {request_id} accepted",
+    )
+    return ApiResponse(success=True, meta={"message": "Request accepted"})
+
+
+@router.put("/{ride_id}/request/{request_id}/reject", response_model=ApiResponse)
+async def reject_request(
+    ride_id: str,
+    request_id: str,
+    body: RejectBody,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Reject a passenger request (driver only) with an optional reason."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found or not authorized")
+
+    req = (await session.execute(
+        select(RideRequest).where(RideRequest.id == request_id, RideRequest.ride_id == ride_id)
+    )).scalar_one_or_none()
+    if req is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    if req.status != "pending":
+        raise HTTPException(status_code=400, detail="Only pending requests can be rejected")
+
+    req.status = "rejected"
+    req.responded_at = datetime.utcnow()
+    req.rejection_reason = body.reason
+    req.rejection_note = body.note
+    session.add(req)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Passenger request {request_id} rejected. Reason: {body.reason or 'none'}",
+    )
+    return ApiResponse(success=True, meta={"message": "Request rejected"})
+
+
+@router.post("/{ride_id}/request/{request_id}/cancel", response_model=ApiResponse)
+async def cancel_passenger_request(
+    ride_id: str,
+    request_id: str,
+    body: CancelBody,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Cancel a ride request (passenger only) with a reason."""
+    req = (await session.execute(
+        select(RideRequest).where(
+            RideRequest.id == request_id,
+            RideRequest.ride_id == ride_id,
+            RideRequest.passenger_id == user.id,
+        )
+    )).scalar_one_or_none()
+    if req is None:
+        raise HTTPException(status_code=404, detail="Request not found or not authorized")
+    if req.status not in ("pending", "accepted"):
+        raise HTTPException(status_code=400, detail="Request cannot be cancelled")
+
+    was_accepted = req.status == "accepted"
+    req.status = "cancelled"
+    req.cancellation_reason = body.reason
+    req.cancellation_note = body.note
+    session.add(req)
+
+    # Restore the seat if the passenger had already been accepted
+    if was_accepted:
+        ride = (await session.execute(select(Ride).where(Ride.id == ride_id))).scalar_one_or_none()
+        if ride:
+            ride.seats_available = min(ride.seats_total - 1, ride.seats_available + 1)
+            session.add(ride)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride_request", request_id,
+        description=f"Passenger cancelled request. Reason: {body.reason}",
+    )
+    return ApiResponse(success=True, meta={"message": "Request cancelled"})
+
+
+@router.post("/{ride_id}/start", response_model=ApiResponse)
+async def start_ride(
+    ride_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Start a ride (driver only)."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    ride.status = "active"
+    ride.updated_at = datetime.utcnow()
+    session.add(ride)
+
+    return ApiResponse(success=True, meta={"message": "Ride started"})
+
+
+@router.post("/{ride_id}/complete", response_model=ApiResponse)
+async def complete_ride(
+    ride_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    """Complete a ride. Triggers OxyPoints award."""
+    ride = (await session.execute(
+        select(Ride).where(Ride.id == ride_id, Ride.driver_id == user.id)
+    )).scalar_one_or_none()
+    if ride is None:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    ride.status = "completed"
+    ride.updated_at = datetime.utcnow()
+
+    passengers_count = ride.seats_total - ride.seats_available - 1
+    ride.co2_saved = calculate_carpool_co2_savings(ride.distance_km, max(passengers_count, 1))
+
+    session.add(ride)
+
+    await log_action(
+        session, user.id,
+        user.role.value if hasattr(user.role, "value") else user.role,
+        "update", "ride", ride_id,
+        description=f"Ride completed. CO2 saved: {ride.co2_saved}kg. Passengers: {passengers_count}",
+    )
+    return ApiResponse(success=True, meta={"message": "Ride completed", "co2_saved": ride.co2_saved})

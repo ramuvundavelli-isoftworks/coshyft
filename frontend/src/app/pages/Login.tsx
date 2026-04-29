@@ -7,7 +7,7 @@ import { Label } from '../components/ui/label';
 import { useRole } from '../context/RoleContext';
 import { useAuth } from '../context/AuthContext';
 import { Role } from '../types';
-import { Leaf, Users, Shield, Building2, Crown, Loader2, CheckCircle } from 'lucide-react';
+import { Leaf, Users, Shield, Building2, Crown, Loader2, CheckCircle, Eye, EyeOff, UserCog } from 'lucide-react';
 
 const DEMO_PASSWORD = 'Password123!';
 
@@ -70,9 +70,12 @@ const roleRoutes: Record<Role, string> = {
 };
 
 export default function Login() {
-  const [selectedRole, setSelectedRole] = useState<Role>('sustainability');
+  const [selectedRole, setSelectedRole] = useState<Role | 'other'>('sustainability');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [manualEmail, setManualEmail] = useState('');
+  const [manualPassword, setManualPassword] = useState('');
   const { switchRole } = useRole();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -80,11 +83,29 @@ export default function Login() {
 
   const from = (location.state as any)?.from?.pathname;
 
-  const selectedOption = roleOptions.find((o) => o.role === selectedRole)!;
+  const isOther = selectedRole === 'other';
+  const selectedOption = isOther ? null : roleOptions.find((o) => o.role === selectedRole)!;
 
-  const handleRoleSelect = (role: Role) => {
+  const activeEmail = isOther ? manualEmail : selectedOption!.email;
+  const activePassword = isOther ? manualPassword : DEMO_PASSWORD;
+
+  const handleRoleSelect = (role: Role | 'other') => {
     setSelectedRole(role);
     setLoginError(null);
+  };
+
+  const handleManualEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedRole !== 'other') {
+      setSelectedRole('other');
+    }
+    setManualEmail(e.target.value);
+  };
+
+  const handleManualPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedRole !== 'other') {
+      setSelectedRole('other');
+    }
+    setManualPassword(e.target.value);
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,16 +114,16 @@ export default function Login() {
     setLoginError(null);
 
     try {
-      const result = await login(selectedOption.email, DEMO_PASSWORD);
+      const result = await login(activeEmail, activePassword);
 
       if (result.success) {
         const realRole = (result.role as Role) || null;
         if (realRole && realRole in roleRoutes) {
           switchRole(realRole);
           navigate(from || roleRoutes[realRole], { replace: true });
-        } else {
-          switchRole(selectedRole);
-          navigate(from || roleRoutes[selectedRole], { replace: true });
+        } else if (!isOther) {
+          switchRole(selectedRole as Role);
+          navigate(from || roleRoutes[selectedRole as Role], { replace: true });
         }
       } else {
         setLoginError(result.error || 'Login failed');
@@ -141,20 +162,30 @@ export default function Login() {
                   id="email"
                   type="email"
                   placeholder="you@company.com"
-                  value={selectedOption.email}
-                  readOnly
-                  className="mt-2 bg-background-subtle cursor-default"
+                  value={activeEmail}
+                  onChange={handleManualEmailChange}
+                  className={`mt-2 bg-background-subtle ${!isOther ? 'cursor-default' : ''}`}
                 />
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={DEMO_PASSWORD}
-                  readOnly
-                  className="mt-2 bg-background-subtle cursor-default"
-                />
+                <div className="relative mt-2">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={activePassword}
+                    onChange={handleManualPasswordChange}
+                    className={`bg-background-subtle pr-10 ${!isOther ? 'cursor-default' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2">
@@ -221,6 +252,28 @@ export default function Login() {
                   </button>
                 );
               })}
+              <button
+                type="button"
+                onClick={() => handleRoleSelect('other')}
+                className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
+                  isOther ? 'border-info bg-info-subtle shadow-sm' : 'bg-card border-border hover:bg-muted/80'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`p-2 rounded-lg ${isOther ? 'bg-info-subtle' : 'bg-card'}`}>
+                    <UserCog className={`h-5 w-5 ${isOther ? 'text-info' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-semibold text-foreground">Other / Manual Entry</span>
+                      {isOther && <CheckCircle className="h-4 w-4 text-info" />}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Enter custom credentials for manual login.
+                    </p>
+                  </div>
+                </div>
+              </button>
             </div>
           </Card>
         </div>

@@ -96,10 +96,10 @@
   --ds-z-base:    0;
   --ds-z-raised:  10;
   --ds-z-overlay: 20;
-  --ds-z-modal:   50;
-  --ds-z-popover: 100;
-  --ds-z-toast:   200;
-  --ds-z-topnav:  500;
+  --ds-z-topnav:  100;
+  --ds-z-modal:   200;
+  --ds-z-popover: 300;
+  --ds-z-toast:   400;
 
   /* ------------------------------------------------------------------ */
   /* Overlay backdrop (always dark regardless of theme)                  */

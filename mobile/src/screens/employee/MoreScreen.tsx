@@ -1,23 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { EmployeeStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-import { COLORS } from '../../constants';
+import { THEME, gs } from '../../styles/theme';
 
 type Nav = NativeStackNavigationProp<EmployeeStackParamList>;
 
 const MORE_ITEMS = [
-  { label: 'Offer a Ride', icon: 'car', screen: 'OfferRide', color: COLORS.warning },
-  { label: 'My Trips', icon: 'time', screen: 'MyTrips', color: COLORS.accent },
-  { label: 'Recurring Rides', icon: 'repeat', screen: 'RecurringRides', color: COLORS.primary },
-  { label: 'OxyPoints & Rewards', icon: 'trophy', screen: 'Rewards', color: COLORS.warning },
-  { label: 'Messages', icon: 'chatbubbles', screen: 'Messages', color: COLORS.info },
-  { label: 'Commute Profile', icon: 'person', screen: 'CommuteProfile', color: COLORS.success },
-  { label: 'Settings', icon: 'settings', screen: 'Settings', color: COLORS.textMuted },
+  { label: 'Offer a Ride',    icon: 'car',          screen: 'OfferRide',      color: THEME.warning },
+  { label: 'My Trips',        icon: 'time',         screen: 'MyTrips',        color: THEME.info },
+  { label: 'My Impact',       icon: 'leaf',         screen: 'MyImpact',       color: THEME.primary },
+  { label: 'Recurring Rides', icon: 'repeat',       screen: 'RecurringRides', color: THEME.primary },
+  { label: 'Messages',        icon: 'chatbubbles',  screen: 'Messages',       color: THEME.info },
+  { label: 'Commute Profile', icon: 'person',       screen: 'CommuteProfile', color: THEME.success },
+  { label: 'Settings',        icon: 'settings',     screen: 'Settings',       color: THEME.textMuted },
 ];
 
 export default function MoreScreen() {
@@ -25,36 +25,58 @@ export default function MoreScreen() {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
 
+  const initials = (user?.name ?? 'U')
+    .split(' ')
+    .map((n: string) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>More</Text>
+    <View style={[gs.flex1, styles.screen]}>
+      <StatusBar barStyle="light-content" backgroundColor={THEME.headerBg} />
+
+      {/* ── Header ─────────────────────────────────────── */}
+      <View style={[gs.header, { paddingTop: insets.top + 10 }]}>
+        <View style={gs.headerRow}>
+          <Text style={gs.headerPageTitle}>More</Text>
+          <BellButton count={2} />
+        </View>
       </View>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* User Info */}
-        <View style={styles.userCard}>
-          <View style={styles.userAvatar}>
-            <Text style={styles.userAvatarText}>{(user?.name ?? 'U')[0]}</Text>
+
+      <ScrollView contentContainerStyle={gs.scrollContent}>
+        {/* ── User card ──────────────────────────────────── */}
+        <View style={[gs.card, styles.userCard]}>
+          <View style={gs.avatarLg}>
+            <Text style={gs.avatarTextLg}>{initials}</Text>
           </View>
-          <View>
-            <Text style={styles.userName}>{user?.name}</Text>
-            <Text style={styles.userRole}>{user?.role} · {user?.tenant_name ?? 'CoShift'}</Text>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{user?.name ?? 'Employee'}</Text>
+            <Text style={styles.userRole}>
+              {user?.role ?? 'employee'} · {user?.tenant_name ?? 'CoShift'}
+            </Text>
+            {user?.department && (
+              <View style={[gs.chip, styles.deptChip]}>
+                <Text style={gs.chipText}>{user.department}</Text>
+              </View>
+            )}
           </View>
         </View>
 
-        {/* Menu Items */}
-        <View style={styles.menu}>
-          {MORE_ITEMS.map((item) => (
+        {/* ── Menu ───────────────────────────────────────── */}
+        <View style={gs.card}>
+          {MORE_ITEMS.map((item, idx) => (
             <TouchableOpacity
               key={item.screen}
-              style={styles.menuItem}
+              style={[styles.menuItem, idx < MORE_ITEMS.length - 1 && styles.menuItemBorder]}
               onPress={() => navigation.navigate(item.screen as any)}
+              activeOpacity={0.7}
             >
-              <View style={[styles.menuIcon, { backgroundColor: item.color + '20' }]}>
-                <Ionicons name={item.icon as any} size={22} color={item.color} />
+              <View style={[styles.menuIcon, { backgroundColor: item.color + '18' }]}>
+                <Ionicons name={item.icon as any} size={20} color={item.color} />
               </View>
               <Text style={styles.menuLabel}>{item.label}</Text>
-              <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+              <Ionicons name="chevron-forward" size={16} color={THEME.textMuted} />
             </TouchableOpacity>
           ))}
         </View>
@@ -63,18 +85,67 @@ export default function MoreScreen() {
   );
 }
 
+function BellButton({ count }: { count: number }) {
+  return (
+    <TouchableOpacity style={gs.bellBtn}>
+      <Ionicons name="notifications-outline" size={20} color="#fff" />
+      {count > 0 && (
+        <View style={gs.bellBadgeWrap}>
+          <Text style={gs.bellBadgeText}>{count}</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  header: { backgroundColor: COLORS.surface, paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
-  content: { padding: 16, gap: 16 },
-  userCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.border },
-  userAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: COLORS.primary + '30', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: COLORS.primary },
-  userAvatarText: { fontSize: 20, fontWeight: '800', color: COLORS.primary },
-  userName: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
-  userRole: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2, textTransform: 'capitalize' },
-  menu: { backgroundColor: COLORS.surface, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
-  menuItem: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  menuIcon: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  menuLabel: { flex: 1, fontSize: 15, color: COLORS.textPrimary, fontWeight: '500' },
+  screen: {
+    backgroundColor: THEME.background,
+  },
+  userCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  userInfo: {
+    flex: 1,
+    gap: 3,
+  },
+  userName: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: THEME.textPrimary,
+  },
+  userRole: {
+    fontSize: 13,
+    color: THEME.textSecondary,
+    textTransform: 'capitalize',
+  },
+  deptChip: {
+    alignSelf: 'flex-start',
+    marginTop: 2,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 13,
+    gap: 14,
+  },
+  menuItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.border,
+  },
+  menuIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuLabel: {
+    flex: 1,
+    fontSize: 15,
+    color: THEME.textPrimary,
+    fontWeight: '500',
+  },
 });

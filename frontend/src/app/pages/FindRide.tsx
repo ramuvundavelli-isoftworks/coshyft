@@ -41,6 +41,7 @@ import {
   Repeat,
   BarChart3,
   Loader2,
+  LocateFixed,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExtendedRide, CommutePreferences, AdvancedFilters } from '../types';
@@ -115,6 +116,8 @@ export default function FindRide() {
   const savePreferencesMutation = useApiMutation((data: any) => authApi.updateProfile(data));
 
   const [isSearching, setIsSearching] = useState(false);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   // Convert API ride match result to ExtendedRide
   const mapApiRide = (item: any): ExtendedRide => {
@@ -147,10 +150,34 @@ export default function FindRide() {
     };
   };
 
+  // Use browser GPS to populate origin
+  const handleUseLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setUserCoords({ lat: latitude, lng: longitude });
+        setOrigin(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        setIsLocating(false);
+        toast.success('Location detected! Click Search to find nearby rides.');
+      },
+      () => {
+        setIsLocating(false);
+        toast.error('Could not get your location. Please enter your address manually.');
+      },
+      { timeout: 10000, enableHighAccuracy: false },
+    );
+  };
+
   // Search for available rides
   const handleSearch = async () => {
     setIsSearching(true);
-    const originCoords = geocodeAddress(origin);
+    // Prefer real GPS coords; fall back to named-location lookup
+    const originCoords = userCoords ?? geocodeAddress(origin);
     const destCoords = geocodeAddress(destination);
     try {
       const result = await carpoolingApi.findRides({
@@ -243,19 +270,17 @@ export default function FindRide() {
 
   const handleBookRide = async () => {
     if (selectedRide) {
-      setIsBookDialogOpen(false);
-      setIsConfirmationDialogOpen(true);
-
       const result = await requestRideMutation.execute({
         rideId: selectedRide.id,
         payload: {
-          seats_requested: parseInt(bookingData.seats),
-          pickup_location: bookingData.pickupLocation,
-          notes: bookingData.notes,
+          pickup_address: bookingData.pickupLocation,
+          message: bookingData.notes || undefined,
         },
       });
 
       if (result.success) {
+        setIsBookDialogOpen(false);
+        setIsConfirmationDialogOpen(true);
         toast.success(`Ride booked with ${selectedRide.driver}!`);
       } else {
         toast.error(result.error?.message || 'Failed to book ride');
@@ -419,15 +444,35 @@ export default function FindRide() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="text-sm font-medium text-foreground mb-2 block">From</label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Enter your location"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                className="pl-9"
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Enter your location"
+                  value={origin}
+                  onChange={(e) => { setOrigin(e.target.value); setUserCoords(null); }}
+                  className="pl-9"
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleUseLocation}
+                disabled={isLocating}
+                title="Use my GPS location"
+              >
+                {isLocating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LocateFixed className="h-4 w-4" />
+                )}
+              </Button>
             </div>
+            {userCoords && (
+              <p className="text-xs text-success mt-1">
+                📍 GPS location detected
+              </p>
+            )}
           </div>
           <div>
             <label className="text-sm font-medium text-foreground mb-2 block">To</label>
@@ -685,7 +730,16 @@ export default function FindRide() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2">
-                    <Button onClick={() => handleViewDetails(ride)}>
+                    <Button
+                      onClick={() => {
+                        setSelectedRide(ride);
+                        setIsBookDialogOpen(true);
+                      }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Book Ride
+                    </Button>
+                    <Button variant="outline" onClick={() => handleViewDetails(ride)}>
                       <BarChart3 className="h-4 w-4 mr-2" />
                       View Details
                     </Button>

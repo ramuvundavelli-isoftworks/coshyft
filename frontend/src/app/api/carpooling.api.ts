@@ -30,8 +30,8 @@ export const carpoolingApi = {
     return api.put(`/rides/${rideId}`, data);
   },
 
-  async cancelRide(rideId: string): Promise<ApiResponse> {
-    return api.delete(`/rides/${rideId}`);
+  async cancelRide(rideId: string, data: { reason: string; note?: string }): Promise<ApiResponse> {
+    return api.post(`/rides/${rideId}/cancel`, data);
   },
 
   async requestRide(rideId: string, data: any): Promise<ApiResponse> {
@@ -42,8 +42,12 @@ export const carpoolingApi = {
     return api.put(`/rides/${rideId}/request/${requestId}/accept`);
   },
 
-  async rejectRequest(rideId: string, requestId: string): Promise<ApiResponse> {
-    return api.put(`/rides/${rideId}/request/${requestId}/reject`);
+  async rejectRequest(rideId: string, requestId: string, data?: { reason?: string; note?: string }): Promise<ApiResponse> {
+    return api.put(`/rides/${rideId}/request/${requestId}/reject`, data ?? {});
+  },
+
+  async cancelRequest(rideId: string, requestId: string, data: { reason: string; note?: string }): Promise<ApiResponse> {
+    return api.post(`/rides/${rideId}/request/${requestId}/cancel`, data);
   },
 
   async startRide(rideId: string): Promise<ApiResponse> {
@@ -84,5 +88,9 @@ export const carpoolingApi = {
 
   async addException(templateId: string, data: any): Promise<ApiResponse> {
     return api.post(`/rides/recurring/${templateId}/exception`, data);
+  },
+
+  async getRideRequests(rideId: string): Promise<ApiResponse> {
+    return api.get(`/rides/${rideId}/requests`);
   },
 };
