@@ -11,7 +11,7 @@ import { commuteApi, carpoolingApi } from '../../api';
 import { THEME, gs } from '../../styles/theme';
 import { useLocation } from '../../hooks/useLocation';
 
-type Tab = 'trips' | 'find' | 'offer';
+type Tab = 'trips' | 'find' | 'offer' | 'active';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -37,15 +37,17 @@ export default function RidesScreen() {
 
       {/* ── Segmented tabs ─────────────────────────────── */}
       <View style={gs.segBar}>
-        <SegTab label="My Trips"   id="trips" active={activeTab} onPress={setActiveTab} />
-        <SegTab label="Find Ride"  id="find"  active={activeTab} onPress={setActiveTab} />
-        <SegTab label="Offer Ride" id="offer" active={activeTab} onPress={setActiveTab} />
+        <SegTab label="My Trips"   id="trips"  active={activeTab} onPress={setActiveTab} />
+        <SegTab label="Find Ride"  id="find"   active={activeTab} onPress={setActiveTab} />
+        <SegTab label="Offer Ride" id="offer"  active={activeTab} onPress={setActiveTab} />
+        <SegTab label="Active"     id="active" active={activeTab} onPress={setActiveTab} />
       </View>
 
       {/* ── Content ────────────────────────────────────── */}
-      {activeTab === 'trips' && <MyTripsTab />}
-      {activeTab === 'find'  && <FindRideTab />}
-      {activeTab === 'offer' && <OfferRideTab />}
+      {activeTab === 'trips'  && <MyTripsTab />}
+      {activeTab === 'find'   && <FindRideTab />}
+      {activeTab === 'offer'  && <OfferRideTab />}
+      {activeTab === 'active' && <ActiveTripTab />}
     </View>
   );
 }
@@ -81,61 +83,102 @@ function BellButton({ count }: { count: number }) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// MY TRIPS TAB
+// MY TRIPS TAB  – combines commute history + carpool rides
 // ══════════════════════════════════════════════════════════════
 function MyTripsTab() {
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeStatus, setActiveStatus] = useState<'all' | 'upcoming' | 'completed'>('all');
 
   const loadTrips = useCallback(async () => {
-    const result = await commuteApi.getHistory({ page: 1, page_size: 20 });
-    if (result.success) setTrips((result.data as any)?.items ?? []);
+    const [historyRes, ridesRes] = await Promise.all([
+      commuteApi.getHistory({ page: 1, page_size: 30 }),
+      carpoolingApi.getMyRides(),
+    ]);
+
+    const historyItems: any[] = (historyRes.success ? (historyRes.data as any)?.items ?? [] : []).map((e: any) => ({
+      id: e.id,
+      type: 'commute',
+      date: e.date ?? e.date_logged,
+      mode: e.transport_mode_label ?? 'Transit',
+      route: `${e.origin_address ?? ''} → ${e.destination_address ?? 'Office'}`,
+      with: null,
+      km: e.distance_km?.toFixed(1) ?? '0',
+      co2: `+${Math.max(0, (e.distance_km ?? 0) * 0.178 - (e.emissions_kg_co2 ?? 0)).toFixed(1)}`,
+      status: 'completed',
+    }));
+
+    const rideItems: any[] = (ridesRes.success && Array.isArray(ridesRes.data) ? ridesRes.data as any[] : []).map((r: any) => {
+      const depTime = r.departure_time ? new Date(r.departure_time) : null;
+      const isPast = depTime !== null && depTime < new Date();
+      const status = r.status === 'completed' ? 'completed'
+        : r.status === 'cancelled' ? 'cancelled'
+        : isPast ? 'completed' : 'upcoming';
+      return {
+        id: r.id,
+        type: 'carpool',
+        date: r.departure_time?.substring(0, 10) ?? '',
+        mode: r.user_role === 'driver' ? 'Carpool (Driver)' : 'Carpool',
+        route: `${r.origin ?? ''} → ${r.destination ?? ''}`,
+        with: r.user_role !== 'driver' ? (r.driver_name ?? 'Driver') : null,
+        km: (r.distance_km ?? 0).toFixed(1),
+        co2: `+${Math.max(0, r.co2_saved ?? 0).toFixed(1)}`,
+        status,
+        userRole: r.user_role,
+      };
+    });
+
+    const combined = [...historyItems, ...rideItems]
+      .filter(t => t.date)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    setTrips(combined.length > 0 ? combined : MOCK_TRIPS);
     setLoading(false);
   }, []);
 
   useEffect(() => { loadTrips(); }, [loadTrips]);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadTrips();
-    setRefreshing(false);
-  };
+  const onRefresh = async () => { setRefreshing(true); await loadTrips(); setRefreshing(false); };
+
+  const filtered = activeStatus === 'all'
+    ? trips
+    : trips.filter(t => t.status === activeStatus);
 
   if (loading) {
-    return (
-      <View style={styles.loadingWrap}>
-        <ActivityIndicator color={THEME.primary} size="large" />
-      </View>
-    );
+    return <View style={styles.loadingWrap}><ActivityIndicator color={THEME.primary} size="large" /></View>;
   }
-
-  const MOCK_TRIPS = [
-    { id: '1', date: '18 Feb 2026', route: 'Ranelagh → Sandyford BP', with: 'Alice Johnson', km: '12.3', co2: '+2.1', status: 'completed' },
-    { id: '2', date: '17 Feb 2026', route: 'City Centre → Tech Park', with: null, km: '8.5', co2: '+0.8', status: 'completed' },
-    { id: '3', date: '22 Feb 2026', route: 'Downtown → Office', with: 'Sarah Johnson', km: '15.2', co2: '+2.5', status: 'upcoming' },
-  ];
-
-  const displayTrips = trips.length > 0 ? trips : MOCK_TRIPS;
 
   return (
     <FlatList
-      data={displayTrips}
+      data={filtered}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
       ListHeaderComponent={
-        displayTrips.length > 0
-          ? <Text style={styles.resultCount}>{displayTrips.length} rides found</Text>
-          : null
+        <>
+          {/* Status filter pills */}
+          <View style={styles.statusRow}>
+            {(['all', 'upcoming', 'completed'] as const).map((s) => (
+              <TouchableOpacity
+                key={s}
+                style={[styles.statusPill, activeStatus === s && styles.statusPillActive]}
+                onPress={() => setActiveStatus(s)}
+              >
+                <Text style={[styles.statusPillText, activeStatus === s && styles.statusPillTextActive]}>
+                  {s === 'all' ? 'All' : s === 'upcoming' ? 'Upcoming' : 'Completed'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Text style={styles.resultCount}>{filtered.length} trip{filtered.length !== 1 ? 's' : ''}</Text>
+        </>
       }
       ListEmptyComponent={
         <View style={gs.emptyWrap}>
           <Ionicons name="calendar-outline" size={48} color={THEME.textMuted} />
-          <Text style={gs.emptyTitle}>No trips yet</Text>
+          <Text style={gs.emptyTitle}>No trips found</Text>
           <Text style={gs.emptyText}>Log your first commute to see your history here.</Text>
         </View>
       }
@@ -144,44 +187,51 @@ function MyTripsTab() {
   );
 }
 
+const MOCK_TRIPS = [
+  { id: '1', type: 'carpool', date: '2026-02-18', mode: 'Carpool', route: 'Ranelagh → Sandyford BP', with: 'Alice Johnson', km: '12.3', co2: '+2.1', status: 'completed' },
+  { id: '2', type: 'commute', date: '2026-02-17', mode: 'Public Transit', route: 'City Centre → Tech Park', with: null, km: '8.5', co2: '+0.8', status: 'completed' },
+  { id: '3', type: 'carpool', date: '2026-02-22', mode: 'Carpool', route: 'Downtown → Office', with: 'Sarah Johnson', km: '15.2', co2: '+2.5', status: 'upcoming' },
+];
+
 function TripCard({ item }: { item: any }) {
   const isCompleted = item.status === 'completed';
-  const date = item.date ?? new Date(item.date_logged ?? Date.now()).toLocaleDateString('en-IE', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-  const route = item.route ?? `${item.origin_address ?? ''} → ${item.destination_address ?? ''}`;
-  const km = item.km ?? item.distance_km?.toFixed(1) ?? '—';
-  const co2 = item.co2 ?? `+${item.co2_saved?.toFixed(1) ?? '0'}`;
+  const isUpcoming = item.status === 'upcoming';
+  const date = item.date
+    ? new Date(item.date).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—';
+
+  const modeColor = item.type === 'carpool' ? THEME.primary : '#3B82F6';
 
   return (
     <View style={[gs.card, styles.tripCard]}>
       <View style={gs.rowBetween}>
         <View style={[gs.row, gs.gap12]}>
-          <View style={styles.tripIcon}>
-            <Ionicons name="car-outline" size={18} color={THEME.primary} />
+          <View style={[styles.tripIcon, { backgroundColor: modeColor + '20' }]}>
+            <Ionicons name={item.type === 'carpool' ? 'car-outline' : 'bus-outline'} size={18} color={modeColor} />
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.tripMode}>{item.mode}</Text>
             <Text style={styles.tripDate}>{date}</Text>
-            <Text style={styles.tripRoute}>{route}</Text>
-            {item.with && (
-              <Text style={styles.tripWith}>with {item.with}</Text>
-            )}
+            <Text style={styles.tripRoute} numberOfLines={1}>{item.route}</Text>
+            {item.with && <Text style={styles.tripWith}>with {item.with}</Text>}
           </View>
         </View>
         {isCompleted ? (
-          <View style={gs.pillCompleted}>
-            <Text style={gs.pillCompletedText}>Completed</Text>
-          </View>
-        ) : (
-          <View style={gs.pillUpcoming}>
-            <Text style={gs.pillUpcomingText}>Upcoming</Text>
-          </View>
-        )}
+          <View style={gs.pillCompleted}><Text style={gs.pillCompletedText}>Done</Text></View>
+        ) : isUpcoming ? (
+          <View style={gs.pillUpcoming}><Text style={gs.pillUpcomingText}>Upcoming</Text></View>
+        ) : null}
       </View>
 
       <View style={[gs.row, styles.tripFooter]}>
-        <Text style={gs.textSm}>{km} km</Text>
-        <Text style={styles.co2Text}>{co2} kg CO₂</Text>
+        <View style={[gs.row, gs.gap4]}>
+          <Ionicons name="navigate-outline" size={12} color={THEME.textMuted} />
+          <Text style={gs.textSm}>{item.km} km</Text>
+        </View>
+        <View style={[gs.row, gs.gap4]}>
+          <Ionicons name="leaf-outline" size={12} color={THEME.primary} />
+          <Text style={styles.co2Text}>{item.co2} kg CO₂</Text>
+        </View>
       </View>
     </View>
   );
@@ -204,7 +254,6 @@ function FindRideTab() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  // ── Auto-detect location on mount ──────────────────────────
   useEffect(() => {
     handleUseGPS();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,7 +281,6 @@ function FindRideTab() {
     setLoading(true);
     setSearched(true);
 
-    // Resolve origin coords: use GPS if available, else geocode the typed address
     let oLat = originCoords?.lat ?? 53.3498;
     let oLng = originCoords?.lng ?? -6.2603;
 
@@ -241,7 +289,6 @@ function FindRideTab() {
       if (resolved) { oLat = resolved.lat; oLng = resolved.lng; }
     }
 
-    // Resolve destination coords
     let dLat = destCoords.lat;
     let dLng = destCoords.lng;
     if (destText.trim()) {
@@ -312,7 +359,7 @@ function FindRideTab() {
                   value={originText}
                   onChangeText={(t) => {
                     setOriginText(t);
-                    setOriginCoords(null); // user typed, reset GPS coords
+                    setOriginCoords(null);
                   }}
                   placeholder="Your starting address"
                   placeholderTextColor={THEME.textMuted}
@@ -441,7 +488,7 @@ function RideCard({ item, onBook }: { item: any; onBook: (id: string) => void })
           onPress={() => onBook(item.id)}
           activeOpacity={0.85}
         >
-          <Text style={styles.bookBtnText}>Book</Text>
+          <Text style={styles.bookBtnText}>Request</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -468,7 +515,7 @@ function OfferRideTab() {
   const [departureTime, setDepartureTime] = useState('08:15');
   const [seats, setSeats]             = useState(3);
   const [isRecurring, setIsRecurring] = useState(true);
-  const [selectedDays, setSelectedDays] = useState<number[]>([0, 2, 4]); // Mon Wed Fri
+  const [selectedDays, setSelectedDays] = useState<number[]>([0, 2, 4]);
   const [originCoords, setOriginCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [loading, setLoading]         = useState(false);
   const [myOffers, setMyOffers]       = useState<any[]>([]);
@@ -525,6 +572,12 @@ function OfferRideTab() {
       setOrigin('');
       setDestination('');
       setOriginCoords(null);
+      // Refresh my offers
+      carpoolingApi.getMyRides().then((res) => {
+        if (res.success && Array.isArray(res.data)) {
+          setMyOffers((res.data as any[]).filter((r: any) => r.user_role === 'driver'));
+        }
+      });
     } else {
       Alert.alert('Error', result.error?.message ?? 'Failed to offer ride');
     }
@@ -535,8 +588,10 @@ function OfferRideTab() {
     route: 'Ranelagh → Sandyford BP',
     schedule: 'Mon, Wed, Fri • 08:15 AM',
     ridesGenerated: 24,
-    co2Saved: '48.2',
+    co2_saved: 48.2,
+    seats_available: 2,
     newRequests: 2,
+    status: 'active',
   };
 
   const displayOffers = myOffers.length > 0 ? myOffers : [MOCK_OFFER];
@@ -739,6 +794,189 @@ function OfferCard({ offer }: { offer: any }) {
   );
 }
 
+// ══════════════════════════════════════════════════════════════
+// ACTIVE TRIP TAB
+// ══════════════════════════════════════════════════════════════
+function ActiveTripTab() {
+  const [trip, setTrip] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadTrip = useCallback(async () => {
+    const res = await carpoolingApi.getActiveTrip();
+    setTrip(res.success ? res.data : null);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadTrip(); }, [loadTrip]);
+
+  const onRefresh = async () => { setRefreshing(true); await loadTrip(); setRefreshing(false); };
+
+  const handleStart = async () => {
+    if (!trip?.id) return;
+    Alert.alert('Start Trip?', 'Mark this trip as started?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Start', onPress: async () => {
+          const result = await carpoolingApi.startRide(trip.id);
+          if (result.success) {
+            setTrip((prev: any) => ({ ...prev, status: 'active' }));
+            Alert.alert('Trip started!', 'Have a safe journey.');
+          } else {
+            Alert.alert('Error', result.error?.message ?? 'Failed to start trip');
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleComplete = async () => {
+    if (!trip?.id) return;
+    Alert.alert('Complete Trip?', 'Mark this trip as completed?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Complete', onPress: async () => {
+          const result = await carpoolingApi.completeRide(trip.id);
+          if (result.success) {
+            setTrip(null);
+            Alert.alert('Trip completed! 🎉', 'Great job reducing emissions today.');
+          } else {
+            Alert.alert('Error', result.error?.message ?? 'Failed to complete trip');
+          }
+        },
+      },
+    ]);
+  };
+
+  if (loading) {
+    return <View style={styles.loadingWrap}><ActivityIndicator color={THEME.primary} size="large" /></View>;
+  }
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.listContent}
+      showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
+    >
+      {!trip ? (
+        <View style={styles.noTripWrap}>
+          <View style={styles.noTripIcon}>
+            <Ionicons name="car-outline" size={40} color={THEME.primary} />
+          </View>
+          <Text style={styles.noTripTitle}>No Active Trip</Text>
+          <Text style={styles.noTripText}>
+            You don't have an active trip right now. Find a ride or offer one to get started.
+          </Text>
+          <TouchableOpacity style={styles.findRideBtn} activeOpacity={0.85}>
+            <Ionicons name="search-outline" size={16} color="#fff" />
+            <Text style={styles.findRideBtnText}>Find a Ride</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          {/* Live status banner */}
+          <View style={[styles.statusBanner, trip.status === 'active' ? styles.statusBannerActive : styles.statusBannerScheduled]}>
+            <View style={[styles.statusDot, { backgroundColor: trip.status === 'active' ? THEME.success : THEME.warning }]} />
+            <Text style={[styles.statusText, { color: trip.status === 'active' ? THEME.success : THEME.warning }]}>
+              {trip.status === 'active' ? 'Trip In Progress' : 'Scheduled'}
+            </Text>
+            <View style={[styles.statusPill2, { backgroundColor: trip.status === 'active' ? THEME.success + '20' : THEME.warning + '20' }]}>
+              <Text style={[styles.statusPill2Text, { color: trip.status === 'active' ? THEME.success : THEME.warning }]}>
+                {trip.status === 'active' ? 'Live' : 'Upcoming'}
+              </Text>
+            </View>
+          </View>
+
+          {/* Route card */}
+          <View style={gs.card}>
+            <Text style={gs.cardTitle}>Route</Text>
+            <View style={styles.routeRow}>
+              <View style={styles.routeDot} />
+              <Text style={styles.routeText}>{trip.origin ?? 'Origin'}</Text>
+            </View>
+            <View style={styles.routeLine} />
+            <View style={styles.routeRow}>
+              <View style={[styles.routeDot, { backgroundColor: THEME.primary }]} />
+              <Text style={styles.routeText}>{trip.destination ?? 'Destination'}</Text>
+            </View>
+            {trip.departure_time && (
+              <View style={[gs.row, gs.gap6, { marginTop: 12 }]}>
+                <Ionicons name="time-outline" size={14} color={THEME.textMuted} />
+                <Text style={gs.textSm}>
+                  {new Date(trip.departure_time).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* Stats row */}
+          <View style={styles.statsRow}>
+            <View style={[gs.card, styles.statCard]}>
+              <Ionicons name="navigate-outline" size={20} color={THEME.info} />
+              <Text style={styles.statValue}>{(trip.distance_km ?? trip.distance ?? 0).toFixed(1)}</Text>
+              <Text style={styles.statLabel}>km</Text>
+            </View>
+            <View style={[gs.card, styles.statCard]}>
+              <Ionicons name="people-outline" size={20} color={THEME.primary} />
+              <Text style={styles.statValue}>{(trip.seats_total ?? 1) - (trip.seats_available ?? 0)}</Text>
+              <Text style={styles.statLabel}>passengers</Text>
+            </View>
+            <View style={[gs.card, styles.statCard]}>
+              <Ionicons name="leaf-outline" size={20} color={THEME.success} />
+              <Text style={[styles.statValue, gs.textGreen]}>
+                {Math.max(0, trip.co2_saved ?? ((trip.distance_km ?? 10) * 0.168)).toFixed(1)}
+              </Text>
+              <Text style={styles.statLabel}>kg CO₂</Text>
+            </View>
+          </View>
+
+          {/* Passengers */}
+          {(trip.passengers ?? []).length > 0 && (
+            <View style={gs.card}>
+              <Text style={gs.cardTitle}>Passengers</Text>
+              {(trip.passengers as string[]).map((name: string, i: number) => (
+                <View key={i} style={styles.passengerRow}>
+                  <View style={styles.passengerAvatar}>
+                    <Text style={styles.passengerInitial}>{name?.[0]?.toUpperCase() ?? '?'}</Text>
+                  </View>
+                  <Text style={styles.passengerName}>{name}</Text>
+                  <Ionicons name="checkmark-circle" size={18} color={THEME.success} />
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* CO₂ impact card */}
+          <View style={[gs.card, styles.impactCard]}>
+            <Ionicons name="leaf" size={24} color={THEME.primary} />
+            <Text style={styles.impactTitle}>Environmental Impact</Text>
+            <Text style={styles.impactValue}>
+              ~{Math.max(0, trip.co2_saved ?? ((trip.distance_km ?? 10) * 0.168)).toFixed(1)} kg CO₂ saved
+            </Text>
+            <Text style={styles.impactSub}>vs. everyone driving solo today</Text>
+          </View>
+
+          {/* Action buttons */}
+          <View style={styles.actionsRow}>
+            {trip.status !== 'active' && (
+              <TouchableOpacity style={[styles.actionBtn, styles.startBtn]} onPress={handleStart} activeOpacity={0.85}>
+                <Ionicons name="play" size={16} color="#fff" />
+                <Text style={styles.actionBtnText}>Start Trip</Text>
+              </TouchableOpacity>
+            )}
+            {trip.status === 'active' && (
+              <TouchableOpacity style={[styles.actionBtn, styles.completeBtn]} onPress={handleComplete} activeOpacity={0.85}>
+                <Ionicons name="checkmark" size={16} color="#fff" />
+                <Text style={styles.actionBtnText}>Complete Trip</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </>
+      )}
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
     backgroundColor: THEME.background,
@@ -752,6 +990,33 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 32,
     gap: 12,
+  },
+
+  // Status filter pills (My Trips)
+  statusRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  statusPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: THEME.surface,
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  statusPillActive: {
+    backgroundColor: THEME.primary,
+    borderColor: THEME.primary,
+  },
+  statusPillText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: THEME.textSecondary,
+  },
+  statusPillTextActive: {
+    color: '#fff',
   },
   resultCount: {
     fontSize: 15,
@@ -934,9 +1199,13 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: THEME.successBg,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  tripMode: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: THEME.textSecondary,
   },
   tripDate: {
     fontSize: 15,
@@ -954,7 +1223,7 @@ const styles = StyleSheet.create({
   },
   tripFooter: {
     justifyContent: 'space-between',
-    paddingTop: 4,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
   },
@@ -1075,5 +1344,204 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: THEME.textPrimary,
+  },
+
+  // ── Active Trip tab ──────────────────────────────────────────
+  noTripWrap: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    gap: 12,
+  },
+  noTripIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: THEME.primary + '15',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  noTripTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: THEME.textPrimary,
+  },
+  noTripText: {
+    fontSize: 14,
+    color: THEME.textSecondary,
+    textAlign: 'center',
+    maxWidth: 280,
+    lineHeight: 20,
+  },
+  findRideBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: THEME.primary,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 8,
+  },
+  findRideBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
+  },
+
+  statusBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+  },
+  statusBannerActive: {
+    backgroundColor: THEME.success + '12',
+    borderColor: THEME.success + '30',
+  },
+  statusBannerScheduled: {
+    backgroundColor: THEME.warning + '12',
+    borderColor: THEME.warning + '30',
+  },
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  statusText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  statusPill2: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusPill2Text: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 4,
+  },
+  routeDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: THEME.textMuted,
+  },
+  routeText: {
+    fontSize: 14,
+    color: THEME.textPrimary,
+    flex: 1,
+  },
+  routeLine: {
+    width: 2,
+    height: 16,
+    backgroundColor: THEME.border,
+    marginLeft: 4,
+    marginVertical: 2,
+  },
+
+  statsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  statCard: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 14,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: THEME.textPrimary,
+    marginTop: 4,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: THEME.textSecondary,
+    textAlign: 'center',
+  },
+
+  passengerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.border,
+  },
+  passengerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: THEME.primary + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  passengerInitial: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: THEME.primary,
+  },
+  passengerName: {
+    flex: 1,
+    fontSize: 14,
+    color: THEME.textPrimary,
+    fontWeight: '500',
+  },
+
+  impactCard: {
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: THEME.primary + '08',
+    borderWidth: 1,
+    borderColor: THEME.primary + '25',
+  },
+  impactTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: THEME.primary,
+  },
+  impactValue: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: THEME.primary,
+  },
+  impactSub: {
+    fontSize: 12,
+    color: THEME.textSecondary,
+  },
+
+  actionsRow: {
+    gap: 10,
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 14,
+    paddingVertical: 15,
+  },
+  startBtn: {
+    backgroundColor: THEME.primary,
+  },
+  completeBtn: {
+    backgroundColor: THEME.success,
+  },
+  actionBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
   },
 });

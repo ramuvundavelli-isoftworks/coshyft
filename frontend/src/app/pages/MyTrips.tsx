@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -21,31 +21,29 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../components/ui/table';
-import { 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Star, 
-  Award, 
-  Download, 
-  Filter, 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import {
+  Calendar,
+  TrendingDown,
+  Download,
   Search,
-  ChevronUp,
-  ChevronDown,
   Plus,
   Eye,
-  TrendingDown,
   Edit,
   Trash2,
   X,
-  AlertTriangle
+  AlertTriangle,
+  MoreHorizontal,
+  Car,
+  Bike,
+  Bus,
+  PersonStanding,
+  Route,
 } from 'lucide-react';
 import { LogCommuteModal, CommuteEntry } from '../components/LogCommuteModal';
 import { toast } from 'sonner';
@@ -54,7 +52,6 @@ import { carpoolingApi, commuteApi } from '../api';
 
 type SortField = 'date' | 'mode' | 'distance' | 'co2Saved';
 type SortDirection = 'asc' | 'desc';
-type ViewMode = 'cards' | 'table';
 
 interface Trip {
   id: string;
@@ -82,7 +79,7 @@ const mockTrips: Trip[] = [
 ];
 
 export default function MyTrips() {
-  const { data: historyData, loading: historyLoading, refetch: refetchHistory } = useApi(
+  const { data: historyData, refetch: refetchHistory } = useApi(
     () => commuteApi.getHistory({ page: 1, page_size: 100 }),
     { deps: [] }
   );
@@ -95,7 +92,20 @@ export default function MyTrips() {
     ? (rideHistoryData as any).items
     : [];
 
-  const rideTrips: Trip[] = rideItems.map((ride: any) => ({
+  const rideTrips: Trip[] = rideItems.map((ride: any) => {
+    const depTime = ride.departure_time ? new Date(ride.departure_time) : null;
+    const isPast = depTime !== null && depTime < new Date();
+    const status: Trip['status'] =
+      ride.status === 'completed'
+        ? 'completed'
+        : ride.status === 'cancelled'
+        ? 'cancelled'
+        : ride.status === 'active'
+        ? 'upcoming'
+        : isPast
+        ? 'completed'
+        : 'upcoming';
+    return ({
     id: ride.id,
     date: ride.departure_time?.substring(0, 10) ?? '',
     mode: 'Carpool',
@@ -103,19 +113,14 @@ export default function MyTrips() {
     distance: ride.distance_km ?? 0,
     co2Saved: Math.max(0, ride.co2_saved ?? 0),
     emissions: 0,
-    status:
-      ride.status === 'scheduled' || ride.status === 'active'
-        ? 'upcoming'
-        : ride.status === 'completed'
-        ? 'completed'
-        : 'cancelled',
+    status,
     office: `${ride.origin ?? ''} → ${ride.destination ?? ''}`,
     passengers: Math.max(0, (ride.seats_total ?? 1) - (ride.seats_available ?? 1)),
     userRole: ride.user_role,
     requestId: ride.request_id,
-  }));
+  });
+  });
 
-  // Map API commute entries to Trip shape; fall back to mock until data loads
   const apiTrips: Trip[] = ((historyData as any)?.items ?? []).map((e: any) => ({
     id: e.id,
     date: e.date,
@@ -146,10 +151,9 @@ export default function MyTrips() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [modeFilter, setModeFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [activeStatus, setActiveStatus] = useState<'all' | 'upcoming' | 'completed' | 'cancelled'>('all');
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [isLogCommuteOpen, setIsLogCommuteOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -157,70 +161,49 @@ export default function MyTrips() {
   const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
-  const [commuteEntries, setCommuteEntries] = useState<CommuteEntry[]>([]);
-  const [editData, setEditData] = useState({
-    mode: '',
-    distance: '',
-    passengers: '',
-    notes: '',
-  });
+  const [editData, setEditData] = useState({ mode: '', distance: '', passengers: '', notes: '' });
   const [exportFormat, setExportFormat] = useState('csv');
   const [cancelReason, setCancelReason] = useState('');
   const [cancelNote, setCancelNote] = useState('');
   const [isCancellingApi, setIsCancellingApi] = useState(false);
 
-  // Filter trips
-  let filteredTrips = trips.filter(trip => {
-    const matchesSearch = 
+  // Base filter (no status)
+  const baseFiltered = trips.filter(trip => {
+    const matchesSearch =
       trip.mode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.driver?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.office.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesMode = modeFilter === 'all' || trip.mode === modeFilter;
-    const matchesStatus = statusFilter === 'all' || trip.status === statusFilter;
-    
     let matchesDate = true;
     if (dateFilter !== 'all') {
       const tripDate = new Date(trip.date);
       const now = new Date();
       const daysDiff = Math.floor((now.getTime() - tripDate.getTime()) / (1000 * 60 * 60 * 24));
-      
       if (dateFilter === '7d') matchesDate = daysDiff <= 7;
       else if (dateFilter === '30d') matchesDate = daysDiff <= 30;
       else if (dateFilter === '90d') matchesDate = daysDiff <= 90;
     }
-    
-    return matchesSearch && matchesMode && matchesStatus && matchesDate;
+    return matchesSearch && matchesMode && matchesDate;
   });
 
-  // Sort trips
+  const filteredTrips = activeStatus === 'all'
+    ? baseFiltered
+    : baseFiltered.filter(t => t.status === activeStatus);
+
   filteredTrips.sort((a, b) => {
     let comparison = 0;
-    if (sortField === 'date') {
-      comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-    } else if (sortField === 'mode') {
-      comparison = a.mode.localeCompare(b.mode);
-    } else if (sortField === 'distance') {
-      comparison = a.distance - b.distance;
-    } else if (sortField === 'co2Saved') {
-      comparison = a.co2Saved - b.co2Saved;
-    }
+    if (sortField === 'date') comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+    else if (sortField === 'distance') comparison = a.distance - b.distance;
+    else if (sortField === 'co2Saved') comparison = a.co2Saved - b.co2Saved;
     return sortDirection === 'asc' ? comparison : -comparison;
   });
 
   const totalTrips = trips.length;
   const totalDistance = trips.reduce((sum, t) => sum + t.distance, 0);
   const totalCO2Saved = trips.reduce((sum, t) => sum + t.co2Saved, 0);
-  const upcomingTrips = trips.filter(t => t.status === 'upcoming').length;
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
+  const upcomingCount = baseFiltered.filter(t => t.status === 'upcoming').length;
+  const completedCount = baseFiltered.filter(t => t.status === 'completed').length;
+  const cancelledCount = baseFiltered.filter(t => t.status === 'cancelled').length;
 
   const handleEditTrip = async () => {
     if (selectedTrip) {
@@ -268,12 +251,10 @@ export default function MyTrips() {
       toast.error('Please describe the reason in the note');
       return;
     }
-
     setIsCancellingApi(true);
     try {
       const payload = { reason: cancelReason, note: cancelNote || undefined };
       let result: any;
-
       if (selectedTrip.mode === 'Carpool') {
         if (selectedTrip.userRole === 'driver') {
           result = await carpoolingApi.cancelRide(selectedTrip.id, payload);
@@ -281,8 +262,6 @@ export default function MyTrips() {
           result = await carpoolingApi.cancelRequest(selectedTrip.id, selectedTrip.requestId, payload);
         }
       }
-
-      // For non-carpool trips or if API call was skipped, just update locally
       if (!result || result.success) {
         setTrips(prev => prev.map(t => t.id === selectedTrip.id ? { ...t, status: 'cancelled' as const } : t));
         setIsCancelDialogOpen(false);
@@ -303,390 +282,286 @@ export default function MyTrips() {
 
   const selectTrip = (trip: Trip) => {
     setSelectedTrip(trip);
-    setEditData({
-      mode: trip.mode,
-      distance: trip.distance.toString(),
-      passengers: trip.passengers.toString(),
-      notes: '',
-    });
+    setEditData({ mode: trip.mode, distance: trip.distance.toString(), passengers: trip.passengers.toString(), notes: '' });
   };
 
-  const handleLogCommute = (entries: CommuteEntry[]) => {
-    setCommuteEntries(entries);
+  const handleLogCommute = (_entry: CommuteEntry) => {
     setIsLogCommuteOpen(false);
-    toast.success(`${entries.length} commute(s) logged successfully`);
+    toast.success('Commute logged successfully');
     refetchHistory();
   };
 
-  const getModeColor = (mode: string) => {
+  const getModeIcon = (mode: string) => {
     switch (mode) {
-      case 'Bike':
-      case 'Walk':
-        return 'bg-success-subtle text-success';
-      case 'Public Transit':
-        return 'bg-info-subtle text-info';
-      case 'Carpool':
-        return 'bg-info-subtle text-info';
-      case 'SOV':
-        return 'bg-muted text-foreground';
-      default:
-        return 'bg-muted text-foreground';
+      case 'Bike': return <Bike className="h-3.5 w-3.5" />;
+      case 'Walk': return <PersonStanding className="h-3.5 w-3.5" />;
+      case 'Public Transit': return <Bus className="h-3.5 w-3.5" />;
+      case 'Carpool': return <Car className="h-3.5 w-3.5" />;
+      default: return <Car className="h-3.5 w-3.5" />;
+    }
+  };
+
+  const getModeStyle = (mode: string) => {
+    switch (mode) {
+      case 'Bike': case 'Walk': return 'bg-success/15 text-success';
+      case 'Public Transit': return 'bg-info/15 text-info';
+      case 'Carpool': return 'bg-primary/15 text-primary';
+      case 'SOV': return 'bg-muted text-muted-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed':
-        return <Badge className="bg-success-subtle text-success">Completed</Badge>;
-      case 'upcoming':
-        return <Badge className="bg-info-subtle text-info">Upcoming</Badge>;
-      case 'cancelled':
-        return <Badge className="bg-destructive-subtle text-destructive">Cancelled</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
+      case 'completed': return <Badge className="bg-success/15 text-success border-0 text-xs">Completed</Badge>;
+      case 'upcoming': return <Badge className="bg-info/15 text-info border-0 text-xs">Upcoming</Badge>;
+      case 'cancelled': return <Badge className="bg-destructive/15 text-destructive border-0 text-xs">Cancelled</Badge>;
+      default: return <Badge className="text-xs">{status}</Badge>;
     }
   };
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return <ChevronUp className="h-4 w-4 text-muted-foreground" />;
-    return sortDirection === 'asc' ? 
-      <ChevronUp className="h-4 w-4 text-info" /> : 
-      <ChevronDown className="h-4 w-4 text-info" />;
-  };
+  const renderTripRow = (trip: Trip) => (
+    <div
+      key={trip.id}
+      className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted/40 rounded-lg group transition-colors"
+    >
+      {/* Mode icon */}
+      <div className={`h-7 w-7 rounded-md flex items-center justify-center flex-shrink-0 ${getModeStyle(trip.mode)}`}>
+        {getModeIcon(trip.mode)}
+      </div>
+
+      {/* Date */}
+      <div className="w-[72px] flex-shrink-0">
+        <p className="text-sm font-medium leading-tight">
+          {new Date(trip.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {new Date(trip.date).toLocaleDateString('en-US', { weekday: 'short' })}
+        </p>
+      </div>
+
+      {/* Route / office */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate">{trip.office}</p>
+        {trip.driver && (
+          <p className="text-xs text-muted-foreground truncate">with {trip.driver}</p>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
+        <span className="flex items-center gap-1">
+          <Route className="h-3 w-3" />
+          {trip.distance} km
+        </span>
+        {trip.co2Saved > 0 && (
+          <span className="flex items-center gap-1 text-success font-medium">
+            <TrendingDown className="h-3 w-3" />
+            {trip.co2Saved.toFixed(1)} kg
+          </span>
+        )}
+      </div>
+
+      {/* Status */}
+      <div className="hidden md:block flex-shrink-0">
+        {getStatusBadge(trip.status)}
+      </div>
+
+      {/* Actions */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuItem
+            onClick={() => { setSelectedTrip(trip); setIsViewDetailsDialogOpen(true); }}
+          >
+            <Eye className="h-3.5 w-3.5 mr-2" />View Details
+          </DropdownMenuItem>
+          {trip.status === 'upcoming' && (
+            <>
+              <DropdownMenuItem
+                onClick={() => { selectTrip(trip); setIsEditDialogOpen(true); }}
+              >
+                <Edit className="h-3.5 w-3.5 mr-2" />Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => {
+                  setSelectedTrip(trip);
+                  setCancelReason('');
+                  setCancelNote('');
+                  setIsCancelDialogOpen(true);
+                }}
+              >
+                <X className="h-3.5 w-3.5 mr-2" />Cancel Trip
+              </DropdownMenuItem>
+            </>
+          )}
+          {trip.status === 'completed' && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => { setSelectedTrip(trip); setIsDeleteDialogOpen(true); }}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" />Delete
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const statusTabs: { value: typeof activeStatus; label: string; count: number }[] = [
+    { value: 'all', label: 'All', count: baseFiltered.length },
+    { value: 'upcoming', label: 'Upcoming', count: upcomingCount },
+    { value: 'completed', label: 'Completed', count: completedCount },
+    { value: 'cancelled', label: 'Cancelled', count: cancelledCount },
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
+    <div className="space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Trips</h1>
-          <p className="text-muted-foreground mt-1">
-            View and manage your commute history
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">My Trips</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Commute history and upcoming rides</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setIsExportDialogOpen(true)}>
-            <Download className="h-4 w-4 mr-2" />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setIsExportDialogOpen(true)}>
+            <Download className="h-4 w-4 mr-1.5" />
             Export
           </Button>
-          <Button onClick={() => setIsLogCommuteOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button size="sm" onClick={() => setIsLogCommuteOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
             Log Commute
           </Button>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-info-subtle rounded-lg">
-              <Calendar className="h-5 w-5 text-info" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Trips</p>
-              <p className="text-2xl font-bold text-foreground">{totalTrips}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-info-subtle rounded-lg">
-              <MapPin className="h-5 w-5 text-info" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Distance</p>
-              <p className="text-2xl font-bold text-foreground">{totalDistance.toFixed(1)} km</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-success-subtle rounded-lg">
-              <TrendingDown className="h-5 w-5 text-success" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">CO₂ Saved</p>
-              <p className="text-2xl font-bold text-success">{totalCO2Saved.toFixed(1)} kg</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-warning-subtle rounded-lg">
-              <Calendar className="h-5 w-5 text-warning" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Upcoming</p>
-              <p className="text-2xl font-bold text-foreground">{upcomingTrips}</p>
-            </div>
-          </div>
-        </Card>
+      {/* Compact stats bar */}
+      <div className="flex items-center gap-5 px-5 py-4 bg-card border rounded-xl">
+        <div>
+          <p className="text-xl font-bold leading-tight">{totalTrips}</p>
+          <p className="text-xs text-muted-foreground">Total Trips</p>
+        </div>
+        <div className="w-px h-8 bg-border" />
+        <div>
+          <p className="text-xl font-bold leading-tight">
+            {totalDistance.toFixed(0)}
+            <span className="text-sm font-normal text-muted-foreground ml-1">km</span>
+          </p>
+          <p className="text-xs text-muted-foreground">Distance</p>
+        </div>
+        <div className="w-px h-8 bg-border" />
+        <div>
+          <p className="text-xl font-bold text-success leading-tight">
+            {totalCO2Saved.toFixed(1)}
+            <span className="text-sm font-normal text-muted-foreground ml-1">kg CO₂</span>
+          </p>
+          <p className="text-xs text-muted-foreground">Saved</p>
+        </div>
+        <div className="w-px h-8 bg-border" />
+        <div>
+          <p className="text-xl font-bold text-info leading-tight">{upcomingCount}</p>
+          <p className="text-xs text-muted-foreground">Upcoming</p>
+        </div>
       </div>
 
-      {/* Filters */}
-      <Card className="p-6">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search trips..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-          <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="7d">Last 7 Days</SelectItem>
-              <SelectItem value="30d">Last 30 Days</SelectItem>
-              <SelectItem value="90d">Last 90 Days</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={modeFilter} onValueChange={setModeFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Modes</SelectItem>
-              <SelectItem value="Carpool">Carpool</SelectItem>
-              <SelectItem value="Public Transit">Public Transit</SelectItem>
-              <SelectItem value="Bike">Bike</SelectItem>
-              <SelectItem value="Walk">Walk</SelectItem>
-              <SelectItem value="SOV">SOV</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex items-center gap-2 bg-card border rounded-lg p-1">
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('cards')}
-            >
-              Cards
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('table')}
-            >
-              Table
-            </Button>
-          </div>
+      {/* Filters row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Search trips..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8 h-8 text-sm"
+          />
         </div>
-      </Card>
+        <Select value={dateFilter} onValueChange={setDateFilter}>
+          <SelectTrigger className="w-[120px] h-8 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="90d">Last 90 days</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={modeFilter} onValueChange={setModeFilter}>
+          <SelectTrigger className="w-[120px] h-8 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Modes</SelectItem>
+            <SelectItem value="Carpool">Carpool</SelectItem>
+            <SelectItem value="Public Transit">Transit</SelectItem>
+            <SelectItem value="Bike">Bike</SelectItem>
+            <SelectItem value="Walk">Walk</SelectItem>
+            <SelectItem value="SOV">SOV</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      {/* Trips Display */}
-      {viewMode === 'cards' ? (
-        <div className="space-y-3">
-          {filteredTrips.map((trip) => (
-            <Card key={trip.id} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="p-3 bg-muted rounded-lg">
-                    <Calendar className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-foreground">
-                        {new Date(trip.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                      </h3>
-                      <Badge className={getModeColor(trip.mode)}>{trip.mode}</Badge>
-                      {getStatusBadge(trip.status)}
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Distance</p>
-                        <p className="font-medium text-foreground">{trip.distance} km</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">CO₂ Saved</p>
-                        <p className="font-medium text-success">{trip.co2Saved} kg</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Office</p>
-                        <p className="font-medium text-foreground">{trip.office}</p>
-                      </div>
-                      {trip.driver && (
-                        <div>
-                          <p className="text-muted-foreground">Driver</p>
-                          <p className="font-medium text-foreground">{trip.driver}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedTrip(trip);
-                      setIsViewDetailsDialogOpen(true);
-                    }}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                  {trip.status === 'upcoming' && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          selectTrip(trip);
-                          setIsEditDialogOpen(true);
-                        }}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedTrip(trip);
-                          setCancelReason('');
-                          setCancelNote('');
-                          setIsCancelDialogOpen(true);
-                        }}
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Cancel
-                      </Button>
-                    </>
-                  )}
-                  {trip.status === 'completed' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedTrip(trip);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
+      {/* Status tabs + trip list */}
+      <div className="space-y-3">
+        {/* Tab strip */}
+        <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit">
+          {statusTabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveStatus(tab.value)}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                activeStatus === tab.value
+                  ? 'bg-background shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tab.label}
+              {tab.count > 0 && (
+                <span className={`ml-1.5 text-xs ${activeStatus === tab.value ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>
+                  {tab.count}
+                </span>
+              )}
+            </button>
           ))}
         </div>
-      ) : (
-        <Card className="p-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('date')}>
-                  <div className="flex items-center gap-2">
-                    Date
-                    <SortIcon field="date" />
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('mode')}>
-                  <div className="flex items-center gap-2">
-                    Mode
-                    <SortIcon field="mode" />
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('distance')}>
-                  <div className="flex items-center gap-2">
-                    Distance
-                    <SortIcon field="distance" />
-                  </div>
-                </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('co2Saved')}>
-                  <div className="flex items-center gap-2">
-                    CO₂ Saved
-                    <SortIcon field="co2Saved" />
-                  </div>
-                </TableHead>
-                <TableHead>Office</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+
+        {/* List */}
+        <Card className="p-2">
+          {filteredTrips.length === 0 ? (
+            <div className="py-10 text-center">
+              <Calendar className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No trips found</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border/50">
               {filteredTrips.map((trip) => (
-                <TableRow key={trip.id} className="hover:bg-background-subtle">
-                  <TableCell className="font-medium">
-                    {new Date(trip.date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getModeColor(trip.mode)}>{trip.mode}</Badge>
-                  </TableCell>
-                  <TableCell>{trip.distance} km</TableCell>
-                  <TableCell className="text-success font-medium">{trip.co2Saved} kg</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{trip.office}</TableCell>
-                  <TableCell>{getStatusBadge(trip.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedTrip(trip);
-                          setIsViewDetailsDialogOpen(true);
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {trip.status === 'upcoming' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            selectTrip(trip);
-                            setIsEditDialogOpen(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {trip.status === 'completed' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedTrip(trip);
-                            setIsDeleteDialogOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <div key={trip.id} className="first:pt-0 last:pb-0">
+                  {renderTripRow(trip)}
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          )}
         </Card>
-      )}
+      </div>
 
       {/* Log Commute Modal */}
       <LogCommuteModal
         isOpen={isLogCommuteOpen}
         onClose={() => setIsLogCommuteOpen(false)}
-        onSave={handleLogCommute}
+        onSubmit={handleLogCommute}
       />
 
       {/* View Details Dialog */}
@@ -695,11 +570,8 @@ export default function MyTrips() {
           <DialogHeader>
             <DialogTitle>Trip Details</DialogTitle>
             <DialogDescription>
-              {selectedTrip && new Date(selectedTrip.date).toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              {selectedTrip && new Date(selectedTrip.date).toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
               })}
             </DialogDescription>
           </DialogHeader>
@@ -708,9 +580,10 @@ export default function MyTrips() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm text-muted-foreground">Transport Mode</Label>
-                  <Badge className={`${getModeColor(selectedTrip.mode)} mt-1`}>
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium mt-1 ${getModeStyle(selectedTrip.mode)}`}>
+                    {getModeIcon(selectedTrip.mode)}
                     {selectedTrip.mode}
-                  </Badge>
+                  </div>
                 </div>
                 <div>
                   <Label className="text-sm text-muted-foreground">Status</Label>
@@ -769,13 +642,8 @@ export default function MyTrips() {
           <div className="space-y-4 py-4">
             <div>
               <Label htmlFor="edit-mode">Transport Mode *</Label>
-              <Select
-                value={editData.mode}
-                onValueChange={(value) => setEditData({ ...editData, mode: value })}
-              >
-                <SelectTrigger id="edit-mode">
-                  <SelectValue />
-                </SelectTrigger>
+              <Select value={editData.mode} onValueChange={(value) => setEditData({ ...editData, mode: value })}>
+                <SelectTrigger id="edit-mode"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Carpool">Carpool</SelectItem>
                   <SelectItem value="Public Transit">Public Transit</SelectItem>
@@ -817,12 +685,8 @@ export default function MyTrips() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditTrip}>
-              Save Changes
-            </Button>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleEditTrip}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -837,7 +701,7 @@ export default function MyTrips() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 bg-warning-subtle border border-warning/25 rounded-lg">
+            <div className="p-4 bg-warning/10 border border-warning/25 rounded-lg">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
                 <div>
@@ -852,12 +716,8 @@ export default function MyTrips() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteTrip}>
-              Delete Trip
-            </Button>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDeleteTrip}>Delete Trip</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -873,7 +733,7 @@ export default function MyTrips() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             {selectedTrip?.mode === 'Carpool' && (
-              <div className="flex items-start gap-2 p-3 bg-warning-subtle border border-warning/25 rounded-lg">
+              <div className="flex items-start gap-2 p-3 bg-warning/10 border border-warning/25 rounded-lg">
                 <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
                 <p className="text-sm text-warning">
                   {selectedTrip.userRole === 'driver'
@@ -882,7 +742,6 @@ export default function MyTrips() {
                 </p>
               </div>
             )}
-
             <div>
               <Label htmlFor="trip-cancel-reason">Reason for cancellation *</Label>
               <Select value={cancelReason} onValueChange={setCancelReason}>
@@ -891,29 +750,14 @@ export default function MyTrips() {
                 </SelectTrigger>
                 <SelectContent>
                   {(selectedTrip?.mode === 'Carpool' && selectedTrip?.userRole === 'driver'
-                    ? [
-                        'Schedule change',
-                        'Vehicle issue or breakdown',
-                        'Personal emergency',
-                        'Weather conditions',
-                        'No passengers requested',
-                        'Others',
-                      ]
-                    : [
-                        'Schedule change',
-                        'Found alternative transport',
-                        'Personal emergency',
-                        'No longer commuting that day',
-                        'Plans changed',
-                        'Others',
-                      ]
+                    ? ['Schedule change', 'Vehicle issue or breakdown', 'Personal emergency', 'Weather conditions', 'No passengers requested', 'Others']
+                    : ['Schedule change', 'Found alternative transport', 'Personal emergency', 'No longer commuting that day', 'Plans changed', 'Others']
                   ).map((r) => (
                     <SelectItem key={r} value={r}>{r}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="trip-cancel-note">
                 {cancelReason === 'Others' ? 'Note (required)' : 'Note (optional)'}
@@ -929,9 +773,7 @@ export default function MyTrips() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCancelDialogOpen(false)}>
-              Keep Trip
-            </Button>
+            <Button variant="outline" onClick={() => setIsCancelDialogOpen(false)}>Keep Trip</Button>
             <Button variant="destructive" onClick={handleCancelTrip} disabled={!cancelReason || isCancellingApi}>
               {isCancellingApi ? 'Cancelling…' : 'Cancel Trip'}
             </Button>
@@ -944,9 +786,7 @@ export default function MyTrips() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Export Trips</DialogTitle>
-            <DialogDescription>
-              Download your trip history in your preferred format
-            </DialogDescription>
+            <DialogDescription>Download your trip history in your preferred format</DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Label htmlFor="export-format">Export Format *</Label>
@@ -963,9 +803,7 @@ export default function MyTrips() {
             </Select>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export Trips

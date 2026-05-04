@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -22,6 +22,12 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import {
   MapPin,
   Users,
   Car,
@@ -33,8 +39,6 @@ import {
   Filter,
   Settings,
   X,
-  Map,
-  List,
   Shield,
   TrendingUp,
   Zap,
@@ -42,11 +46,12 @@ import {
   BarChart3,
   Loader2,
   LocateFixed,
+  MoreHorizontal,
+  Search,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExtendedRide, CommutePreferences, AdvancedFilters } from '../types';
 import {
-  calculateCompatibilityScore,
   calculateRouteScore,
   calculateTimeScore,
   calculatePreferencesScore,
@@ -70,8 +75,7 @@ export default function FindRide() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [departureTime, setDepartureTime] = useState('08:15');
   const [selectedRide, setSelectedRide] = useState<ExtendedRide | null>(null);
-  
-  // Modal states
+
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
@@ -79,20 +83,12 @@ export default function FindRide() {
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  
-  // User preferences and filters
+
   const [userPreferences, setUserPreferences] = useState<CommutePreferences>({} as CommutePreferences);
   const [activeFilters, setActiveFilters] = useState<AdvancedFilters>({});
   const [sortBy, setSortBy] = useState<'match' | 'time' | 'distance' | 'co2'>('match');
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  
-  // Booking data
-  const [bookingData, setBookingData] = useState({
-    seats: '1',
-    pickupLocation: '',
-    notes: '',
-  });
-  
+
+  const [bookingData, setBookingData] = useState({ seats: '1', pickupLocation: '', notes: '' });
   const [offerData, setOfferData] = useState({
     origin: '',
     destination: 'Acme Dublin HQ',
@@ -102,10 +98,8 @@ export default function FindRide() {
     vehicleMake: '',
     preferences: '',
   });
-  
   const [message, setMessage] = useState('');
 
-  // API mutations
   const requestRideMutation = useApiMutation((data: { rideId: string; payload: any }) =>
     carpoolingApi.requestRide(data.rideId, data.payload)
   );
@@ -119,14 +113,13 @@ export default function FindRide() {
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
 
-  // Convert API ride match result to ExtendedRide
   const mapApiRide = (item: any): ExtendedRide => {
     const ride = item.ride ?? item;
     const originCoords = { lat: ride.origin_lat ?? 53.3498, lng: ride.origin_lng ?? -6.2603 };
     const destCoords = { lat: ride.destination_lat ?? 53.3340, lng: ride.destination_lng ?? -6.2535 };
     const depTime = ride.departure_time
       ? (typeof ride.departure_time === 'string'
-          ? ride.departure_time.substring(11, 16)   // ISO datetime → HH:mm
+          ? ride.departure_time.substring(11, 16)
           : String(ride.departure_time))
       : '08:00';
     return {
@@ -150,7 +143,6 @@ export default function FindRide() {
     };
   };
 
-  // Use browser GPS to populate origin
   const handleUseLocation = () => {
     if (!navigator.geolocation) {
       toast.error('Geolocation is not supported by your browser');
@@ -173,10 +165,8 @@ export default function FindRide() {
     );
   };
 
-  // Search for available rides
   const handleSearch = async () => {
     setIsSearching(true);
-    // Prefer real GPS coords; fall back to named-location lookup
     const originCoords = userCoords ?? geocodeAddress(origin);
     const destCoords = geocodeAddress(destination);
     try {
@@ -200,37 +190,25 @@ export default function FindRide() {
     }
   };
 
-  // Auto-search on mount
   useEffect(() => {
     handleSearch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Apply filters and sorting
   useEffect(() => {
     let filtered = [...rides];
-
-    // Apply advanced filters
     if (Object.keys(activeFilters).length > 0) {
       filtered = applyAdvancedFilters(filtered, activeFilters);
     }
-
-    // Sort rides
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'match':
-          return b.matchScore - a.matchScore;
-        case 'time':
-          return a.departureTime.localeCompare(b.departureTime);
-        case 'distance':
-          return a.distance - b.distance;
-        case 'co2':
-          return b.co2Saved - a.co2Saved;
-        default:
-          return 0;
+        case 'match': return b.matchScore - a.matchScore;
+        case 'time': return a.departureTime.localeCompare(b.departureTime);
+        case 'distance': return a.distance - b.distance;
+        case 'co2': return b.co2Saved - a.co2Saved;
+        default: return 0;
       }
     });
-
     setFilteredRides(filtered);
   }, [rides, activeFilters, sortBy]);
 
@@ -243,7 +221,6 @@ export default function FindRide() {
 
   const handleSavePreferences = async (preferences: CommutePreferences) => {
     setUserPreferences(preferences);
-
     const result = await savePreferencesMutation.execute({
       commute_preferences: {
         maxDetourMinutes: preferences.maxDetourMinutes,
@@ -255,7 +232,6 @@ export default function FindRide() {
         genderPreference: preferences.genderPreference,
       },
     });
-
     if (result.success) {
       toast.success('Your commute preferences have been saved!');
     } else {
@@ -277,7 +253,6 @@ export default function FindRide() {
           message: bookingData.notes || undefined,
         },
       });
-
       if (result.success) {
         setIsBookDialogOpen(false);
         setIsConfirmationDialogOpen(true);
@@ -323,7 +298,6 @@ export default function FindRide() {
       vehicle_make: offerData.vehicleMake,
       preferences: offerData.preferences,
     });
-
     if (result.success) {
       toast.success('Your ride has been posted!');
     } else {
@@ -334,10 +308,9 @@ export default function FindRide() {
   const handleSendMessage = async () => {
     if (selectedRide && message.trim()) {
       const result = await sendMessageMutation.execute({
-        threadId: selectedRide.id, // In real app, would be the thread ID
+        threadId: selectedRide.id,
         content: message,
       });
-
       if (result.success) {
         toast.success(`Message sent to ${selectedRide.driver}`);
       } else {
@@ -366,26 +339,26 @@ export default function FindRide() {
     setActiveFilters(newFilters);
   };
 
-  const getActiveFilterCount = () => {
-    return Object.keys(activeFilters).filter(
+  const getActiveFilterCount = () =>
+    Object.keys(activeFilters).filter(
       (key) => activeFilters[key as keyof AdvancedFilters] !== undefined
     ).length;
-  };
 
   const getVehicleIcon = (type: string) => {
     switch (type) {
-      case 'electric':
-        return '⚡';
-      case 'hybrid':
-        return '🔋';
-      case 'suv':
-        return '🚙';
-      default:
-        return '🚗';
+      case 'electric': return '⚡';
+      case 'hybrid': return '🔋';
+      case 'suv': return '🚙';
+      default: return '🚗';
     }
   };
 
-  // Calculate detailed scores for selected ride
+  const getMatchStyle = (score: number) => {
+    if (score >= 80) return 'bg-success/15 text-success';
+    if (score >= 60) return 'bg-info/15 text-info';
+    return 'bg-muted text-muted-foreground';
+  };
+
   const getDetailedScores = (ride: ExtendedRide) => {
     const userRoute = {
       origin: geocodeAddress(origin),
@@ -393,14 +366,12 @@ export default function FindRide() {
       departureTime: departureTime,
       distance: 0,
     };
-
     const rideRoute = {
       origin: ride.originLocation,
       destination: ride.destinationLocation,
       departureTime: ride.departureTime,
       distance: ride.distance,
     };
-
     return {
       routeScore: calculateRouteScore(userRoute, rideRoute, userPreferences.flexibleRadius),
       timeScore: calculateTimeScore(
@@ -417,347 +388,284 @@ export default function FindRide() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
+    <div className="space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Find a Ride</h1>
-          <p className="text-muted-foreground mt-1">
-            Join a carpool and reduce your commute emissions
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">Find a Ride</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Join a carpool and reduce your commute emissions</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsPreferencesOpen(true)}>
-            <Settings className="h-4 w-4 mr-2" />
-            My Preferences
+          <Button variant="outline" size="sm" onClick={() => setIsPreferencesOpen(true)}>
+            <Settings className="h-4 w-4 mr-1.5" />
+            Preferences
           </Button>
-          <Button onClick={() => setIsOfferDialogOpen(true)}>
-            <Car className="h-4 w-4 mr-2" />
+          <Button size="sm" onClick={() => setIsOfferDialogOpen(true)}>
+            <Car className="h-4 w-4 mr-1.5" />
             Offer a Ride
           </Button>
         </div>
       </div>
 
       {/* Search Card */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">Search for Available Rides</h2>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <Card className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">From</label>
-            <div className="flex gap-2">
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">From</label>
+            <div className="flex gap-1.5">
               <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Enter your location"
+                  placeholder="Your location"
                   value={origin}
                   onChange={(e) => { setOrigin(e.target.value); setUserCoords(null); }}
-                  className="pl-9"
+                  className="pl-8 h-8 text-sm"
                 />
               </div>
               <Button
                 variant="outline"
                 size="icon"
+                className="h-8 w-8 flex-shrink-0"
                 onClick={handleUseLocation}
                 disabled={isLocating}
                 title="Use my GPS location"
               >
-                {isLocating ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <LocateFixed className="h-4 w-4" />
-                )}
+                {isLocating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LocateFixed className="h-3.5 w-3.5" />}
               </Button>
             </div>
-            {userCoords && (
-              <p className="text-xs text-success mt-1">
-                📍 GPS location detected
-              </p>
-            )}
+            {userCoords && <p className="text-xs text-success mt-1">GPS detected</p>}
           </div>
+
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">To</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">To</label>
             <div className="relative">
-              <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Navigation className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Enter destination"
+                placeholder="Destination"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="pl-9"
+                className="pl-8 h-8 text-sm"
               />
             </div>
           </div>
+
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">Date</label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Date</label>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="h-8 text-sm" />
           </div>
+
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">Time</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Time</label>
             <Input
               type="time"
               value={departureTime}
               onChange={(e) => setDepartureTime(e.target.value)}
+              className="h-8 text-sm"
             />
           </div>
+
           <div className="flex items-end">
-            <Button className="w-full" onClick={handleSearch} disabled={isSearching}>
-              {isSearching ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Filter className="h-4 w-4 mr-2" />
-              )}
+            <Button className="w-full h-8 text-sm" onClick={handleSearch} disabled={isSearching}>
+              {isSearching ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Search className="h-3.5 w-3.5 mr-1.5" />}
               Search
             </Button>
           </div>
         </div>
 
-        {/* Quick Filters */}
-        <div className="flex items-center gap-2 mt-4 pt-4 border-t">
-          <Button variant="outline" size="sm" onClick={() => setIsAdvancedSearchOpen(true)}>
-            <Filter className="h-4 w-4 mr-2" />
-            Advanced Filters
+        {/* Filter chips */}
+        <div className="flex items-center gap-2 mt-3 pt-3 border-t flex-wrap">
+          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setIsAdvancedSearchOpen(true)}>
+            <Filter className="h-3 w-3 mr-1.5" />
+            Filters
             {getActiveFilterCount() > 0 && (
-              <Badge className="ml-2 bg-info">{getActiveFilterCount()}</Badge>
+              <Badge className="ml-1.5 h-4 w-4 p-0 flex items-center justify-center bg-info text-white text-[10px]">
+                {getActiveFilterCount()}
+              </Badge>
             )}
           </Button>
-
-          {/* Active filter chips */}
           {activeFilters.maxDistance && (
-            <Badge variant="secondary" className="gap-1">
+            <Badge variant="secondary" className="gap-1 text-xs h-6">
               Max {activeFilters.maxDistance} km
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => clearFilter('maxDistance')}
-              />
+              <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter('maxDistance')} />
             </Badge>
           )}
           {activeFilters.minRating && (
-            <Badge variant="secondary" className="gap-1">
+            <Badge variant="secondary" className="gap-1 text-xs h-6">
               {activeFilters.minRating}+ stars
               <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter('minRating')} />
             </Badge>
           )}
           {activeFilters.vehicleTypes && activeFilters.vehicleTypes.length > 0 && (
-            <Badge variant="secondary" className="gap-1">
+            <Badge variant="secondary" className="gap-1 text-xs h-6">
               {activeFilters.vehicleTypes.length} vehicle type(s)
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => clearFilter('vehicleTypes')}
-              />
+              <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter('vehicleTypes')} />
             </Badge>
           )}
         </div>
       </Card>
 
-      {/* Results Header */}
+      {/* Results header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            Available Rides ({filteredRides.length})
-          </h2>
-          
-          {/* View Toggle */}
-          <div className="flex items-center gap-1 border rounded-lg p-1">
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'map' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('map')}
-            >
-              <Map className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
+        <p className="text-sm font-medium text-foreground">
+          {filteredRides.length} available ride{filteredRides.length !== 1 ? 's' : ''}
+        </p>
         <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-40 h-8 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="match">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Best Match
+              <div className="flex items-center gap-2 text-xs">
+                <TrendingUp className="h-3.5 w-3.5" />Best Match
               </div>
             </SelectItem>
             <SelectItem value="time">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Earliest Time
+              <div className="flex items-center gap-2 text-xs">
+                <Clock className="h-3.5 w-3.5" />Earliest Time
               </div>
             </SelectItem>
             <SelectItem value="distance">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Shortest Distance
+              <div className="flex items-center gap-2 text-xs">
+                <MapPin className="h-3.5 w-3.5" />Shortest Distance
               </div>
             </SelectItem>
             <SelectItem value="co2">
-              <div className="flex items-center gap-2">
-                <Navigation className="h-4 w-4" />
-                Most CO₂ Saved
+              <div className="flex items-center gap-2 text-xs">
+                <Navigation className="h-3.5 w-3.5" />Most CO₂ Saved
               </div>
             </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Available Rides */}
-      <div className="space-y-4">
+      {/* Ride list */}
+      <div className="space-y-2">
         {filteredRides.length === 0 ? (
-          <Card className="p-12 text-center">
-            <div className="flex flex-col items-center gap-4">
-              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
-                <Car className="h-8 w-8 text-muted-foreground" />
+          <Card className="p-10 text-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-12 w-12 bg-muted rounded-full flex items-center justify-center">
+                <Car className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">No rides found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your filters or search criteria
-                </p>
+                <h3 className="text-sm font-semibold text-foreground">No rides found</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Try adjusting your filters or search criteria</p>
               </div>
-              <Button variant="outline" onClick={() => setActiveFilters({})}>
-                Clear All Filters
+              <Button variant="outline" size="sm" onClick={() => setActiveFilters({})}>
+                Clear Filters
               </Button>
             </div>
           </Card>
         ) : (
-          filteredRides.map((ride) => {
-            const detailedScores = getDetailedScores(ride);
-            
-            return (
-              <Card key={ride.id} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex items-start gap-4 flex-1">
-                    <Avatar className="h-14 w-14">
-                      <AvatarFallback className="text-lg font-semibold">
-                        {ride.driver.split(' ').map((n) => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1">
-                      {/* Driver Info */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <h3 className="font-semibold text-foreground text-lg">{ride.driver}</h3>
-                        {ride.verifiedDriver && (
-                          <Badge variant="outline" className="bg-info-subtle text-info border-info/25">
-                            <Shield className="h-3 w-3 mr-1" />
-                            Verified
-                          </Badge>
-                        )}
-                        {ride.recurring && (
-                          <Badge variant="outline" className="bg-info-subtle text-info border-info/25">
-                            <Repeat className="h-3 w-3 mr-1" />
-                            Recurring
-                          </Badge>
-                        )}
-                        {ride.driverRating && (
-                          <div className="flex items-center gap-1 text-warning">
-                            <Star className="h-4 w-4 fill-current" />
-                            <span className="text-sm font-medium">{ride.driverRating}</span>
-                            <span className="text-xs text-muted-foreground">({ride.totalTrips} trips)</span>
-                          </div>
-                        )}
-                      </div>
+          filteredRides.map((ride) => (
+            <Card key={ride.id} className="p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start gap-3">
+                {/* Avatar */}
+                <Avatar className="h-9 w-9 flex-shrink-0 mt-0.5">
+                  <AvatarFallback className="text-xs font-semibold bg-primary/10 text-primary">
+                    {ride.driver.split(' ').map((n) => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
 
-                      {/* Compatibility Score */}
-                      <div className="mb-4">
-                        <CompatibilityScore overallScore={ride.matchScore} compact={false} />
-                      </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  {/* Row 1: driver + badges */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm font-semibold">{ride.driver}</span>
+                    {ride.verifiedDriver && (
+                      <Shield className="h-3.5 w-3.5 text-info flex-shrink-0" />
+                    )}
+                    {ride.recurring && (
+                      <Repeat className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                    )}
+                    {ride.driverRating && (
+                      <span className="flex items-center gap-0.5 text-xs text-warning">
+                        <Star className="h-3 w-3 fill-current" />
+                        {ride.driverRating}
+                      </span>
+                    )}
+                  </div>
 
-                      {/* Route Details */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-                        <div className="flex items-start gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                          <div>
-                            <p className="font-medium text-foreground">{ride.origin}</p>
-                            <p className="text-xs text-muted-foreground">→ {ride.destination}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
-                          <div>
-                            <p className="font-medium text-foreground">{ride.departureTime}</p>
-                            <p className="text-xs text-muted-foreground">{ride.distance.toFixed(1)} km</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2 text-sm">
-                          <Users className="h-4 w-4 text-muted-foreground mt-0.5" />
-                          <div>
-                            <p className="font-medium text-foreground">{ride.seatsAvailable} seats</p>
-                            <p className="text-xs text-muted-foreground">available</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2 text-sm">
-                          <Navigation className="h-4 w-4 text-success mt-0.5" />
-                          <div>
-                            <p className="font-medium text-success">{ride.co2Saved.toFixed(1)} kg CO₂</p>
-                            <p className="text-xs text-muted-foreground">saved</p>
-                          </div>
-                        </div>
-                      </div>
+                  {/* Row 2: route + stats */}
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                      <span className="font-medium text-foreground">{ride.origin}</span>
+                      <span className="mx-0.5">→</span>
+                      <span className="font-medium text-foreground">{ride.destination}</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {ride.departureTime}
+                    </span>
+                    <span>{ride.distance.toFixed(1)} km</span>
+                    <span className="flex items-center gap-1 text-success">
+                      <Navigation className="h-3 w-3" />
+                      {ride.co2Saved.toFixed(1)} kg CO₂
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {ride.seatsAvailable} seats
+                    </span>
+                  </div>
 
-                      {/* Vehicle & Preferences */}
-                      <div className="flex flex-wrap items-center gap-2">
-                        {ride.vehicleMake && (
-                          <Badge variant="outline" className="bg-background-subtle">
-                            <span className="mr-1">{getVehicleIcon(ride.vehicleType || '')}</span>
-                            {ride.vehicleMake}
-                          </Badge>
-                        )}
-                        {ride.vehicleType === 'electric' && (
-                          <Badge variant="outline" className="bg-success-subtle text-success border-success/25">
-                            <Zap className="h-3 w-3 mr-1" />
-                            Zero Emissions
-                          </Badge>
-                        )}
-                        {ride.preferencesTags?.slice(0, 3).map((tag, idx) => (
-                          <Badge key={idx} variant="outline" className="bg-info-subtle text-info">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {ride.preferencesTags && ride.preferencesTags.length > 3 && (
-                          <Badge variant="outline">+{ride.preferencesTags.length - 3} more</Badge>
-                        )}
-                      </div>
+                  {/* Row 3: tags */}
+                  {(ride.vehicleMake || (ride.preferencesTags && ride.preferencesTags.length > 0)) && (
+                    <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                      {ride.vehicleMake && (
+                        <Badge variant="outline" className="text-xs h-5 py-0 px-1.5">
+                          {getVehicleIcon(ride.vehicleType || '')} {ride.vehicleMake}
+                        </Badge>
+                      )}
+                      {ride.vehicleType === 'electric' && (
+                        <Badge variant="outline" className="text-xs h-5 py-0 px-1.5 bg-success/10 text-success border-success/20">
+                          <Zap className="h-2.5 w-2.5 mr-0.5" />Zero Emissions
+                        </Badge>
+                      )}
+                      {ride.preferencesTags?.slice(0, 2).map((tag, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs h-5 py-0 px-1.5 bg-info/10 text-info border-info/20">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {(ride.preferencesTags?.length ?? 0) > 2 && (
+                        <span className="text-xs text-muted-foreground">
+                          +{(ride.preferencesTags?.length ?? 0) - 2}
+                        </span>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={() => {
-                        setSelectedRide(ride);
-                        setIsBookDialogOpen(true);
-                      }}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Book Ride
-                    </Button>
-                    <Button variant="outline" onClick={() => handleViewDetails(ride)}>
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSelectedRide(ride);
-                        setIsMessageDialogOpen(true);
-                      }}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Message
-                    </Button>
-                  </div>
+                  )}
                 </div>
-              </Card>
-            );
-          })
+
+                {/* Match + actions */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${getMatchStyle(ride.matchScore)}`}>
+                    {ride.matchScore}%
+                  </span>
+                  <Button
+                    size="sm"
+                    className="h-8 text-xs px-3"
+                    onClick={() => { setSelectedRide(ride); setIsBookDialogOpen(true); }}
+                  >
+                    Request
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={() => handleViewDetails(ride)}>
+                        <BarChart3 className="h-3.5 w-3.5 mr-2" />View Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => { setSelectedRide(ride); setIsMessageDialogOpen(true); }}>
+                        <MessageCircle className="h-3.5 w-3.5 mr-2" />Message Driver
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </Card>
+          ))
         )}
       </div>
 
@@ -784,13 +692,10 @@ export default function FindRide() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Ride Details</DialogTitle>
-            <DialogDescription>
-              Comprehensive compatibility analysis and ride information
-            </DialogDescription>
+            <DialogDescription>Comprehensive compatibility analysis and ride information</DialogDescription>
           </DialogHeader>
           {selectedRide && (
             <div className="space-y-6 py-4">
-              {/* Driver Profile */}
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarFallback className="text-2xl font-semibold">
@@ -801,9 +706,8 @@ export default function FindRide() {
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-xl font-semibold">{selectedRide.driver}</h3>
                     {selectedRide.verifiedDriver && (
-                      <Badge variant="outline" className="bg-info-subtle text-info">
-                        <Shield className="h-3 w-3 mr-1" />
-                        Verified Driver
+                      <Badge variant="outline" className="bg-info/10 text-info border-info/20">
+                        <Shield className="h-3 w-3 mr-1" />Verified Driver
                       </Badge>
                     )}
                   </div>
@@ -813,26 +717,20 @@ export default function FindRide() {
                         <Star className="h-5 w-5 fill-current" />
                         <span className="font-medium text-lg">{selectedRide.driverRating}</span>
                       </div>
-                      <span className="text-muted-foreground">
-                        {selectedRide.totalTrips} completed trips
-                      </span>
+                      <span className="text-muted-foreground">{selectedRide.totalTrips} completed trips</span>
                       <span className="text-muted-foreground">•</span>
-                      <span className="text-muted-foreground">
-                        Trust Score: {selectedRide.trustScore}%
-                      </span>
+                      <span className="text-muted-foreground">Trust Score: {selectedRide.trustScore}%</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Detailed Compatibility Score */}
               <CompatibilityScore
                 overallScore={selectedRide.matchScore}
                 {...getDetailedScores(selectedRide)}
                 detailed={true}
               />
 
-              {/* Route Map Visualization */}
               <RouteMapVisualization
                 origin={selectedRide.originLocation}
                 destination={selectedRide.destinationLocation}
@@ -843,23 +741,17 @@ export default function FindRide() {
                 compatibilityScore={selectedRide.matchScore}
               />
 
-              {/* Trip Details */}
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
                   <Label className="text-sm text-muted-foreground">Departure Time</Label>
-                  <p className="font-medium text-foreground mt-1 text-lg">
-                    {selectedRide.departureTime}
-                  </p>
+                  <p className="font-medium text-foreground mt-1 text-lg">{selectedRide.departureTime}</p>
                 </Card>
                 <Card className="p-4">
                   <Label className="text-sm text-muted-foreground">Seats Available</Label>
-                  <p className="font-medium text-foreground mt-1 text-lg">
-                    {selectedRide.seatsAvailable}
-                  </p>
+                  <p className="font-medium text-foreground mt-1 text-lg">{selectedRide.seatsAvailable}</p>
                 </Card>
               </div>
 
-              {/* Vehicle Info */}
               {selectedRide.vehicleMake && (
                 <Card className="p-4">
                   <Label className="text-sm text-muted-foreground mb-2 block">Vehicle</Label>
@@ -867,24 +759,20 @@ export default function FindRide() {
                     <span className="text-2xl">{getVehicleIcon(selectedRide.vehicleType || '')}</span>
                     <p className="font-medium text-foreground text-lg">{selectedRide.vehicleMake}</p>
                     {selectedRide.vehicleType === 'electric' && (
-                      <Badge className="bg-success">
-                        <Zap className="h-3 w-3 mr-1" />
-                        Zero Emissions
+                      <Badge className="bg-success text-white">
+                        <Zap className="h-3 w-3 mr-1" />Zero Emissions
                       </Badge>
                     )}
                   </div>
                 </Card>
               )}
 
-              {/* Ride Preferences */}
               {selectedRide.preferencesTags && selectedRide.preferencesTags.length > 0 && (
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-3 block">
-                    Ride Preferences & Atmosphere
-                  </Label>
+                  <Label className="text-sm text-muted-foreground mb-3 block">Ride Preferences</Label>
                   <div className="flex flex-wrap gap-2">
                     {selectedRide.preferencesTags.map((pref, idx) => (
-                      <Badge key={idx} variant="outline" className="bg-info-subtle text-info">
+                      <Badge key={idx} variant="outline" className="bg-info/10 text-info border-info/20">
                         {pref}
                       </Badge>
                     ))}
@@ -892,49 +780,34 @@ export default function FindRide() {
                 </div>
               )}
 
-              {/* Recurring Schedule */}
               {selectedRide.recurring && selectedRide.daysOfWeek && (
-                <Card className="p-4 bg-info-subtle border-info/25">
+                <Card className="p-4 bg-info/10 border-info/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Repeat className="h-5 w-5 text-info" />
-                    <Label className="text-sm font-medium text-foreground">
-                      Recurring Schedule
-                    </Label>
+                    <Label className="text-sm font-medium text-foreground">Recurring Schedule</Label>
                   </div>
                   <p className="text-sm text-info">
-                    This ride repeats every{' '}
-                    {selectedRide.daysOfWeek
-                      .map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d])
-                      .join(', ')}
+                    Repeats every{' '}
+                    {selectedRide.daysOfWeek.map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}
                   </p>
                 </Card>
               )}
 
-              {/* Environmental Impact */}
-              <div className="p-4 bg-success-subtle border border-success/25 rounded-lg">
+              <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <Navigation className="h-5 w-5 text-success" />
                   <span className="font-semibold text-success">Environmental Impact</span>
                 </div>
                 <p className="text-sm text-success">
-                  By joining this ride, you'll save{' '}
-                  <strong>{selectedRide.co2Saved.toFixed(1)} kg CO₂</strong> compared to driving
-                  alone. That's equivalent to planting{' '}
-                  <strong>{Math.round(selectedRide.co2Saved * 0.5)}</strong> trees!
+                  By joining this ride, you'll save <strong>{selectedRide.co2Saved.toFixed(1)} kg CO₂</strong> compared
+                  to driving alone — equivalent to planting <strong>{Math.round(selectedRide.co2Saved * 0.5)}</strong> trees!
                 </p>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailsDialogOpen(false)}>
-              Close
-            </Button>
-            <Button
-              onClick={() => {
-                setIsDetailsDialogOpen(false);
-                setIsBookDialogOpen(true);
-              }}
-            >
+            <Button variant="outline" onClick={() => setIsDetailsDialogOpen(false)}>Close</Button>
+            <Button onClick={() => { setIsDetailsDialogOpen(false); setIsBookDialogOpen(true); }}>
               Book This Ride
             </Button>
           </DialogFooter>
@@ -946,56 +819,39 @@ export default function FindRide() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Book Ride</DialogTitle>
-            <DialogDescription>
-              Confirm your booking with {selectedRide?.driver}
-            </DialogDescription>
+            <DialogDescription>Confirm your booking with {selectedRide?.driver}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+            <div className="p-3 bg-info/10 border border-info/20 rounded-lg">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-info">
-                  <strong>{selectedRide?.driver}</strong> • {selectedRide?.departureTime}
+                  <strong>{selectedRide?.driver}</strong> · {selectedRide?.departureTime}
                 </span>
-                <Badge variant="outline" className="bg-success-subtle text-success">
+                <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
                   {selectedRide?.co2Saved.toFixed(1)} kg CO₂ saved
                 </Badge>
               </div>
             </div>
-
             <div>
               <Label htmlFor="seats">Number of Seats *</Label>
-              <Select
-                value={bookingData.seats}
-                onValueChange={(value) => setBookingData({ ...bookingData, seats: value })}
-              >
-                <SelectTrigger id="seats">
-                  <SelectValue />
-                </SelectTrigger>
+              <Select value={bookingData.seats} onValueChange={(value) => setBookingData({ ...bookingData, seats: value })}>
+                <SelectTrigger id="seats"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {Array.from(
-                    { length: selectedRide?.seatsAvailable || 1 },
-                    (_, i) => i + 1
-                  ).map((n) => (
-                    <SelectItem key={n} value={n.toString()}>
-                      {n} seat{n > 1 ? 's' : ''}
-                    </SelectItem>
+                  {Array.from({ length: selectedRide?.seatsAvailable || 1 }, (_, i) => i + 1).map((n) => (
+                    <SelectItem key={n} value={n.toString()}>{n} seat{n > 1 ? 's' : ''}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="pickup">Pickup Location *</Label>
               <Input
                 id="pickup"
                 value={bookingData.pickupLocation}
-                onChange={(e) =>
-                  setBookingData({ ...bookingData, pickupLocation: e.target.value })
-                }
+                onChange={(e) => setBookingData({ ...bookingData, pickupLocation: e.target.value })}
                 placeholder="Enter your pickup address"
               />
             </div>
-
             <div>
               <Label htmlFor="notes">Notes for Driver (optional)</Label>
               <Textarea
@@ -1008,9 +864,7 @@ export default function FindRide() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsBookDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsBookDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleBookRide}
               disabled={!bookingData.pickupLocation.trim() || requestRideMutation.loading}
@@ -1026,9 +880,7 @@ export default function FindRide() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Offer a Ride</DialogTitle>
-            <DialogDescription>
-              Share your commute and help others reduce emissions
-            </DialogDescription>
+            <DialogDescription>Share your commute and help others reduce emissions</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
@@ -1051,7 +903,6 @@ export default function FindRide() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="departure-time">Departure Time *</Label>
@@ -1059,20 +910,13 @@ export default function FindRide() {
                   id="departure-time"
                   type="time"
                   value={offerData.departureTime}
-                  onChange={(e) =>
-                    setOfferData({ ...offerData, departureTime: e.target.value })
-                  }
+                  onChange={(e) => setOfferData({ ...offerData, departureTime: e.target.value })}
                 />
               </div>
               <div>
                 <Label htmlFor="seats">Seats Available *</Label>
-                <Select
-                  value={offerData.seatsAvailable}
-                  onValueChange={(value) => setOfferData({ ...offerData, seatsAvailable: value })}
-                >
-                  <SelectTrigger id="seats">
-                    <SelectValue />
-                  </SelectTrigger>
+                <Select value={offerData.seatsAvailable} onValueChange={(value) => setOfferData({ ...offerData, seatsAvailable: value })}>
+                  <SelectTrigger id="seats"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1 seat</SelectItem>
                     <SelectItem value="2">2 seats</SelectItem>
@@ -1082,17 +926,11 @@ export default function FindRide() {
                 </Select>
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="vehicle-type">Vehicle Type *</Label>
-                <Select
-                  value={offerData.vehicleType}
-                  onValueChange={(value) => setOfferData({ ...offerData, vehicleType: value })}
-                >
-                  <SelectTrigger id="vehicle-type">
-                    <SelectValue placeholder="Select vehicle type" />
-                  </SelectTrigger>
+                <Select value={offerData.vehicleType} onValueChange={(value) => setOfferData({ ...offerData, vehicleType: value })}>
+                  <SelectTrigger id="vehicle-type"><SelectValue placeholder="Select type" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Electric">⚡ Electric</SelectItem>
                     <SelectItem value="Hybrid">🔋 Hybrid</SelectItem>
@@ -1111,7 +949,6 @@ export default function FindRide() {
                 />
               </div>
             </div>
-
             <div>
               <Label htmlFor="preferences">Ride Preferences (optional)</Label>
               <Input
@@ -1120,34 +957,20 @@ export default function FindRide() {
                 onChange={(e) => setOfferData({ ...offerData, preferences: e.target.value })}
                 placeholder="e.g., No smoking, Music OK, Quiet ride"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Separate multiple preferences with commas
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Separate with commas</p>
             </div>
-
-            <div className="p-4 bg-info-subtle border border-info/25 rounded-lg">
+            <div className="p-3 bg-info/10 border border-info/20 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
-                <Settings className="h-5 w-5 text-info" />
-                <p className="text-sm font-medium text-info">
-                  Your default commute preferences will be applied
-                </p>
+                <Settings className="h-4 w-4 text-info" />
+                <p className="text-sm font-medium text-info">Your default commute preferences will be applied</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setIsOfferDialogOpen(false);
-                  setIsPreferencesOpen(true);
-                }}
-              >
+              <Button variant="outline" size="sm" onClick={() => { setIsOfferDialogOpen(false); setIsPreferencesOpen(true); }}>
                 Edit Preferences
               </Button>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOfferDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsOfferDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleOfferRide}
               disabled={
@@ -1183,9 +1006,7 @@ export default function FindRide() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsMessageDialogOpen(false)}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setIsMessageDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSendMessage} disabled={!message.trim() || sendMessageMutation.loading}>
               {sendMessageMutation.loading ? 'Sending...' : 'Send Message'}
             </Button>
@@ -1198,8 +1019,8 @@ export default function FindRide() {
         <DialogContent>
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
-              <div className="h-16 w-16 bg-success-subtle rounded-full flex items-center justify-center">
-                <CheckCircle className="h-10 w-10 text-success" />
+              <div className="h-14 w-14 bg-success/15 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-success" />
               </div>
             </div>
             <DialogTitle className="text-center">Booking Confirmed!</DialogTitle>
@@ -1208,7 +1029,7 @@ export default function FindRide() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-4 bg-background-subtle rounded-lg space-y-2 text-sm">
+            <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Driver:</span>
                 <span className="font-medium">{selectedRide?.driver}</span>
@@ -1230,18 +1051,14 @@ export default function FindRide() {
                 <span className="font-medium text-success">{selectedRide?.matchScore}%</span>
               </div>
             </div>
-
-            <div className="p-4 bg-success-subtle border border-success/25 rounded-lg text-center">
+            <div className="p-3 bg-success/10 border border-success/20 rounded-lg text-center">
               <p className="text-sm text-success">
-                🌱 You'll save <strong>{selectedRide?.co2Saved.toFixed(1)} kg CO₂</strong> on this
-                trip!
+                🌱 You'll save <strong>{selectedRide?.co2Saved.toFixed(1)} kg CO₂</strong> on this trip!
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => setIsConfirmationDialogOpen(false)} className="w-full">
-              Done
-            </Button>
+            <Button onClick={() => setIsConfirmationDialogOpen(false)} className="w-full">Done</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
